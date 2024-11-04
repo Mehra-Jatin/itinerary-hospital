@@ -1,4 +1,4 @@
-
+import React from 'react'
 import PetCareSection from '../components/Petcare'
 import PetServices from '../components/Petservice'
 import BenefitSection from '../components/Benefit'
