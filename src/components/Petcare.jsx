@@ -8,7 +8,7 @@ const PetCareSection = () => {
 
   const [hove,sethove]=useState(false)
   return (
-    <section className="flex flex-col md:flex-row items-center justify-center p-8 bg-white space-y-6 md:space-y-0 md:space-x-12 md:mx-[10%]">
+    <section className="flex flex-col md:flex-row items-center justify-center p-8 bg-white space-y-6 md:space-y-0 md:space-x-12 md:mx-[10%] lg:pt-48 md:pt-96 pt-96">
       {/* Left Side - Image and Icons */}
       <div className="relative bg-white w-full md:w-2/4 h-auto md:h-[400px] lg:h-[500px] flex items-center justify-center ">
         <img src={img1} alt="Pug" className="w-3/4 h-auto md:w-64 lg:w-80" /> {/* Responsive size for img1 */}
