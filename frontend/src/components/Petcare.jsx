@@ -8,7 +8,54 @@ const PetCareSection = () => {
 
   const [hove,sethove]=useState(false)
   return (
-    <section className="flex flex-col md:flex-row items-center justify-center p-8 bg-white space-y-6 md:space-y-0 md:space-x-12 md:mx-[10%] lg:pt-48 md:pt-96 pt-96">
+    <div className='mt-20 lg:mt-0'>
+    {/* Cards Section */}
+    <div className="relative z-20 mb-[-100px] mt-[-50px]  w-full flex flex-wrap items-center justify-center">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4 md:px-16 lg:px-32">
+        <div className="bg-white w-fit p-6 rounded-lg shadow-lg text-left hover:bg-brown-600 hover:translate-y-[-10px] transition-all duration-300">
+          <div className="flex items-center mb-4 text-orange-500 hover:text-brown-800">
+            <span className="material-icons-outlined text-3xl mr-2">
+              home
+            </span>
+            <h3 className="text-xl font-bold text-gray-800">
+              Pet Boarding
+            </h3>
+          </div>
+          <p className="text-gray-600">
+            Place for dogs & cats to stay while you’re away!
+          </p>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow-lg text-left hover:bg-brown-600 transition-all duration-300 hover:translate-y-[-10px]">
+          <div className="flex items-center mb-4 text-orange-500 hover:text-brown-800">
+            <span className="material-icons-outlined text-3xl mr-2">
+              healing
+            </span>
+            <h3 className="text-xl font-bold text-gray-800">
+              Veterinary Care
+            </h3>
+          </div>
+          <p className="text-gray-600">
+            Pet health and wellness that’s one step ahead.
+          </p>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow-lg text-left flex flex-col hover:bg-brown-500 transition-all duration-300 hover:translate-y-[-10px]">
+          <div className="flex items-center mb-4 text-orange-500 hover:text-brown-800">
+            <span className="material-icons-outlined text-3xl mr-2">
+              content
+            </span>
+            <h3 className="text-xl font-bold text-gray-800">
+              Pet Grooming
+            </h3>
+          </div>
+          <p className="text-gray-600">
+            Making dogs & cats look great is our passion!
+          </p>
+        </div>
+      </div>
+    </div>
+    <section className="flex z-0 flex-col md:flex-row items-center justify-center p-8 bg-white space-y-6 md:space-y-0 md:space-x-12 md:mx-[10%] lg:pt-48 md:pt-96 pt-96">
       {/* Left Side - Image and Icons */}
       <div className="relative bg-white w-full md:w-2/4 h-auto md:h-[400px] lg:h-[500px] flex items-center justify-center ">
         <img src={img1} alt="Pug" className="w-3/4 h-auto md:w-64 lg:w-80" /> {/* Responsive size for img1 */}
@@ -48,6 +95,7 @@ const PetCareSection = () => {
         </div>
       </div>
     </section>
+    </div>
   );
 };
 
