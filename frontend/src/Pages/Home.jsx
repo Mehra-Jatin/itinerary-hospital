@@ -13,7 +13,6 @@ import UserProfile from './UserProfile'
 const Home = () => {
   return (
     <div className='font-paytone'>
-<Navbar/>
 <Hero/>
 <PetCareSection/>
 <PetServices/>
