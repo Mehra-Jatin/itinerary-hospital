@@ -1,32 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import testeMonialsData from '../data/testimonials.json'
 
-const testimonials = [
-  {
-    name: 'Tomas Williams',
-    petType: 'GERMANIAN LITTLE PUG',
-    quote: 'Guests will feel at home with the around-the-clock care of our pet-loving staff. We offer a safe, clean, temperature-controlled environment, playtime, exercise.',
-    rating: 4,
-    img:'https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    pet:'https://images.unsplash.com/photo-1537204696486-967f1b7198c8?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  },
-  {
-    name: 'Sarah Johnson',
-    petType: 'GOLDEN RETRIEVER',
-    quote: 'Outstanding service and care for my furry friend. The staff is incredibly attentive and professional.',
-    rating: 5,
-    img:'https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-     pet:'https://images.unsplash.com/photo-1537204696486-967f1b7198c8?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  },
-  {
-    name: 'Mike Peterson',
-    petType: 'SIBERIAN HUSKY',
-    quote: "Best pet care service I've ever used. My dog always comes home happy and well-exercised.",
-    rating: 4,
-    img:'https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-     pet:'https://images.unsplash.com/photo-1537204696486-967f1b7198c8?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  },
-];
 
 const StarRating = ({ rating }) => (
   <div className="flex gap-1">
@@ -48,6 +23,7 @@ const StarRating = ({ rating }) => (
 const ReviewSlider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [testimonials,setTestemonials]=useState(testeMonialsData)
 
   const nextSlide = () => {
     setIsAnimating(true);

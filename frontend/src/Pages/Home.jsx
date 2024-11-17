@@ -7,6 +7,8 @@ import Gallery from '../components/Gallery'
 import ReviewSlider from '../components/reviewSlider'
 import Navbar from '../components/Navbar'
 import Hero from '../components/Hero'
+import DoctorProfile from './DoctorProfile'
+import UserProfile from './UserProfile'
 
 const Home = () => {
   return (
@@ -18,6 +20,8 @@ const Home = () => {
 <BenefitSection/>
 <Gallery />
   <ReviewSlider />
+  <DoctorProfile />
+  <UserProfile />
   <Footer />
     </div>
   )

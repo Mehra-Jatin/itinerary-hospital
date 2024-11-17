@@ -1,13 +1,7 @@
-
+import {useState} from "react"
+import ImagesData from '../data/GalleryData.json'
 const Gallery = () => {
-  const images = [
-    { id: 1, title: "Sleepy Puppy", description: "A peaceful sleeping beagle" ,img:'https://images.unsplash.com/photo-1537204696486-967f1b7198c8?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'},
-    { id: 2, title: "Fluffy Cat", description: "Beautiful long-haired cat relaxing" ,img:'https://images.unsplash.com/photo-1537204696486-967f1b7198c8?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'},
-    { id: 3, title: "Pet Love", description: "Person holding their beloved cat" ,img:'https://images.unsplash.com/photo-1537204696486-967f1b7198c8?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'},
-    { id: 4, title: "Pet Care", description: "Regular grooming keeps pets healthy",img:'https://images.unsplash.com/photo-1537204696486-967f1b7198c8?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
-    { id: 5, title: "Best Friends", description: "Special bond between human and dog" ,img:'https://images.unsplash.com/photo-1537204696486-967f1b7198c8?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'},
-    { id: 6, title: "Dalmatian Love", description: "Sweet moment with a spotted friend" ,img:'https://images.unsplash.com/photo-1537204696486-967f1b7198c8?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
-  ];
+  const [images,setImages]=useState(ImagesData)
 
   return (
     <div className="container mx-auto p-4 w-full">
