@@ -11,14 +11,13 @@ import Hero from '../components/Hero'
 const Home = () => {
   return (
     <div className='font-paytone'>
-<Navbar/>
 <Hero/>
 <PetCareSection/>
 <PetServices/>
 <BenefitSection/>
 <Gallery />
   <ReviewSlider />
-  <Footer />
+  
     </div>
   )
 }
