@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 // Custom Checkbox Component
 const CustomCheckbox = ({ label, name, onChange }) => {
@@ -6,7 +7,7 @@ const CustomCheckbox = ({ label, name, onChange }) => {
     const { checked } = e.target;
     onChange(name, checked);
   };
-
+  const navigate=useNavigate();
   return (
     <label className="flex cursor-pointer items-center text-gray-700 font-bold hover:text-orange-500 space-x-3">
       <input
@@ -131,11 +132,15 @@ const StarRating = ({ rating }) => {
   return (
     <div className="flex">
       {[...Array(fullStars)].map((_, index) => (
-        <span key={index} className="text-yellow-500 text-lg">⭐</span>
+        <span key={index} className="text-yellow-500 text-lg">
+          ⭐
+        </span>
       ))}
       {halfStar && <span className="text-yellow-500 text-lg">⭐</span>}
       {[...Array(emptyStars)].map((_, index) => (
-        <span key={index} className="text-gray-400 text-lg">☆</span>
+        <span key={index} className="text-gray-400 text-lg">
+          ☆
+        </span>
       ))}
     </div>
   );
@@ -143,6 +148,8 @@ const StarRating = ({ rating }) => {
 
 // Doctor Listing Component
 const DoctorCard = ({ doctor }) => {
+  const navigate = useNavigate(); // Ensure the navigate hook is used here
+
   return (
     <div className="p-6 bg-white shadow-lg rounded-lg mb-6 flex flex-col md:flex-row gap-4 md:items-center sm:items-start">
       {/* Doctor Image */}
@@ -156,14 +163,17 @@ const DoctorCard = ({ doctor }) => {
         <h3 className="text-xl font-bold text-gray-800">{doctor.name}</h3>
         <p className="text-orange-500">{doctor.specialty}</p>
         <p className="text-gray-500">{doctor.location}</p>
-        
+
         {/* Description */}
         <p className="mt-2 text-sm text-gray-600">{doctor.description}</p>
 
         {/* Rating and Button */}
         <div className="flex flex-col md:flex-row items-center justify-between mt-4 gap-4">
           <StarRating rating={parseFloat(doctor.rating)} />
-          <button className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 w-full md:w-auto">
+          <button
+            className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 w-full md:w-auto"
+            onClick={() => navigate(`doctorprofile`)} // Pass dynamic doctor name in the URL
+          >
             View Profile
           </button>
         </div>
@@ -190,7 +200,8 @@ const Doctor = () => {
       specialty: "Cardiologist",
       location: "Mumbai",
       rating: "5",
-      description: "Experienced Cardiologist specializing in heart-related issues.",
+      description:
+        "Experienced Cardiologist specializing in heart-related issues.",
       image: "https://via.placeholder.com/150",
     },
     {
@@ -198,7 +209,8 @@ const Doctor = () => {
       specialty: "Cardiologist",
       location: "Mumbai",
       rating: "4.5",
-      description: "Experienced Cardiologist specializing in heart-related issues.",
+      description:
+        "Experienced Cardiologist specializing in heart-related issues.",
       image: "https://via.placeholder.com/150",
     },
     {
@@ -206,7 +218,8 @@ const Doctor = () => {
       specialty: "Dermatologist",
       location: "Delhi",
       rating: "4",
-      description: "Specialist in skin care, acne, and dermatological treatments.",
+      description:
+        "Specialist in skin care, acne, and dermatological treatments.",
       image: "https://via.placeholder.com/150",
     },
     {
@@ -277,7 +290,9 @@ const Doctor = () => {
         return parseFloat(doctor.rating) >= ratingValue;
       });
 
-    return matchesSearch && matchesLocation && matchesSpecialty && matchesRating;
+    return (
+      matchesSearch && matchesLocation && matchesSpecialty && matchesRating
+    );
   });
 
   return (
