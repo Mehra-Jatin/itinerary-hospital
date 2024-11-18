@@ -3,9 +3,12 @@ import { Clock, DollarSign, ThumbsUp } from 'lucide-react';
 import DoctorPracticeExperience from '../components/DoctorPracticeExperience';
 import DoctorReviews from '../components/DoctorReviews';
 import { FiChevronDown } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
 
 const DoctorProfile = () => {
+  const navigate =useNavigate()
   return (
+    
     <div className="max-w-5xl mx-auto bg-white rounded-lg shadow overflow-hidden  mb-5">
       {/* Header Image */}
       <div className="relative h-48 bg-gray-200">
@@ -90,7 +93,9 @@ const DoctorProfile = () => {
             ))}
           </ul>
           {/* Appointment Button */}
-          <button className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors">
+          <button className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors " onClick={()=>{
+            navigate("/doctor/appointement")
+          }}>
             Make Appointments
           </button>
         </div>

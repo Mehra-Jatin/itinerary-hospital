@@ -5,6 +5,8 @@ import App from './App.jsx';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Home from './Pages/Home.jsx';  // Import the Home component
 import Doctor from './Pages/Doctor.jsx';
+import DoctorProfile from './Pages/DoctorProfile.jsx';
+import Appointment from './Pages/Appointment.jsx'; // Import the Appointment component
 
 // Define the router configuration with routes
 const router = createBrowserRouter([
@@ -19,6 +21,24 @@ const router = createBrowserRouter([
       {
         path: "doctor",  // This will render the Doctor component at "/doctor"
         element: <Doctor />,
+        // children: [
+        //   {
+        //     path: "doctorprofile",  // This will render the DoctorProfile component at "/doctor/doctorprofile"
+        //     element: <DoctorProfile />,
+        //   },
+        //   {
+        //     path: "appointment",  // This will render the Appointment component at "/doctor/appointment"
+        //     element: <Appointment />,
+        //   },
+        // ],
+      },
+      {
+        path: "/doctor/doctorprofile",  // This will now render the Home component when navigating to "/"
+        element: <DoctorProfile/>,  // The component for the homepage
+      },
+      {
+        path: "/doctor/appointement",  // This will now render the Home component when navigating to "/"
+        element: <Appointment/>,  // The component for the homepage
       },
     ],
   },
