@@ -5,11 +5,11 @@ import User from '../Models/UserModel.js';
 // Register User
 // Register User
 export const registerUser = async (req, res) => {
-  const { username, email, password, phoneNumber, role } = req.body;
+  const { FirstName,LastName, email, password,age,gender} = req.body;
 
   try {
-    if (!username || !email || !password || !phoneNumber) {
-      return res.status(400).json({ success: false, message: 'Username, email, password, and phone number are required.' });
+    if (!FirstName || !email || !password ) {
+      return res.status(400).json({ success: false, message: 'FirstName, email, password are required.' });
     }
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -22,11 +22,12 @@ export const registerUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     const newUser = new User({
-      username,
+      FirstName,
+      LastName,
       email,
+      age,
+      gender,
       password: hashedPassword,
-      phoneNumber,
-      role,
     });
 
     await newUser.save();
@@ -63,7 +64,7 @@ export const loginUser = async (req, res) => {
 
     // Generate JWT token
     const token = jwt.sign(
-      { userId: user._id, username: user.username },
+      { userId: user._id},
       process.env.JWT_SECRET || 'secretKey', // Use an environment variable for security
       { expiresIn: '1h' }
     );
@@ -74,8 +75,15 @@ export const loginUser = async (req, res) => {
       message: 'Login successful.',
       token,
       user: {
-        username: user.username,
+        userId: user._id,
+        FirstName: user.FirstName,
+        LastName: user.LastName,
+        age:user.age,
+        gender:user.gender,
+        email: user.email,
         role: user.role,
+        // history: user.history,
+        // appointment: user.appointment,
       },
     });
   } catch (error) {
@@ -86,24 +94,20 @@ export const loginUser = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   const { userId } = req.params;
-  const { username, email, phoneNumber, role } = req.body;
+  const { FirstName,LastName,age,gender,email,password } = req.body;
 
   try {
-    if (!username || !email) {
-      return res.status(400).json({ success: false, message: 'Username and email are required.' });
+    if (!email) {
+      return res.status(400).json({ success: false, message: ' email  required.' });
     }
     const existingUser = await User.findOne({ email });
     if (existingUser && existingUser._id.toString() !== userId) {
       return res.status(400).json({ success: false, message: 'Email already in use.' });
     }
-    const existingUsername = await User.findOne({ username });
-    if (existingUsername && existingUsername._id.toString() !== userId) {
-      return res.status(400).json({ success: false, message: 'Username already taken.' });
-    }
 
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      { username, email, phoneNumber, role },
+      { FirstName,LastName,age,gender,email,password },
       { new: true, runValidators: true }
     );
 
@@ -156,9 +160,12 @@ export const getUser = async (req, res) => {
     res.status(200).json({
       success: true,
       user: {
-        username: user.username,
+        userId: user._id,
+        FirstName: user.FirstName,
+        LastName: user.LastName,
+        age:user.age,
+        gender:user.gender,
         email: user.email,
-        phoneNumber: user.phoneNumber,
         role: user.role,
         // appointments: user.appointments,
         // history: user.history,

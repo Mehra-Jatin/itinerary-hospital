@@ -4,17 +4,25 @@ const appointmentSchema = mongoose.Schema(
   {
     doctorId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User', // Reference to the doctor, assuming they are in the 'User' collection
+      ref: 'Doctor', // Reference to the doctor, assuming they are in the 'Doctor' collection
       required: true,
     },
-    patientId: {
+    userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User', // Reference to the patient, assuming they are also in the 'User' collection
       required: true,
     },
-    dateTime: {
+    time:{
+      type:String,
+      required:true,
+    } ,
+    date: {
       type: Date,
       required: true,
+    },
+    reason:{
+      type:String,
+      required:true,
     },
     paymentStatus: {
       type: String,
