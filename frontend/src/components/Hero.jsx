@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import heroImg1 from "../components/Images/home1-img.jpg";
 import heroImg2 from "../components/Images/home2-img.jpg";
