@@ -77,26 +77,25 @@ export const login = async (req, res) => {
     }
 
     // Find user by email
-    const user = await User.findOne({ email });
+    let user = await User.findOne({ email });
     if (!user) {
-      // if no user find iif doctor exist
-      const doctor = await Doctor.findOne({ email });
-      if (!doctor) {
+      // if no user find if doctor exist
+      user = await Doctor.findOne({ email });
+      if (!user) {
         return res.status(404).json({ success: false, message: 'User not found.' });
       }
     }
 
-    const val= user ? user : doctor;
 
     // Compare provided password with the hashed password
-    const isMatch = await bcrypt.compare(password, val.password);
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ success: false, message: 'Invalid credentials.' });
     }
 
     // Generate JWT token
     const token = jwt.sign(
-      { userId: val._id},
+      { userId: user._id},
       process.env.JWT_SECRET || 'secretKey', // Use an environment variable for security
       { expiresIn: '1h' }
     );
@@ -106,7 +105,7 @@ export const login = async (req, res) => {
       success: true,
       message: 'Login successful.',
       token,
-      val,
+      user,
     });
   } catch (error) {
     console.error('Error logging in user:', error);
