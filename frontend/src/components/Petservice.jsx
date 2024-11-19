@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import catImage from '../components/Images/dog.png';
 import vetImage from '../components/Images/dog.png';
