@@ -1,26 +1,26 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const chatRoomSchema = mongoose.Schema(
   {
     doctorId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User', // Reference to the User model for the doctor
+      ref: "User", // Reference to the User model for the doctor
       required: true,
     },
     patientId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User', // Reference to the User model for the patient
+      ref: "User", // Reference to the User model for the patient
       required: true,
     },
     paymentId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Payment', // You can reference a Payment model if you have one
+      ref: "Payment", // You can reference a Payment model if you have one
       required: true,
     },
     status: {
       type: String,
-      enum: ['active', 'inactive', 'completed'],
-      default: 'active',
+      enum: ["active", "inactive", "completed"],
+      default: "active",
     },
     expiresIn: {
       type: Date,
@@ -34,8 +34,17 @@ const chatRoomSchema = mongoose.Schema(
         },
         sender: {
           type: String,
-          enum: ['doctor', 'patient'],
+          enum: ["doctor", "patient"],
           required: true,
+        },
+        receiver: {
+          type: String,
+          enum: ["doctor", "patient"],
+          required: true,
+        },
+        isRead: {
+          type: Boolean,
+          default: false,
         },
         timestamp: {
           type: Date,
@@ -50,6 +59,6 @@ const chatRoomSchema = mongoose.Schema(
 );
 
 // Create the ChatRoom model based on the schema
-const ChatRoom = mongoose.model('ChatRoom', chatRoomSchema);
+const ChatRoom = mongoose.model("ChatRoom", chatRoomSchema);
 
 export default ChatRoom;
