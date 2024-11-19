@@ -79,6 +79,7 @@ export const login = async (req, res) => {
     // Find user by email
     const user = await User.findOne({ email });
     if (!user) {
+      // if no user find iif doctor exist
       const doctor = await Doctor.findOne({ email });
       if (!doctor) {
         return res.status(404).json({ success: false, message: 'User not found.' });
