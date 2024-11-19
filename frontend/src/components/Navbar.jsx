@@ -27,7 +27,6 @@ const Navbar = () => {
       <NavLink to="/home" className="flex items-center space-x-2">
         <img src={logoImg} alt="PawsCare Logo" className="w-48" />
       </NavLink>
-
       {/* Desktop Menu */}
       <div className="hidden md:flex space-x-6">
         {["Home", "Pages", "Doctor", "Blog", "Shop", "Contacts"].map((menu) => (
