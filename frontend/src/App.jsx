@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import Home from './Pages/Home.jsx'
+// import { useState } from 'react'
+// import Home from './Pages/Home.jsx'
 
 import './App.css'
 import Navbar from './components/Navbar.jsx'
@@ -8,11 +8,11 @@ import Footer from './components/Footer.jsx'
 
 function App() {
   return (
-<>
-<Navbar/>
-<Outlet/>
-<Footer/>
-</>
+    <>
+      <Navbar />
+      <Outlet />
+      <Footer />
+    </>
   )
 }
 
