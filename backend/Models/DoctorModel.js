@@ -1,17 +1,15 @@
 import mongoose from 'mongoose';
 import validator from 'validator';
 
-const userSchema = mongoose.Schema(
+const doctorSchema = mongoose.Schema(
   {
-    
     FirstName: {
-    type: String,
-    required: true,
-    },
-
-    LastName: {
       type: String,
+      required: true,
     },
+    LastName: {
+        type: String,
+      },
     email: {
       type: String,
       required: true,
@@ -23,17 +21,23 @@ const userSchema = mongoose.Schema(
       required: true,
       minlength: 6, // Password length requirement
     },
-    age:{
-      type:Number,
-    },
-    gender:{
-      type:String,
-      enum:['male','female','other'],
-    },
     role: {
       type: String,
-      enum: ['patient', 'admin'],
-      default: 'patient',
+      default: 'doctor',
+    },
+    age:{
+     type:Number,
+    },
+    gender:{
+        type:String,
+        enum:['male','female','other'],
+    },
+    specialization:{
+        type:String,
+        required:true,
+    },
+    experience:{
+        type:Number,
     },
     // appointments: [
     //   {
@@ -53,6 +57,6 @@ const userSchema = mongoose.Schema(
   }
 );
 
-const User = mongoose.model('User', userSchema);
+const Doctor = mongoose.model('Doctor', doctorSchema);
 
-export default User;
+export default Doctor;
