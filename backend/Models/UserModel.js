@@ -20,6 +20,7 @@ const userSchema = mongoose.Schema(
     password: {
       type: String,
       required: true,
+      select: false, // Hide the password by default
       minlength: 6, // Password length requirement
     },
     age: {

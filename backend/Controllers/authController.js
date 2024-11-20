@@ -28,13 +28,10 @@ export const register = async (req, res) => {
     }
 
     // Check if the email already exists
-    let existingUser;
-    if (role === "doctor") {
-      existingUser = await Doctor.findOne({ email });
-    } else {
-      existingUser = await User.findOne({ email });
-    }
-    if (existingUser) {
+     const existingDoctor = await Doctor.findOne({ email });
+     const existingUser = await User.findOne({ email });
+
+    if (existingUser || existingDoctor) {
       return res.status(400).json({
         success: false,
         message: `A ${role} with this email already exists.`,
@@ -102,9 +99,9 @@ export const login = async (req, res) => {
     }
 
     // Find user or doctor by email
-    let user = await User.findOne({ email });
+    let user = await User.findOne({ email }).select("+password");
     if (!user) {
-      user = await Doctor.findOne({ email });
+      user = await Doctor.findOne({ email }).select("+password");
       if (!user) {
         return res.status(404).json({
           success: false,
@@ -121,14 +118,15 @@ export const login = async (req, res) => {
         message: "Invalid credentials.",
       });
     }
-
+   
     // Generate JWT token
     const token = jwt.sign(
       { userId: user._id },
-      process.env.JWT_SECRET || "secretKey", // Ensure a strong secret
+      process.env.JWT_SECRET_KEY , // Ensure a strong secret
       { expiresIn: "1h" }
     );
-
+    
+    user.password = undefined; // Don't send password
     // Send response with user info and token
     res.status(200).json({
       success: true,
