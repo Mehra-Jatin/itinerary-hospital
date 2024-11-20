@@ -107,26 +107,28 @@ const FilterItems = ({ onCheckboxChange }) => (
     </div>
 
     {/* Rating Filter */}
-    <div>
-      <h3 className="text-lg font-bold mb-2">Rating</h3>
-      <div className="space-y-2">
-        {["⭐⭐⭐⭐⭐", "⭐⭐⭐⭐", "⭐⭐⭐"].map((rating, index) => (
-          <CustomCheckbox
-            key={index}
-            label={rating}
-            name={`rating-${rating}`}
-            onChange={onCheckboxChange}
-          />
-        ))}
-      </div>
-    </div>
+    {/* Rating Filter */}
+<div>
+  <h3 className="text-lg font-bold mb-2">Rating</h3>
+  <div className="space-y-2">
+    {["5", "4", "3"].map((rating, index) => (
+      <CustomCheckbox
+        key={index}
+        label={`${rating} Stars`}
+        name={`rating-${rating}`}
+        onChange={onCheckboxChange}
+      />
+    ))}
+  </div>
+</div>
+
   </>
 );
 
 // Star Rating Component
 const StarRating = ({ rating }) => {
   const fullStars = Math.floor(rating);
-  const halfStar = rating % 1 !== 0;
+  // const halfStar = rating % 1 !== 0;
   const emptyStars = 5 - Math.ceil(rating);
 
   return (
@@ -136,7 +138,7 @@ const StarRating = ({ rating }) => {
           ⭐
         </span>
       ))}
-      {halfStar && <span className="text-yellow-500 text-lg">⭐</span>}
+      {/* {halfStar && <span className="text-yellow-500 text-lg">⭐</span>} */}
       {[...Array(emptyStars)].map((_, index) => (
         <span key={index} className="text-gray-400 text-lg">
           ☆
@@ -145,6 +147,7 @@ const StarRating = ({ rating }) => {
     </div>
   );
 };
+
 
 // Doctor Listing Component
 const DoctorCard = ({ doctor }) => {
@@ -208,7 +211,7 @@ const Doctor = () => {
       name: "Dr. Rudra Maurya",
       specialty: "Cardiologist",
       location: "Mumbai",
-      rating: "4.5",
+      rating: "4",
       description:
         "Experienced Cardiologist specializing in heart-related issues.",
       image: "https://via.placeholder.com/150",
@@ -243,11 +246,11 @@ const Doctor = () => {
 
   const handleFilterChange = (filterName, isChecked) => {
     const [filterType, filterValue] = filterName.split("-");
-
+  
     setFilters((prevFilters) => {
       const newFilters = { ...prevFilters };
       if (isChecked) {
-        newFilters[filterType].push(filterValue);
+        newFilters[filterType] = [...newFilters[filterType], filterValue];
       } else {
         newFilters[filterType] = newFilters[filterType].filter(
           (item) => item !== filterValue
@@ -256,6 +259,7 @@ const Doctor = () => {
       return newFilters;
     });
   };
+  
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value.toLowerCase());
@@ -267,34 +271,25 @@ const Doctor = () => {
       doctor.name.toLowerCase().includes(searchQuery) ||
       doctor.specialty.toLowerCase().includes(searchQuery) ||
       doctor.location.toLowerCase().includes(searchQuery);
-
+  
     // Location filter
     const matchesLocation =
       filters.location.length === 0 ||
       filters.location.includes(doctor.location);
-
+  
     // Specialty filter
     const matchesSpecialty =
       filters.specialty.length === 0 ||
       filters.specialty.includes(doctor.specialty);
-
+  
     // Rating filter
     const matchesRating =
       filters.rating.length === 0 ||
-      filters.rating.some((rating) => {
-        const ratingValue = {
-          "⭐⭐⭐⭐⭐": 5,
-          "⭐⭐⭐⭐": 4,
-          "⭐⭐⭐": 3,
-        }[rating];
-        return parseFloat(doctor.rating) >= ratingValue;
-      });
-
-    return (
-      matchesSearch && matchesLocation && matchesSpecialty && matchesRating
-    );
+      filters.rating.some((rating) => parseFloat(doctor.rating) == parseFloat(rating));
+  
+    return matchesSearch && matchesLocation && matchesSpecialty && matchesRating;
   });
-
+  
   return (
     <div className="flex flex-col lg:flex-row bg-gray-50 min-h-screen p-6">
       <FilterSidebar onFilterChange={handleFilterChange} />
