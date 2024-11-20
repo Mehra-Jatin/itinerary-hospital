@@ -56,7 +56,7 @@ const FilterSidebar = ({ onFilterChange }) => {
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           className="w-full p-3 bg-orange-500 text-white rounded-lg font-bold mb-4"
         >
-          {isDropdownOpen ? "Close Filters" : "Open Filters"}
+          {isDropdownOpen ? "Close Filters" : "Open Filterssssss"}
         </button>
         {isDropdownOpen && (
           <div className="p-6 bg-white shadow-md rounded-lg space-y-6">

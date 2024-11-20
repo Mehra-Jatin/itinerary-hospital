@@ -12,7 +12,8 @@ export default function Register() {
         email: '',
         password: '',
         confirmPassword: '',
-        dateOfBirth: '',
+        // dateOfBirth: '',
+        age:"",
         gender: '',
         phoneNumber: '',
         address: '',
@@ -58,7 +59,7 @@ export default function Register() {
 
     const validateStep2 = () => {
         const newErrors = {};
-        if (!formData.dateOfBirth) newErrors.dateOfBirth = 'Date of birth is required';
+        // if (!formData.dateOfBirth) newErrors.dateOfBirth = 'Date of birth is required';
         if (!formData.phoneNumber) newErrors.phoneNumber = 'Phone number is required';
         if (!/^\d+$/.test(formData.phoneNumber)) {
             newErrors.phoneNumber = 'Phone number must contain only digits';
@@ -85,8 +86,6 @@ export default function Register() {
             navigate('/login');
         }
     };
-
-    const goBack = () => navigate(-1);
 
     const renderAuthOptions = () => (
         <div className="space-y-4">
@@ -124,7 +123,7 @@ export default function Register() {
                             name="firstName"
                             type="text"
                             required
-                            className={`block w-full pl-10 pr-3 py-2 rounded-md ${errors.firstName ? 'border-red-300' : 'border-gray-300'} focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out sm:text-sm sm:leading-5`}
+                            className={`block w-full pl-10 pr-3 py-2 rounded-md border ${errors.firstName ? 'border-red-300' : 'border-gray-300'} focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out sm:text-sm sm:leading-5`}
                             placeholder="First Name"
                             onChange={handleInputChange}
                         />
@@ -141,7 +140,7 @@ export default function Register() {
                             id="lastName"
                             name="lastName"
                             type="text"
-                            className="block w-full pl-10 pr-3 py-2 rounded-md border-gray-300 focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                            className="block w-full pl-10 pr-3 py-2 rounded-md border border-gray-300 focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
                             placeholder="Last Name"
                             onChange={handleInputChange}
                         />
@@ -159,7 +158,7 @@ export default function Register() {
                         name="email"
                         type="email"
                         required
-                        className={`block w-full pl-10 pr-3 py-2 rounded-md ${errors.email ? 'border-red-300' : 'border-gray-300'} focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out sm:text-sm sm:leading-5`}
+                        className={`block w-full pl-10 pr-3 py-2 rounded-md border ${errors.email ? 'border-red-300' : 'border-gray-300'} focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out sm:text-sm sm:leading-5`}
                         placeholder="you@example.com"
                         onChange={handleInputChange}
                     />
@@ -177,7 +176,7 @@ export default function Register() {
                         name="password"
                         type={showPassword ? 'text' : 'password'}
                         required
-                        className={`block w-full pl-10 pr-10 py-2 rounded-md ${errors.password ? 'border-red-300' : 'border-gray-300'} focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out sm:text-sm sm:leading-5`}
+                        className={`block w-full pl-10 pr-10 py-2 rounded-md border ${errors.password ? 'border-red-300' : 'border-gray-300'} focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out sm:text-sm sm:leading-5`}
                         placeholder="********"
                         onChange={handleInputChange}
                     />
@@ -200,7 +199,7 @@ export default function Register() {
                         name="confirmPassword"
                         type="password"
                         required
-                        className={`block w-full pl-10 pr-3 py-2 rounded-md ${errors.confirmPassword ? 'border-red-300' : 'border-gray-300'} focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out sm:text-sm sm:leading-5`}
+                        className={`block w-full pl-10 pr-3 py-2 rounded-md border ${errors.confirmPassword ? 'border-red-300' : 'border-gray-300'} focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out sm:text-sm sm:leading-5`}
                         placeholder="********"
                         onChange={handleInputChange}
                     />
@@ -213,7 +212,7 @@ export default function Register() {
     const renderRegistrationStep2 = () => (
         <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-                <div>
+                {/* <div>
                     <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
                     <input
                         id="dateOfBirth"
@@ -224,13 +223,13 @@ export default function Register() {
                         onChange={handleInputChange}
                     />
                     {errors.dateOfBirth && <p className="mt-1 text-sm text-red-600">{errors.dateOfBirth}</p>}
-                </div>
+                </div> */}
                 <div>
                     <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
                     <select
                         id="gender"
                         name="gender"
-                        className="block w-full px-3 py-2 rounded-md border-gray-300 focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                        className="block w-full px-3 py-2 rounded-md border border-gray-300 focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
                         onChange={handleInputChange}
                     >
                         <option value="">Select gender</option>
@@ -247,8 +246,8 @@ export default function Register() {
                     name="phoneNumber"
                     type="tel"
                     required
-                    className={`block w-full px-3 py-2 rounded-md ${errors.phoneNumber ? 'border-red-300' : 'border-gray-300'} focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out sm:text-sm sm:leading-5`}
-                    placeholder="Phone Number"
+                    className={`block w-full px-3 py-2 rounded-md border ${errors.phoneNumber ? 'border-red-300' : 'border-gray-300'} focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out sm:text-sm sm:leading-5`}
+                    placeholder="e.g. +911234567890"
                     onChange={handleInputChange}
                 />
                 {errors.phoneNumber && <p className="mt-1 text-sm text-red-600">{errors.phoneNumber}</p>}
@@ -260,7 +259,7 @@ export default function Register() {
                         id="address"
                         name="address"
                         rows="3"
-                        className="block w-full px-3 py-2 rounded-md border-gray-300 focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                        className="block w-full px-3 py-2 rounded-md border border-gray-300 focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
                         placeholder="Your address"
                         onChange={handleInputChange}
                     ></textarea>
@@ -274,7 +273,7 @@ export default function Register() {
                             id="specialization"
                             name="specialization"
                             type="text"
-                            className="block w-full px-3 py-2 rounded-md border-gray-300 focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                            className="block w-full px-3 py-2 rounded-md border border-gray-300 focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
                             placeholder="Your specialization"
                             onChange={handleInputChange}
                         />
@@ -285,7 +284,7 @@ export default function Register() {
                             id="experience"
                             name="experience"
                             type="number"
-                            className="block w-full px-3 py-2 rounded-md border-gray-300 focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                            className="block w-full px-3 py-2 rounded-md border border-gray-300 focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
                             placeholder="Years of experience"
                             onChange={handleInputChange}
                         />
@@ -297,10 +296,6 @@ export default function Register() {
 
     return (
         <>
-            <button onClick={goBack} className='absolute top-4 left-4 flex items-center space-x-2 hover:bg-orange-100 rounded-full p-2'>
-                <FaArrowLeft className='w-3 h-3' />
-                <span>Back</span>
-            </button>
             <div className="min-h-screen flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-2xl">
                     <div>
@@ -311,7 +306,7 @@ export default function Register() {
                             Already have an account?
                             {' '}
                             <button
-                                onClick={() => navigate('/login')}
+                                onClick={() => navigate('/auth/login')}
                                 className="font-medium text-orange-600 hover:text-orange-500 transition duration-150 ease-in-out"
                             >
                                 Sign in

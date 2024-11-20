@@ -7,6 +7,7 @@ import Gallery from '../components/Gallery'
 import ReviewSlider from '../components/reviewSlider'
 // import Navbar from '../components/Navbar'
 import Hero from '../components/Hero'
+import Banner from '@/components/Banner'
 // import DoctorProfile from './DoctorProfile'
 // import UserProfile from './UserProfile'
 
@@ -18,7 +19,10 @@ const Home = () => {
       <PetServices />
       <BenefitSection />
       <Gallery />
+      <hr className='mt-8'/>
       <ReviewSlider />
+      <hr className='mt-8'/>
+      <Banner />
     </div>
   )
 }
