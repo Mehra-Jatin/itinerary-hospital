@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-
+import axios from 'axios';
 export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
@@ -29,11 +29,23 @@ export default function Login() {
         e.preventDefault();
         setError('');
         const result = await login(formData.email, formData.password);
+        loginHandler(formData.email, formData.password);
         if (!result.success) {
             setError(result.message);
         }
         // If login is successful, the user will be redirected in the AuthContext
     };
+  const loginHandler = async (email, password) => {
+    try{
+            const response = await axios.post('http://localhost:4000/api/v1/login', {email, password});
+            console.log(response.data);
+            // localStorage.setItem('token', response.data.token);
+            // localStorage.setItem('user', JSON.stringify(response.data.user));
+            navigate('/')
+    }catch(error){
+        console.log(error);
+        }
+    }
 
     return (
         <div className="h-[90vh] flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">

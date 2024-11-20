@@ -9,6 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import DoctorApprovalWaiting from '../../components/DoctorApprovalWaiting';
 import { Textarea } from '@/components/ui/textarea';
+import axios from 'axios';
+import { set } from 'date-fns';
 
 export default function Register() {
     const [registrationStep, setRegistrationStep] = useState(1);
@@ -92,6 +94,7 @@ export default function Register() {
         if (registrationStep === 2 && validateStep2()) {
             setError('');
             const result = await register(formData);
+             registerUser(formData,role);
             if (result.success) {
                 if (role === 'doctor') {
                     setIsNewDoctor(true);
@@ -107,7 +110,30 @@ export default function Register() {
             }
         }
     };
-
+    // backend api call
+  const registerUser = async (formData,role) => {
+    try {
+        const { data } = await axios.post('http://localhost:4000/api/v1/register', { FirstName: formData.firstName,
+            LastName: formData.lastName,
+            email: formData.email,
+            password: formData.password,
+            age: formData.age,
+            gender: formData.gender,
+            role: role,
+            specialization: formData.specialization,
+            experience: formData.experience,
+            PhoneNo:formData.phoneNumber, });
+        console.log(data);
+        if (data.success) {
+             navigate('/auth/login');
+        } else {
+             setError(data.message);
+        }
+    } catch (error) {
+        console.error('Error registering user/doctor:', error);
+        setError(error.message);
+    }
+};
     const renderAuthOptions = () => (
         <div className="space-y-4">
             <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Choose Your Role</h2>
@@ -249,8 +275,8 @@ export default function Register() {
                             <SelectValue placeholder="Select gender" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="male">Male</SelectItem>
-                            <SelectItem value="female">Female</SelectItem>
+                            <SelectItem value="Male">Male</SelectItem>
+                            <SelectItem value="Female">Female</SelectItem>
                             <SelectItem value="other">Other</SelectItem>
                         </SelectContent>
                     </Select>
