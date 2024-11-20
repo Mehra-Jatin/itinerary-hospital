@@ -27,25 +27,21 @@ export default function Login() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError('');
         const result = await login(formData.email, formData.password);
-        loginHandler(formData.email, formData.password);
-        if (!result.success) {
+        console.log('Login Result:', result); // Add this line to log the result
+        if (result.success) { // Check if success is true then goes to the each dashboard
+            if (result.user.role === 'patient') {
+                navigate('/profile');
+            } else if (result.user.role === 'doctor') {
+                navigate('/doctordashboard');
+            } else if (result.user.role === 'admin') {
+                navigate('/admindashboard');
+            }
+        } else {
             setError(result.message);
         }
-        // If login is successful, the user will be redirected in the AuthContext
     };
-  const loginHandler = async (email, password) => {
-    try{
-            const response = await axios.post('http://localhost:4000/api/v1/login', {email, password});
-            console.log(response.data);
-            // localStorage.setItem('token', response.data.token);
-            // localStorage.setItem('user', JSON.stringify(response.data.user));
-            navigate('/')
-    }catch(error){
-        console.log(error);
-        }
-    }
+
 
     return (
         <div className="h-[90vh] flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -58,7 +54,7 @@ export default function Login() {
                         Don&apos;t have an account?
                         {' '}
                         <button
-                            onClick={() => navigate('/register')}
+                            onClick={() => navigate('/auth/register')}
                             className="font-medium text-orange-600 hover:text-orange-500 transition duration-150 ease-in-out"
                         >
                             Sign up

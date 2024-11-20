@@ -7,7 +7,10 @@ import cors from 'cors';
 dotenv.config();
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173', // Specify your frontend origin
+  credentials: true,              // Allow credentials (cookies, headers)
+}));
 // Middleware to parse JSON request bodies
 app.use(express.json());
 
