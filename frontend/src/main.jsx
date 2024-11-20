@@ -8,12 +8,14 @@ import Doctor from "./Pages/Doctor.jsx";
 import DoctorProfile from "./Pages/DoctorProfile.jsx";
 import Appointment from "./Pages/Appointment.jsx"; // Import the Appointment component
 import UserProfile from "./Pages/user/UserProfile.jsx";
-import User from "./Pages/UserLayout.jsx";
 import UserAppoienments from "./Pages/user/UserAppoienments.jsx";
 import UserSetting from "./Pages/user/UserSetting.jsx";
-import AuthPage from "./Pages/Auth/AuthPage.jsx";
 import Login from "./Pages/Auth/Login.jsx";
 import Register from "./Pages/Auth/Register.jsx";
+import AuthLayout from "./Pages/Auth/AuthLayout";
+import UserLayout from "./Pages/UserLayout.jsx";
+import ProtectedRoute from "./hooks/ProtectedRoute";
+import { AuthProvider } from "./contexts/AuthContext";
 
 // Define the router configuration with routes
 const router = createBrowserRouter([
@@ -22,7 +24,7 @@ const router = createBrowserRouter([
     element: <App />, // This is the root layout component
     children: [
       {
-        path: "/", // This will now render the Home component when navigating to "/"
+        path: "", // This will now render the Home component when navigating to "/"
         element: <Home />, // The component for the homepage
       },
       {
@@ -51,10 +53,14 @@ const router = createBrowserRouter([
   },
   {
     path: "/profile", // This will now render the Home component when navigating to "/"
-    element: <User />,
+    element:
+      <ProtectedRoute>
+        <UserLayout />
+      </ProtectedRoute>
+      ,
     children: [
       {
-        path: "/profile", // This will now render the Home component when navigating to "/"
+        path: "", // This will now render the Home component when navigating to "/"
         element: <UserProfile />,
       },
       {
@@ -69,16 +75,19 @@ const router = createBrowserRouter([
   },
   {
     path: "/auth",
-    element: <AuthPage />,
+    element: <AuthLayout />,
+    children: [
+      {
+        path: "/auth/login",
+        element: <Login />,
+      },
+      {
+        path: "/auth/register",
+        element: <Register />,
+      }
+    ]
   },
-  {
-    path: "/auth/login",
-    element: <Login />,
-  },
-  {
-    path: "/auth/register",
-    element: <Register />,
-  },
+
   {
     path: "*",
     element: (
@@ -99,6 +108,8 @@ const router = createBrowserRouter([
 // Render the app with the router provider
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </StrictMode>
 );

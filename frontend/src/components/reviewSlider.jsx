@@ -47,7 +47,7 @@ const ReviewSlider = () => {
   }, []);
 
   return (
-    <div className="w-full max-w-8xl mx-auto px-4 py-8">
+    <div className="w-full max-w-7xl mx-auto px-4 py-8 md:mt-24">
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold text-[#f97316] mb-4">Pawscare Reviews</h1>
         <p className="text-dark max-w-2xl mx-auto">
@@ -104,14 +104,14 @@ const ReviewSlider = () => {
 
         <button
           onClick={prevSlide}
-          className="absolute left-0 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 shadow-lg hover:bg-gray-50 transition-colors"
+          className="absolute left-0 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 hover:bg-gray-50 transition-colors"
         >
           <ChevronLeft className="w-6 h-6 text-gray-600" />
         </button>
 
         <button
           onClick={nextSlide}
-          className="absolute right-0 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 shadow-lg hover:bg-gray-50 transition-colors"
+          className="absolute right-0 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 hover:bg-gray-50 transition-colors"
         >
           <ChevronRight className="w-6 h-6 text-gray-600" />
         </button>

@@ -39,22 +39,16 @@ export default function Login() {
         }
     };
 
-    const goBack = () => navigate(-1);
-
     return (
         <>
-            <button onClick={goBack} className='absolute top-4 left-4 flex items-center space-x-2 hover:bg-orange-100 rounded-full p-2'>
-                <FaArrowLeft className='w-3 h-3' />
-                <span>Back</span>
-            </button>
-            <div className="min-h-screen flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+            <div className="h-[90vh] flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-2xl">
                     <div>
                         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
                             Welcome Back!
                         </h2>
                         <p className="mt-2 text-center text-sm text-gray-600">
-                            Don't have an account?
+                            Don&apos;t have an account?
                             {' '}
                             <button
                                 onClick={() => navigate('/auth/register')}
