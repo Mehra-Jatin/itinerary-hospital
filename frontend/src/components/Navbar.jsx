@@ -18,10 +18,11 @@ import {
 } from "@/components/ui/sheet"
 import { User, ChevronDown, Calendar, Settings, LogOut, Menu, Home, FileText, Stethoscope, BookOpen, ShoppingBag, PhoneCall } from 'lucide-react'
 import logoImg from '../components/Images/logo-header.png'
+import { useAuth } from '@/hooks/useAuth'
 
 export default function Navbar() {
   const user = null // Replace with your auth logic
-  const logout = () => { } // Replace with your logout function
+  const {logout} = useAuth();  // Replace with your logout function
 
   const menuItems = [
     { name: "Home", path: "/", icon: Home, hasDropdown: false },
@@ -31,6 +32,11 @@ export default function Navbar() {
     { name: "Shop", path: "/shop", icon: ShoppingBag, hasDropdown: true },
     { name: "Contacts", path: "/contacts", icon: PhoneCall, hasDropdown: false },
   ]
+
+  const handleLogout = () => {
+    logout();
+    window.location.href = '/';
+  };
 
   return (
     <nav className="flex justify-between items-center p-4 bg-white shadow-lg">
@@ -88,7 +94,7 @@ export default function Navbar() {
                 <Settings className="mr-2 h-4 w-4" /> Settings
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={logout}>
+              <DropdownMenuItem onClick={handleLogout}>
                 <LogOut className="mr-2 h-4 w-4" /> Logout
               </DropdownMenuItem>
             </DropdownMenuContent>
