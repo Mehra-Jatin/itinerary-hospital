@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
-import { FaUser, FaLock, FaEnvelope, FaUserMd, FaUserInjured, FaEye, FaEyeSlash, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
+import { FaUser, FaLock, FaEnvelope, FaUserMd, FaUserInjured, FaEye, FaEyeSlash, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import DoctorApprovalWaiting from '../../components/DoctorApprovalWaiting';
+import { Textarea } from '@/components/ui/textarea';
 
 export default function Register() {
     const [registrationStep, setRegistrationStep] = useState(1);
@@ -13,7 +21,6 @@ export default function Register() {
         password: '',
         confirmPassword: '',
         // dateOfBirth: '',
-        age:"",
         gender: '',
         phoneNumber: '',
         address: '',
@@ -21,7 +28,9 @@ export default function Register() {
         experience: ''
     });
     const [errors, setErrors] = useState({});
-
+    const [error, setError] = useState('');
+    const [isNewDoctor, setIsNewDoctor] = useState(false);
+    const { register } = useAuth();
     const navigate = useNavigate();
 
     const handleInputChange = (e) => {
@@ -78,12 +87,24 @@ export default function Register() {
         setRegistrationStep(1);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (registrationStep === 2 && validateStep2()) {
-            console.log('Registration submitted:', formData);
-            alert('Registration successful! Please log in.');
-            navigate('/login');
+            setError('');
+            const result = await register(formData);
+            if (result.success) {
+                if (role === 'doctor') {
+                    setIsNewDoctor(true);
+                } else {
+                    navigate('/profile');
+                }
+            } else {
+                if (result.message.includes('email already exists')) {
+                    setError('This email is already registered. Please login instead.');
+                } else {
+                    setError(result.message);
+                }
+            }
         }
     };
 
@@ -113,17 +134,17 @@ export default function Register() {
         <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
                 <div>
-                    <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                    <Label htmlFor="firstName">First Name</Label>
                     <div className="relative rounded-md shadow-sm">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <FaUser className="h-5 w-5 text-gray-400" />
                         </div>
-                        <input
+                        <Input
                             id="firstName"
                             name="firstName"
                             type="text"
                             required
-                            className={`block w-full pl-10 pr-3 py-2 rounded-md border ${errors.firstName ? 'border-red-300' : 'border-gray-300'} focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out sm:text-sm sm:leading-5`}
+                            className="pl-10"
                             placeholder="First Name"
                             onChange={handleInputChange}
                         />
@@ -131,16 +152,16 @@ export default function Register() {
                     {errors.firstName && <p className="mt-1 text-sm text-red-600">{errors.firstName}</p>}
                 </div>
                 <div>
-                    <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                    <Label htmlFor="lastName">Last Name</Label>
                     <div className="relative rounded-md shadow-sm">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <FaUser className="h-5 w-5 text-gray-400" />
                         </div>
-                        <input
+                        <Input
                             id="lastName"
                             name="lastName"
                             type="text"
-                            className="block w-full pl-10 pr-3 py-2 rounded-md border border-gray-300 focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                            className="pl-10"
                             placeholder="Last Name"
                             onChange={handleInputChange}
                         />
@@ -148,17 +169,17 @@ export default function Register() {
                 </div>
             </div>
             <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <Label htmlFor="email">Email</Label>
                 <div className="relative rounded-md shadow-sm">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <FaEnvelope className="h-5 w-5 text-gray-400" />
                     </div>
-                    <input
+                    <Input
                         id="email"
                         name="email"
                         type="email"
                         required
-                        className={`block w-full pl-10 pr-3 py-2 rounded-md border ${errors.email ? 'border-red-300' : 'border-gray-300'} focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out sm:text-sm sm:leading-5`}
+                        className="pl-10"
                         placeholder="you@example.com"
                         onChange={handleInputChange}
                     />
@@ -166,40 +187,38 @@ export default function Register() {
                 {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
             </div>
             <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                <Label htmlFor="password">Password</Label>
                 <div className="relative rounded-md shadow-sm">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <FaLock className="h-5 w-5 text-gray-400" />
                     </div>
-                    <input
+                    <Input
                         id="password"
                         name="password"
                         type={showPassword ? 'text' : 'password'}
                         required
-                        className={`block w-full pl-10 pr-10 py-2 rounded-md border ${errors.password ? 'border-red-300' : 'border-gray-300'} focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out sm:text-sm sm:leading-5`}
+                        className="pl-10 pr-10"
                         placeholder="********"
                         onChange={handleInputChange}
                     />
                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer" onClick={() => setShowPassword(!showPassword)}>
-                        {showPassword ? <FaEyeSlash className="h-5 w-5 text-gray-400" /> :
-                            <FaEye className="h-5 w-5 text-gray-400" />
-                        }
+                        {showPassword ? <FaEyeSlash className="h-5 w-5 text-gray-400" /> : <FaEye className="h-5 w-5 text-gray-400" />}
                     </div>
                 </div>
                 {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password}</p>}
             </div>
             <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
                 <div className="relative rounded-md shadow-sm">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <FaLock className="h-5 w-5 text-gray-400" />
                     </div>
-                    <input
+                    <Input
                         id="confirmPassword"
                         name="confirmPassword"
                         type="password"
                         required
-                        className={`block w-full pl-10 pr-3 py-2 rounded-md border ${errors.confirmPassword ? 'border-red-300' : 'border-gray-300'} focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out sm:text-sm sm:leading-5`}
+                        className="pl-10"
                         placeholder="********"
                         onChange={handleInputChange}
                     />
@@ -213,78 +232,71 @@ export default function Register() {
         <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
                 {/* <div>
-                    <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
-                    <input
+                    <Label htmlFor="dateOfBirth">Date of Birth</Label>
+                    <Input
                         id="dateOfBirth"
                         name="dateOfBirth"
                         type="date"
                         required
-                        className={`block w-full px-3 py-2 rounded-md ${errors.dateOfBirth ? 'border-red-300' : 'border-gray-300'} focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out sm:text-sm sm:leading-5`}
                         onChange={handleInputChange}
                     />
                     {errors.dateOfBirth && <p className="mt-1 text-sm text-red-600">{errors.dateOfBirth}</p>}
                 </div> */}
                 <div>
-                    <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
-                    <select
-                        id="gender"
-                        name="gender"
-                        className="block w-full px-3 py-2 rounded-md border border-gray-300 focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
-                        onChange={handleInputChange}
-                    >
-                        <option value="">Select gender</option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                        <option value="other">Other</option>
-                    </select>
+                    <Label htmlFor="gender">Gender</Label>
+                    <Select name="gender" onValueChange={(value) => handleInputChange({ target: { name: 'gender', value } })}>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select gender" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="male">Male</SelectItem>
+                            <SelectItem value="female">Female</SelectItem>
+                            <SelectItem value="other">Other</SelectItem>
+                        </SelectContent>
+                    </Select>
                 </div>
             </div>
             <div>
-                <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                <input
+                <Label htmlFor="phoneNumber">Phone Number</Label>
+                <Input
                     id="phoneNumber"
                     name="phoneNumber"
                     type="tel"
                     required
-                    className={`block w-full px-3 py-2 rounded-md border ${errors.phoneNumber ? 'border-red-300' : 'border-gray-300'} focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out sm:text-sm sm:leading-5`}
-                    placeholder="e.g. +911234567890"
+                    placeholder="Phone Number"
                     onChange={handleInputChange}
                 />
                 {errors.phoneNumber && <p className="mt-1 text-sm text-red-600">{errors.phoneNumber}</p>}
             </div>
             {role === 'patient' && (
                 <div>
-                    <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                    <textarea
+                    <Label htmlFor="address">Address</Label>
+                    <Textarea
                         id="address"
                         name="address"
-                        rows="3"
-                        className="block w-full px-3 py-2 rounded-md border border-gray-300 focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
                         placeholder="Your address"
                         onChange={handleInputChange}
-                    ></textarea>
+                    />
                 </div>
             )}
             {role === 'doctor' && (
                 <>
                     <div>
-                        <label htmlFor="specialization" className="block text-sm font-medium text-gray-700 mb-1">Specialization</label>
-                        <input
+                        <Label htmlFor="specialization">Specialization</Label>
+                        <Input
                             id="specialization"
                             name="specialization"
                             type="text"
-                            className="block w-full px-3 py-2 rounded-md border border-gray-300 focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
                             placeholder="Your specialization"
                             onChange={handleInputChange}
                         />
                     </div>
                     <div>
-                        <label htmlFor="experience" className="block text-sm font-medium text-gray-700 mb-1">Years of Experience</label>
-                        <input
+                        <Label htmlFor="experience">Years of Experience</Label>
+                        <Input
                             id="experience"
                             name="experience"
                             type="number"
-                            className="block w-full px-3 py-2 rounded-md border border-gray-300 focus:ring-orange-500 focus:border-orange-500 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
                             placeholder="Years of experience"
                             onChange={handleInputChange}
                         />
@@ -294,60 +306,68 @@ export default function Register() {
         </div>
     );
 
+    if (isNewDoctor) {
+        return <DoctorApprovalWaiting />;
+    }
+
     return (
-        <>
-            <div className="min-h-screen flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-                <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-2xl">
-                    <div>
-                        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                            Create Your Account
-                        </h2>
-                        <p className="mt-2 text-center text-sm text-gray-600">
-                            Already have an account?
-                            {' '}
-                            <button
-                                onClick={() => navigate('/auth/login')}
-                                className="font-medium text-orange-600 hover:text-orange-500 transition duration-150 ease-in-out"
-                            >
-                                Sign in
-                            </button>
-                        </p>
-                    </div>
-                    <div className="flex items-center justify-center mb-8">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${registrationStep === 1 ? 'bg-orange-600 text-white' : 'bg-orange-100 text-orange-600'}`}>1</div>
-                        <div className={`h-1 w-16 ${registrationStep === 2 ? 'bg-orange-600' : 'bg-orange-100'}`}></div>
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${registrationStep === 2 ? 'bg-orange-600 text-white' : 'bg-orange-100 text-orange-600'}`}>2</div>
-                    </div>
-                    <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-                        {registrationStep === 1 && (
-                            <>
-                                {renderAuthOptions()}
-                                {renderRegistrationStep1()}
-                            </>
-                        )}
-                        {registrationStep === 2 && renderRegistrationStep2()}
-                        <div className="flex justify-between space-x-4">
-                            {registrationStep === 2 && (
-                                <button
-                                    type="button"
-                                    onClick={handleBack}
-                                    className="flex-1 inline-flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
-                                >
-                                    <FaArrowLeft className="mr-2" /> Back
-                                </button>
-                            )}
-                            <button
-                                type={registrationStep === 2 ? 'submit' : 'button'}
-                                onClick={registrationStep === 1 ? handleNext : undefined}
-                                className={`${registrationStep === 1 ? 'flex-1' : 'w-full'} inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition duration-150 ease-in-out`}
-                            >
-                                {registrationStep === 1 ? 'Next' : 'Complete Registration'}
-                                {registrationStep === 1 && <FaArrowRight className="ml-2" />}
-                            </button>
-                        </div>
-                    </form>
+        <div className="min-h-screen flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-2xl">
+                <div>
+                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                        Create Your Account
+                    </h2>
+                    <p className="mt-2 text-center text-sm text-gray-600">
+                        Already have an account?
+                        {' '}
+                        <button
+                            onClick={() => navigate('/auth/login')}
+                            className="font-medium text-orange-600 hover:text-orange-500 transition duration-150 ease-in-out"
+                        >
+                            Sign in
+                        </button>
+                    </p>
                 </div>
+                <div className="flex items-center justify-center mb-8">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${registrationStep === 1 ? 'bg-orange-600 text-white' : 'bg-orange-100 text-orange-600'}`}>1</div>
+                    <div className={`h-1 w-16 ${registrationStep === 2 ? 'bg-orange-600' : 'bg-orange-100'}`}></div>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${registrationStep === 2 ? 'bg-orange-600 text-white' : 'bg-orange-100 text-orange-600'}`}>2</div>
+                </div>
+                {error && (
+                    <Alert variant="destructive">
+                        <AlertDescription>{error}</AlertDescription>
+                    </Alert>
+                )}
+                <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+                    {registrationStep === 1 && (
+                        <>
+                            {renderAuthOptions()}
+                            {renderRegistrationStep1()}
+                        </>
+                    )}
+                    {registrationStep === 2 && renderRegistrationStep2()}
+                    <div className="flex justify-between space-x-4">
+                        {registrationStep === 2 && (
+                            <Button
+                                type="button"
+                                onClick={handleBack}
+                                variant="outline"
+                                className="flex-1"
+                            >
+                                <FaArrowLeft className="mr-2" /> Back
+                            </Button>
+                        )}
+                        <Button
+                            type={registrationStep === 2 ? 'submit' : 'button'}
+                            onClick={registrationStep === 1 ? handleNext : undefined}
+                            className={`bg-orange-600 ${registrationStep === 1 ? 'flex-1' : 'w-full'}`}
+                        >
+                            {registrationStep === 1 ? 'Next' : 'Complete Registration'}
+                            {registrationStep === 1 && <FaArrowRight className="ml-2" />}
+                        </Button>
+                    </div>
+                </form>
             </div>
-        </>
+        </div>
     );
 }
