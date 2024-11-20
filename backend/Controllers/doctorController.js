@@ -53,6 +53,7 @@ export const deleteDoctor = async (req, res) => {
 };
 
 // Get Doctor
+
 export const getDoctor = async (req, res) => {
   const { doctorId } = req.params;
 
@@ -79,6 +80,24 @@ export const getDoctor = async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching doctor:', error);
+    res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
+  }
+};
+
+export const getAllDoctors = async (req, res) => {
+  try {
+    const doctors = await Doctor.find(); // Fetch all doctors from the database
+
+    if (!doctors || doctors.length === 0) {
+      return res.status(404).json({ success: false, message: 'No doctors found.' });
+    }
+
+    res.status(200).json({
+      success: true,
+      doctors,
+    });
+  } catch (error) {
+    console.error('Error fetching doctors:', error);
     res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
   }
 };
