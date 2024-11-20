@@ -1,28 +1,39 @@
+import bcrypt from 'bcrypt';
 import Doctor from '../Models/DoctorModel.js';
 
 // Update Doctor
 export const updateDoctor = async (req, res) => {
   const { doctorId } = req.params;
-  const { FirstName, LastName, age, gender, email, password, specialization, experience } = req.body;
+  const { FirstName, LastName, age, gender, email, password, specialization, experience, PhoneNo } = req.body;
 
   try {
     if (!email) {
       return res.status(400).json({ success: false, message: 'Email is required.' });
     }
+
+    // Check if the email is already in use by another doctor
     const existingDoctor = await Doctor.findOne({ email });
     if (existingDoctor && existingDoctor._id.toString() !== doctorId) {
-      return res.status(400).json({ success: false, message: 'Email already in use.' });
+      return res.status(400).json({ success: false, message: 'Email already in use by another doctor.' });
     }
 
-    const updatedDoctor = await Doctor.findByIdAndUpdate(
-      doctorId,
-      { FirstName, LastName, age, gender, email, password, specialization, experience },
-      { new: true, runValidators: true }
-    );
+    // Hash the password if it's being updated
+    let updatedData = { FirstName, LastName, age, gender, email, specialization, experience, PhoneNo };
+
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      updatedData.password = await bcrypt.hash(password, salt);
+    }
+
+    // Find the doctor and update
+    const updatedDoctor = await Doctor.findByIdAndUpdate(doctorId, updatedData, { new: true, runValidators: true });
 
     if (!updatedDoctor) {
       return res.status(404).json({ success: false, message: 'Doctor not found.' });
     }
+
+    // Exclude sensitive fields like password before returning data
+    updatedDoctor.password = undefined;
 
     res.status(200).json({
       success: true,
@@ -53,16 +64,17 @@ export const deleteDoctor = async (req, res) => {
 };
 
 // Get Doctor
-
 export const getDoctor = async (req, res) => {
   const { doctorId } = req.params;
 
   try {
     const doctor = await Doctor.findById(doctorId);
-
     if (!doctor) {
       return res.status(404).json({ success: false, message: 'Doctor not found.' });
     }
+
+    // Exclude sensitive fields like password before returning data
+    doctor.password = undefined;
 
     res.status(200).json({
       success: true,
@@ -76,6 +88,7 @@ export const getDoctor = async (req, res) => {
         role: doctor.role,
         specialization: doctor.specialization,
         experience: doctor.experience,
+        PhoneNo: doctor.PhoneNo,
       },
     });
   } catch (error) {
@@ -84,6 +97,7 @@ export const getDoctor = async (req, res) => {
   }
 };
 
+// Get All Doctors
 export const getAllDoctors = async (req, res) => {
   try {
     const doctors = await Doctor.find(); // Fetch all doctors from the database
@@ -91,6 +105,9 @@ export const getAllDoctors = async (req, res) => {
     if (!doctors || doctors.length === 0) {
       return res.status(404).json({ success: false, message: 'No doctors found.' });
     }
+
+    // Exclude sensitive fields like password before returning data
+    doctors.forEach(doctor => doctor.password = undefined);
 
     res.status(200).json({
       success: true,

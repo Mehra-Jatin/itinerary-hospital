@@ -3,10 +3,9 @@ import validator from 'validator';
 
 const userSchema = mongoose.Schema(
   {
-    
     FirstName: {
-    type: String,
-    required: true,
+      type: String,
+      required: true,
     },
 
     LastName: {
@@ -23,8 +22,8 @@ const userSchema = mongoose.Schema(
       required: true,
       minlength: 6, // Password length requirement
     },
-    age:{
-      type:Number,
+    age: {
+      type: Number,
     },
     gender: {
       type: String,
@@ -35,6 +34,17 @@ const userSchema = mongoose.Schema(
       enum: ['patient', 'admin'],
       default: 'patient',
     },
+    PhoneNo: {
+      type: Number,
+      required: true,
+      validate: {
+        validator: function(v) {
+          // Regular expression to match a valid phone number format
+          return /^[0-9]{10}$/.test(v);
+        },
+        message: props => `${props.value} is not a valid phone number!`
+      },
+    }
     // appointments: [
     //   {
     //     type: mongoose.Schema.Types.ObjectId,

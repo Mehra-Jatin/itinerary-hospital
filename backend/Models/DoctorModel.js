@@ -41,7 +41,19 @@ const doctorSchema = mongoose.Schema(
     },
     rating:{
       type:Number,
+    },
+    PhoneNo: {
+      type: Number,
+      required: true,
+      validate: {
+        validator: function(v) {
+          // Regular expression to match a valid phone number format
+          return /^[0-9]{10}$/.test(v);
+        },
+        message: props => `${props.value} is not a valid phone number!`
+      },
     }
+
     // appointments: [
     //   {
     //     type: mongoose.Schema.Types.ObjectId,

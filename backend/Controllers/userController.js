@@ -1,15 +1,14 @@
-
 import User from '../Models/UserModel.js';
+import Doctor from '../Models/DoctorModel.js';  // Assuming you want to fetch doctors
 
-
-// update user
+// Update User
 export const updateUser = async (req, res) => {
   const { userId } = req.params;
-  const { FirstName,LastName,age,gender,email,password } = req.body;
+  const { FirstName, LastName, age, gender, email, password, PhoneNo } = req.body;
 
   try {
     if (!email) {
-      return res.status(400).json({ success: false, message: ' email  required.' });
+      return res.status(400).json({ success: false, message: 'Email is required.' });
     }
     const existingUser = await User.findOne({ email });
     if (existingUser && existingUser._id.toString() !== userId) {
@@ -18,7 +17,7 @@ export const updateUser = async (req, res) => {
 
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      { FirstName,LastName,age,gender,email,password },
+      { FirstName, LastName, age, gender, email, password, PhoneNo },
       { new: true, runValidators: true }
     );
 
@@ -60,10 +59,7 @@ export const getUser = async (req, res) => {
 
   try {
     // Get user by userId
-    const user = await User.findById(userId)
-      // .populate('appointments') // Assuming you have appointments and history collections
-      // .populate('history');
-
+    const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found.' });
     }
@@ -75,12 +71,11 @@ export const getUser = async (req, res) => {
         userId: user._id,
         FirstName: user.FirstName,
         LastName: user.LastName,
-        age:user.age,
-        gender:user.gender,
+        age: user.age,
+        gender: user.gender,
         email: user.email,
         role: user.role,
-        // appointments: user.appointments,
-        // history: user.history,
+        PhoneNo: user.PhoneNo,
       },
     });
   } catch (error) {
@@ -89,3 +84,24 @@ export const getUser = async (req, res) => {
   }
 };
 
+// Get All Doctors
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find(); // Fetch all users from the database
+
+    if (!users || users.length === 0) {
+      return res.status(404).json({ success: false, message: 'No users found.' });
+    }
+
+    // Exclude sensitive fields like password before returning data
+    users.forEach(user => user.password = undefined);  // Exclude password
+
+    res.status(200).json({
+      success: true,
+      users, // Return the list of users
+    });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
+  }
+}
