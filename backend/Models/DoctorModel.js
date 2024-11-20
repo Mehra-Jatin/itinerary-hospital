@@ -30,7 +30,7 @@ const doctorSchema = mongoose.Schema(
     },
     gender:{
         type:String,
-        enum:['male','female','other'],
+        enum:['Male','Female','other'],
     },
     specialization:{
         type:String,
@@ -39,6 +39,9 @@ const doctorSchema = mongoose.Schema(
     experience:{
         type:Number,
     },
+    rating:{
+      type:Number,
+    }
     // appointments: [
     //   {
     //     type: mongoose.Schema.Types.ObjectId,
