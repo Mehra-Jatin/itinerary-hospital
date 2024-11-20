@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -21,8 +21,7 @@ import logoImg from '../components/Images/logo-header.png'
 import { useAuth } from '@/hooks/useAuth'
 
 export default function Navbar() {
-  const user = null // Replace with your auth logic
-  const {logout} = useAuth();  // Replace with your logout function
+  const { user, logout } = useAuth();  // Replace with your logout function
 
   const menuItems = [
     { name: "Home", path: "/", icon: Home, hasDropdown: false },
@@ -32,6 +31,7 @@ export default function Navbar() {
     { name: "Shop", path: "/shop", icon: ShoppingBag, hasDropdown: true },
     { name: "Contacts", path: "/contacts", icon: PhoneCall, hasDropdown: false },
   ]
+
 
   const handleLogout = () => {
     logout();
@@ -77,7 +77,7 @@ export default function Navbar() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="font-semibold group">
-                <User className="mr-2 h-4 w-4" /> Welcome, User
+                <User className="mr-2 h-4 w-4" /> Welcome, {user.FirstName}
                 <ChevronDown className="ml-1 h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
               </Button>
             </DropdownMenuTrigger>
@@ -85,13 +85,13 @@ export default function Navbar() {
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
-                <User className="mr-2 h-4 w-4" /> Profile
+                <NavLink to="/profile" className="flex items-center"><User className="mr-2 h-4 w-4" /> Profile</NavLink>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Calendar className="mr-2 h-4 w-4" /> Appointments
+                <NavLink to="/profile/appointements" className="flex items-center"><Calendar className="mr-2 h-4 w-4" /> Appointments</NavLink>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Settings className="mr-2 h-4 w-4" /> Settings
+                <NavLink to="/profile/settings" className="flex items-center"><Settings className="mr-2 h-4 w-4" /> Settings </NavLink>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout}>
@@ -131,7 +131,7 @@ export default function Navbar() {
                 <span>{item.name}</span>
               </Link>
             ))}
-            
+
           </div>
           {!user && (
             <div className="mt-6">
@@ -141,11 +141,11 @@ export default function Navbar() {
             </div>
           )}
           <div className='absolute bottom-4'>
-        <p className="text-xs text-gray-500">© 2024 PawsCare. All rights reserved.</p>
-        <img src={logoImg} alt="PawsCare Logo" className="h-12" />
-      </div>
+            <p className="text-xs text-gray-500">© 2024 PawsCare. All rights reserved.</p>
+            <img src={logoImg} alt="PawsCare Logo" className="h-12" />
+          </div>
         </SheetContent>
-        
+
       </Sheet>
 
 

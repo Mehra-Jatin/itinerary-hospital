@@ -17,14 +17,14 @@ export default function Register() {
     const [role, setRole] = useState('patient');
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
+        FirstName: '',
+        LastName: '',
         email: '',
         password: '',
         confirmPassword: '',
         // dateOfBirth: '',
         gender: '',
-        phoneNumber: '',
+        PhoneNo: '',
         address: '',
         specialization: '',
         experience: ''
@@ -51,7 +51,7 @@ export default function Register() {
 
     const validateStep1 = () => {
         const newErrors = {};
-        if (!formData.firstName) newErrors.firstName = 'First name is required';
+        if (!formData.FirstName) newErrors.FirstName = 'First name is required';
         if (!formData.email) newErrors.email = 'Email is required';
         if (!formData.password) newErrors.password = 'Password is required';
         if (formData.password !== formData.confirmPassword) {
@@ -71,9 +71,9 @@ export default function Register() {
     const validateStep2 = () => {
         const newErrors = {};
         // if (!formData.dateOfBirth) newErrors.dateOfBirth = 'Date of birth is required';
-        if (!formData.phoneNumber) newErrors.phoneNumber = 'Phone number is required';
-        if (!/^\d+$/.test(formData.phoneNumber)) {
-            newErrors.phoneNumber = 'Phone number must contain only digits';
+        if (!formData.PhoneNo) newErrors.PhoneNo = 'Phone number is required';
+        if (!/^\d+$/.test(formData.PhoneNo)) {
+            newErrors.PhoneNo = 'Phone number must contain only digits';
         }
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -92,48 +92,37 @@ export default function Register() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (registrationStep === 2 && validateStep2()) {
-            setError('');
-            const result = await register(formData);
-             registerUser(formData,role);
-            if (result.success) {
-                if (role === 'doctor') {
-                    setIsNewDoctor(true);
+            try {
+                const registrationData = {
+                    ...formData,
+                    role  // Add this line to include role
+                };
+                const result = await register(registrationData);
+                
+                if (result.success) {
+                    if (role === 'doctor') {
+                        setIsNewDoctor(true);
+                    } else {
+                        navigate('/auth/login');
+                    }
                 } else {
-                    navigate('/profile');
+                    // More specific error handling
+                    const errorMessage = result.message || 'Registration failed';
+                    if (errorMessage.includes('email already exists')) {
+                        setError('This email is already registered. Please login instead.');
+                    } else {
+                        setError(errorMessage);
+                    }
                 }
-            } else {
-                if (result.message.includes('email already exists')) {
-                    setError('This email is already registered. Please login instead.');
-                } else {
-                    setError(result.message);
-                }
+            } catch (error) {
+                // Catch any unexpected errors
+                console.error('Registration error:', error);
+                setError('An unexpected error occurred. Please try again.');
             }
         }
     };
     // backend api call
-  const registerUser = async (formData,role) => {
-    try {
-        const { data } = await axios.post('http://localhost:4000/api/v1/register', { FirstName: formData.firstName,
-            LastName: formData.lastName,
-            email: formData.email,
-            password: formData.password,
-            age: formData.age,
-            gender: formData.gender,
-            role: role,
-            specialization: formData.specialization,
-            experience: formData.experience,
-            PhoneNo:formData.phoneNumber, });
-        console.log(data);
-        if (data.success) {
-             navigate('/auth/login');
-        } else {
-             setError(data.message);
-        }
-    } catch (error) {
-        console.error('Error registering user/doctor:', error);
-        setError(error.message);
-    }
-};
+
     const renderAuthOptions = () => (
         <div className="space-y-4">
             <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Choose Your Role</h2>
@@ -160,14 +149,14 @@ export default function Register() {
         <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
                 <div>
-                    <Label htmlFor="firstName">First Name</Label>
+                    <Label htmlFor="FirstName">First Name</Label>
                     <div className="relative rounded-md shadow-sm">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <FaUser className="h-5 w-5 text-gray-400" />
                         </div>
                         <Input
-                            id="firstName"
-                            name="firstName"
+                            id="FirstName"
+                            name="FirstName"
                             type="text"
                             required
                             className="pl-10"
@@ -175,17 +164,17 @@ export default function Register() {
                             onChange={handleInputChange}
                         />
                     </div>
-                    {errors.firstName && <p className="mt-1 text-sm text-red-600">{errors.firstName}</p>}
+                    {errors.FirstName && <p className="mt-1 text-sm text-red-600">{errors.FirstName}</p>}
                 </div>
                 <div>
-                    <Label htmlFor="lastName">Last Name</Label>
+                    <Label htmlFor="LastName">Last Name</Label>
                     <div className="relative rounded-md shadow-sm">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <FaUser className="h-5 w-5 text-gray-400" />
                         </div>
                         <Input
-                            id="lastName"
-                            name="lastName"
+                            id="LastName"
+                            name="LastName"
                             type="text"
                             className="pl-10"
                             placeholder="Last Name"
@@ -283,16 +272,16 @@ export default function Register() {
                 </div>
             </div>
             <div>
-                <Label htmlFor="phoneNumber">Phone Number</Label>
+                <Label htmlFor="PhoneNo">Phone Number</Label>
                 <Input
-                    id="phoneNumber"
-                    name="phoneNumber"
+                    id="PhoneNo"
+                    name="PhoneNo"
                     type="tel"
                     required
                     placeholder="Phone Number"
                     onChange={handleInputChange}
                 />
-                {errors.phoneNumber && <p className="mt-1 text-sm text-red-600">{errors.phoneNumber}</p>}
+                {errors.PhoneNo && <p className="mt-1 text-sm text-red-600">{errors.PhoneNo}</p>}
             </div>
             {role === 'patient' && (
                 <div>

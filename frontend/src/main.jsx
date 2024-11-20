@@ -16,6 +16,7 @@ import AuthLayout from "./Pages/Auth/AuthLayout";
 import UserLayout from "./Pages/UserLayout.jsx";
 import ProtectedRoute from "./hooks/ProtectedRoute";
 import { AuthProvider } from "./contexts/AuthContext";
+import ProtectedLoginRoute from "./hooks/ProtectedLoginRoute";
 
 // Define the router configuration with routes
 const router = createBrowserRouter([
@@ -75,7 +76,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/auth",
-    element: <AuthLayout />,
+    element: <ProtectedLoginRoute><AuthLayout /></ProtectedLoginRoute>,
     children: [
       {
         path: "/auth/login",
@@ -87,7 +88,6 @@ const router = createBrowserRouter([
       }
     ]
   },
-
   {
     path: "*",
     element: (
@@ -103,6 +103,7 @@ const router = createBrowserRouter([
       </div>
     ),
   },
+  // admin and doctor dashboard routes
 ]);
 
 // Render the app with the router provider

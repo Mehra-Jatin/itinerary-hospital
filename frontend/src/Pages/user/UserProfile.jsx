@@ -1,25 +1,41 @@
+import { useAuth } from "@/hooks/useAuth";
 import React, { useState } from "react";
 import { MdEditSquare } from "react-icons/md";
-import userData from '../../data/UserProfile.json'
+
 
 
 const UserProfile = () => {
+  // const [isEditing, setIsEditing] = useState(false);
+  // const { user } = useAuth();
+
+  // const handleEditToggle = () => {
+  //   setIsEditing((prev) => !prev);
+  // };
+
+  // const handleInputChange = (e) => {
+  //   // const { name, value } = e.target;
+  //   // setuser((prev) => ({ ...prev, [name]: value }));
+  // };
+
+  // const handleSave = () => {
+    
+  //   console.log("Updated data:", user);
+  //   setIsEditing(false);
+  // };
+
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState(userData);
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!user) {
+    return <div>Please log in</div>;
+  }
 
   const handleEditToggle = () => {
     setIsEditing((prev) => !prev);
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSave = () => {
-    
-    console.log("Updated data:", formData);
-    setIsEditing(false);
   };
 
   return (
@@ -32,15 +48,15 @@ const UserProfile = () => {
             className="rounded-full w-full h-full object-cover"
           />
         </div>
-        <h2 className="text-2xl font-semibold mb-2">{formData.fullName}</h2>
+        <h2 className="text-2xl font-semibold mb-2">{user.FirstName}</h2>
         <p className="text-gray-600 mb-2">Full Stack Developer</p>
-        <p className="text-gray-500 text-sm mb-6">{formData.address}</p>
+        <p className="text-gray-500 text-sm mb-6">{user.address}</p>
       </div>
 
       <div className="bg-white rounded-lg shadow-md p-8 flex-1">
         <div className="flex justify-between items-start">
           <div className="space-y-6 flex-1">
-            {Object.entries(formData).map(([key, value]) => (
+            {Object.entries(user).map(([key, value]) => (
               <React.Fragment key={key}>
                 <div className="flex flex-wrap gap-8">
                   <label className="text-gray-900 block capitalize">

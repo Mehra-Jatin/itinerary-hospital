@@ -35,34 +35,55 @@ export const AuthProvider = ({ children }) => {
             const response = await api.post('/login', { email, password });
             if (response.status === 200 && response.data.success) {
                setUser(response.data.user);
-               Cookies.set('user', JSON.stringify(response.data.user), { expires: 7 }); // for 7 days
-            //    navigate('/profile');
-               return { success: true, message: response.data.message };
+               Cookies.set('user', JSON.stringify(response.data.user), { expires: 7 });
+               return { 
+                 success: true, 
+                 message: response.data.message, 
+                 user: response.data.user  // Explicitly return user
+               };
             } else {
-                return { success: false, message: response.data.message || 'Login failed.' };
+                return { 
+                  success: false, 
+                  message: response.data.message || 'Login failed.' 
+                };
             }
         } catch (error) {
             console.error('Error logging in:', error);
-            return { success: false, message: error.response?.data?.message || 'An error occurred. Login failed.' };
+            return { 
+              success: false, 
+              message: error.response?.data?.message || 'An error occurred. Login failed.' 
+            };
         }
     }
 
     const register = async (userData) => {
         try {
-          const response = await api.post('/auth/register', userData);
-          if (response.data.success) {
-            setUser(response.data.user);
-            Cookies.set('user', JSON.stringify(response.data.user), { expires: 7 }); // for 7 days
-            // navigate('/profile');
-            return { success: true };
-          } else {
-            return { success: false, message: response.data.message || 'Registration failed' };
-          }
+            const registrationData = {
+                ...userData,
+                role: userData.role || 'patient'  // Add explicit role
+            };
+            const response = await api.post('/register', registrationData);
+            if (response.data.success) {
+                setUser(response.data.user);
+                Cookies.set('user', JSON.stringify(response.data.user), { expires: 7 });
+                return { 
+                    success: true, 
+                    user: response.data.user 
+                };
+            } else {
+                return { 
+                    success: false, 
+                    message: response.data.message || 'Registration failed' 
+                };
+            }
         } catch (error) {
-          console.error('Registration error:', error);
-          return { success: false, message: error.response?.data?.message || 'An error occurred during registration' };
+            console.error('Registration error:', error);
+            return { 
+                success: false, 
+                message: error.response?.data?.message || 'An error occurred during registration' 
+            };
         }
-      };
+    };
     
       const logout = () => {
         setUser(null);
