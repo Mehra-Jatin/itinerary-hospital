@@ -2,12 +2,12 @@ import express from 'express';
 import router from './Routes/userRoute.js';  // Your route file
 import connectDB from './config/dbs.js';  // Your DB connection
 import dotenv from 'dotenv';
-
+import cors from 'cors';
 // Load environment variables from .env file
 dotenv.config();
 
 const app = express();
-
+app.use(cors());
 // Middleware to parse JSON request bodies
 app.use(express.json());
 
