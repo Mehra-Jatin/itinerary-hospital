@@ -10,6 +10,7 @@ const userSchema = mongoose.Schema(
 
     LastName: {
       type: String,
+      default: '',
     },
     email: {
       type: String,
@@ -25,10 +26,12 @@ const userSchema = mongoose.Schema(
     },
     age: {
       type: Number,
+      default: 18,
     },
     gender: {
       type: String,
       enum: ['Male', 'Female', 'other'],
+      default: '',
     },    
     role: {
       type: String,
@@ -45,19 +48,19 @@ const userSchema = mongoose.Schema(
         },
         message: props => `${props.value} is not a valid phone number!`
       },
-    }
-    // appointments: [
-    //   {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'Appointment',
-    //   },
-    // ],
-    // history: [
-    //   {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'History',
-    //   },
-    // ],
+    },
+    appointments: [
+     {
+      type: mongoose.Schema.Types.ObjectId,
+       ref: 'Appointment',
+       },
+     ],
+     history: [
+       {
+         type: mongoose.Schema.Types.ObjectId,
+         ref: 'History',
+       },
+     ],
   },
   {
     timestamps: true,
