@@ -17,6 +17,11 @@ import UserLayout from "./Pages/UserLayout.jsx";
 import ProtectedRoute from "./hooks/ProtectedRoute";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedLoginRoute from "./hooks/ProtectedLoginRoute";
+import DoctorLayout from "./Pages/doctor/DoctorLayout";
+import DoctorDashboardLayout from "./Pages/Dashboard/doctor/DoctorDashboardLayout";
+import DoctorNavigation from "./Pages/doctor/DoctorNavigation";
+import DocProfile from "./Pages/doctor/DocProfile";
+import AdminDashboardLayout from "./Pages/Dashboard/admin/AdminDashboardLayout";
 
 // Define the router configuration with routes
 const router = createBrowserRouter([
@@ -52,28 +57,32 @@ const router = createBrowserRouter([
       },
     ],
   },
+
+  // patient routes
   {
-    path: "/profile", // This will now render the Home component when navigating to "/"
+    path: "/profile",
     element:
-      <ProtectedRoute>
+      <ProtectedRoute role="patient">
         <UserLayout />
       </ProtectedRoute>
-      ,
+    ,
     children: [
       {
-        path: "", // This will now render the Home component when navigating to "/"
+        path: "",
         element: <UserProfile />,
       },
       {
-        path: "/profile/settings", // This will now render the Home component when navigating to "/"
+        path: "/profile/settings",
         element: <UserSetting />,
       },
       {
-        path: "/profile/appointements", // This will now render the Home component when navigating to "/"
+        path: "/profile/appointements",
         element: <UserAppoienments />,
       },
     ],
   },
+
+  // Auth routes
   {
     path: "/auth",
     element: <ProtectedLoginRoute><AuthLayout /></ProtectedLoginRoute>,
@@ -89,6 +98,54 @@ const router = createBrowserRouter([
     ]
   },
   {
+    path: "/doctor-profile",
+    element: <ProtectedRoute role="doctor">
+      <DoctorLayout />
+    </ProtectedRoute>,
+    children: [
+      {
+        path: "",
+        element: <DocProfile />,
+      },
+      {
+        path: "/doctor-profile/doctor-navigation",
+        element: <DoctorNavigation />,
+      }
+    ]
+  },
+  // admin and doctor dashboard routes
+
+  // doctor dashboard
+  {
+    path: "/doctor-dashboard",
+    element: <ProtectedRoute role="doctor">
+      <DoctorDashboardLayout />
+    </ProtectedRoute>,
+    children: [
+      {
+        path: "",
+        element: <DoctorProfile />,
+      }
+    ]
+  },
+
+  // admin dashboard
+  {
+    path: "/admin-dashboard",
+    element: <ProtectedRoute role="admin">
+      <AdminDashboardLayout />
+    </ProtectedRoute>,
+    // children: [
+    //   {
+    //     path: "",
+    //     element: <DocProfile />,
+    //   }
+    // ]
+  },
+
+
+  // this for unknown routes
+  {
     path: "*",
     element: (
       <div className="h-screen w-screen flex justify-center items-center">
@@ -103,7 +160,6 @@ const router = createBrowserRouter([
       </div>
     ),
   },
-  // admin and doctor dashboard routes
 ]);
 
 // Render the app with the router provider

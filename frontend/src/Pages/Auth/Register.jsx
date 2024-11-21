@@ -60,8 +60,8 @@ export default function Register() {
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
             newErrors.email = 'Invalid email format';
         }
-        if (formData.password.length < 8) {
-            newErrors.password = 'Password must be at least 8 characters long';
+        if (formData.password.length < 6) {
+            newErrors.password = 'Password must be at least 6 characters long';
         }
 
         setErrors(newErrors);

@@ -16,7 +16,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { User, ChevronDown, Calendar, Settings, LogOut, Menu, Home, FileText, Stethoscope, BookOpen, ShoppingBag, PhoneCall } from 'lucide-react'
+import { User, ChevronDown, Calendar, Settings, LogOut, Menu, Home, FileText, Stethoscope, BookOpen, ShoppingBag, PhoneCall, LayoutDashboard, CalendarSearch, MessageSquareText } from 'lucide-react'
 import logoImg from '../components/Images/logo-header.png'
 import { useAuth } from '@/hooks/useAuth'
 
@@ -56,9 +56,9 @@ export default function Navbar() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem>Submenu 1</DropdownMenuItem>
-                <DropdownMenuItem>Submenu 2</DropdownMenuItem>
-                <DropdownMenuItem>Submenu 3</DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer">Submenu 1</DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer">Submenu 2</DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer">Submenu 3</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
@@ -77,24 +77,61 @@ export default function Navbar() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="font-semibold group">
-                <User className="mr-2 h-4 w-4" /> Welcome, {user.FirstName}
+                <User className="mr-2 h-4 w-4" /> Welcome, {user.role === 'doctor' ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : user.FirstName}
                 <ChevronDown className="ml-1 h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <NavLink to="/profile" className="flex items-center"><User className="mr-2 h-4 w-4" /> Profile</NavLink>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <NavLink to="/profile/appointements" className="flex items-center"><Calendar className="mr-2 h-4 w-4" /> Appointments</NavLink>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <NavLink to="/profile/settings" className="flex items-center"><Settings className="mr-2 h-4 w-4" /> Settings </NavLink>
-              </DropdownMenuItem>
+              {user.role === 'doctor' ? (
+                <>
+                  <NavLink to="/doctor-profile" className="flex items-center hover:bg-gray-100 rounded-sm transition duration-150 cursor-pointer">
+                    <DropdownMenuItem className="cursor-pointer">
+                      <User className="mr-2 h-4 w-4" /> Profile
+                    </DropdownMenuItem>
+                  </NavLink>
+                  <NavLink to="/doctor-dashboard" className="flex items-center hover:bg-gray-100 rounded-sm transition duration-150 cursor-pointer">
+                    <DropdownMenuItem className="cursor-pointer">
+                      <LayoutDashboard  className="mr-2 h-4 w-4" /> Go to Dashboard
+                    </DropdownMenuItem>
+                  </NavLink>
+                  <NavLink to="/doctor-dashboard/appointements" className="flex items-center hover:bg-gray-100 rounded-sm transition duration-150 cursor-pointer">
+                    <DropdownMenuItem className="cursor-pointer">
+                      <Calendar className="mr-2 h-4 w-4" /> Manage Appoientments
+                    </DropdownMenuItem>
+                  </NavLink>
+                  <NavLink to="/doctor-dashboard/schedules" className="flex items-center hover:bg-gray-100 rounded-sm transition duration-150 cursor-pointer">
+                    <DropdownMenuItem className="cursor-pointer">
+                      <CalendarSearch className="mr-2 h-4 w-4" /> My Schedules
+                    </DropdownMenuItem>
+                  </NavLink>
+                  <NavLink to="/doctor-dashboard/chats" className="flex items-center hover:bg-gray-100 rounded-sm transition duration-150 cursor-pointer">
+                    <DropdownMenuItem className="cursor-pointer">
+                      <MessageSquareText className="mr-2 h-4 w-4" /> Chats
+                    </DropdownMenuItem>
+                  </NavLink>
+                  <NavLink to="/doctor-dashboard/settings" className="flex items-center hover:bg-gray-100 rounded-sm transition duration-150 cursor-pointer">
+                    <DropdownMenuItem className="cursor-pointer">
+                      <Settings className="mr-2 h-4 w-4" /> Settings
+                    </DropdownMenuItem>
+                  </NavLink>
+                </>
+              ) : (
+                <>
+                  <DropdownMenuItem className="cursor-pointer">
+                    <NavLink to="/profile" className="flex items-center"><User className="mr-2 h-4 w-4" /> Profile</NavLink>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer">
+                    <NavLink to="/profile/appointements" className="flex items-center"><Calendar className="mr-2 h-4 w-4" />My Appointments</NavLink>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer">
+                    <NavLink to="/profile/settings" className="flex items-center"><Settings className="mr-2 h-4 w-4" /> Settings </NavLink>
+                  </DropdownMenuItem>
+                </>
+              )}
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout}>
+              <DropdownMenuItem onClick={handleLogout} className="">
                 <LogOut className="mr-2 h-4 w-4" /> Logout
               </DropdownMenuItem>
             </DropdownMenuContent>
