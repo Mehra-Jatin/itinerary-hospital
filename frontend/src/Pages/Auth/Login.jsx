@@ -33,9 +33,9 @@ export default function Login() {
             if (result.user.role === 'patient') {
                 navigate('/profile');
             } else if (result.user.role === 'doctor') {
-                navigate('/doctordashboard');
+                navigate('/doctor-profile');
             } else if (result.user.role === 'admin') {
-                navigate('/admindashboard');
+                navigate('/admin-dashboard');
             }
         } else {
             setError(result.message);
