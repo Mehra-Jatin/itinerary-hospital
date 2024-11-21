@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import Doctor from '../Models/DoctorModel.js';
-
+import nodemailer from 'nodemailer';
 // Update Doctor
 export const updateDoctor = async (req, res) => {
   const { doctorId } = req.params;
@@ -108,9 +108,36 @@ export const validateDoctor = async (req, res) => {
       { isValidated: true },
       { new: true } // Return the updated document
     );
-
+     
     if (!doctor) {
       return res.status(404).json({ success: false, message: 'Doctor not found.' });
+    }
+
+    // Send an email to the doctor
+    var transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false,
+      auth: {
+        user: process.env.ADMIN_EMAIL,
+        pass: process.env.ADMIN_PASSWORD,
+      },
+      debug: true,
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: doctor.email,
+      subject: 'Doctor Validation',
+      text: `Hello ${doctor.FirstName},\n\nYour account has been validated by the admin.\n\nRegards,\nHealthcare Team`,
+    };
+    try{
+       transporter.sendMail(mailOptions).then(() => {
+        console.log(`Email sent successfully to ${doctor.email}`);
+       });
+    }
+    catch(error){
+      console.error('Error sending email:', error);
     }
 
     res.status(200).json({ success: true, message: 'Doctor validated successfully.', doctor });
