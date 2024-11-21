@@ -24,6 +24,10 @@ const appointmentSchema = mongoose.Schema(
       type:String,
       required:true,
     },
+    chat:{
+      type:Boolean,
+      default:false,
+    },
     paymentStatus: {
       type: String,
       enum: ['pending', 'completed', 'failed'],

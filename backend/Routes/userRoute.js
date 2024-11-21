@@ -1,6 +1,6 @@
 import express from 'express';
 import { updateUser, deleteUser, getUser, getAllUsers } from '../Controllers/userController.js';
-import { updateDoctor, deleteDoctor, getDoctor, getAllDoctors } from '../Controllers/doctorController.js';
+import { updateDoctor, deleteDoctor, getDoctor, getAllDoctors,validateDoctor } from '../Controllers/doctorController.js';
 import { register, login } from '../Controllers/authController.js';
 import { authorizeRoles, isAuthenticatedUser } from '../Middleware/roleMiddleware.js';
 
@@ -22,4 +22,5 @@ router.route('/doctor/:doctorId').delete(isAuthenticatedUser(), authorizeRoles('
 router.route('/doctor/:doctorId').get(isAuthenticatedUser(), getDoctor);
 router.route('/doctors').get(isAuthenticatedUser(), authorizeRoles('admin', 'patient'), getAllDoctors);
 
+router.route('/validate/:doctorId').put(isAuthenticatedUser(),authorizeRoles('admin'),validateDoctor);
 export default router;

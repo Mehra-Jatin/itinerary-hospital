@@ -97,6 +97,31 @@ export const getDoctor = async (req, res) => {
   }
 };
 
+// Validate Doctor by admin
+export const validateDoctor = async (req, res) => {
+  try {
+    const { doctorId } = req.params;
+
+    // Find and update the doctor atomically
+    const doctor = await Doctor.findByIdAndUpdate(
+      doctorId,
+      { isValidated: true },
+      { new: true } // Return the updated document
+    );
+
+    if (!doctor) {
+      return res.status(404).json({ success: false, message: 'Doctor not found.' });
+    }
+
+    res.status(200).json({ success: true, message: 'Doctor validated successfully.', doctor });
+  } catch (error) {
+    console.error('Error validating doctor:', error);
+    res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
+  }
+
+};
+
+
 // Get All Doctors
 export const getAllDoctors = async (req, res) => {
   try {
