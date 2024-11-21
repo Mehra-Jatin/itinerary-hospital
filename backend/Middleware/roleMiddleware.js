@@ -12,7 +12,7 @@ const isAuthenticatedUser = () => {
     }
 
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY || 'secretKey');
+      const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
       console.log('Decoded JWT:', decoded); // Log the decoded JWT
 
       // Try to find the user and the doctor using the decoded userId

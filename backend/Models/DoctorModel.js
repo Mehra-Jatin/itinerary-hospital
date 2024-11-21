@@ -6,9 +6,11 @@ const doctorSchema = mongoose.Schema(
     FirstName: {
       type: String,
       required: true,
+      default: '',
     },
     LastName: {
         type: String,
+        default: '',
       },
     email: {
       type: String,
@@ -28,10 +30,12 @@ const doctorSchema = mongoose.Schema(
     },
     age:{
      type:Number,
+     default:18,
     },
     gender:{
         type:String,
         enum:['Male','Female','other'],
+        default:'',
     },
     specialization:{
         type:String,
@@ -39,9 +43,11 @@ const doctorSchema = mongoose.Schema(
     },
     experience:{
         type:Number,
+        default:0,
     },
     rating:{
       type:Number,
+      default:0,
     },
     PhoneNo: {
       type: Number,
@@ -53,20 +59,22 @@ const doctorSchema = mongoose.Schema(
         },
         message: props => `${props.value} is not a valid phone number!`
       },
-    }
-
-    // appointments: [
-    //   {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'Appointment',
-    //   },
-    // ],
-    // history: [
-    //   {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'History',
-    //   },
-    // ],
+    },
+    isValidated: {
+      type: Boolean,
+      default: false,
+    }, appointments: [
+      {
+       type: mongoose.Schema.Types.ObjectId,
+        ref: 'Appointment',
+        },
+      ],
+      history: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'History',
+        },
+      ],
   },
   {
     timestamps: true,
