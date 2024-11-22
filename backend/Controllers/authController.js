@@ -191,3 +191,25 @@ export const getAppointment = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error. Please try again later." });
   }
 };
+
+
+// update appointment status
+
+export const updateAppointment = async (req, res) => {
+  const { status,appointmentId } = req.body;
+  try {
+    const appointment = await Appointment.findByIdAndUpdate(appointmentId, {appointmentStatus: status }, { new: true, runValidators: true });
+    if (!appointment) {
+      return res.status(404).json({ success: false, message: "Appointment not found." });
+    }
+    res.status(200).json({
+      success: true,
+      message: "Appointment updated successfully.",
+      appointment,
+    });
+  }
+  catch (error) {
+    console.error("Error updating appointment:", error);
+    res.status(500).json({ success: false, message: "Server error. Please try again later." });
+  }
+};
