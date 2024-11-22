@@ -23,6 +23,7 @@ const Home = () => {
       <ReviewSlider />
       <hr className='mt-8'/>
       <Banner />
+      
     </div>
   )
 }
