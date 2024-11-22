@@ -20,10 +20,10 @@ const appointmentSchema = mongoose.Schema(
       type: Date,
       required: true,
     },
-    reason:{
-      type:String,
-      required:true,
-    },
+    // reason:{
+    //   type:String,
+    //   required:true,
+    // },
     chat:{
       type:Boolean,
       default:false,

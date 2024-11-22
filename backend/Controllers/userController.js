@@ -1,6 +1,6 @@
 import User from '../Models/UserModel.js';
 import Doctor from '../Models/DoctorModel.js';  // Assuming you want to fetch doctors
-
+import Appointment from '../Models/Appointement.js';
 // Update User
 export const updateUser = async (req, res) => {
   const { userId } = req.params;
@@ -102,6 +102,41 @@ export const getAllUsers = async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching users:', error);
+    res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
+  }
+}
+
+export const BookAppointment = async (req, res) => {
+
+  const {userId, doctorId, date, time } = req.body;
+
+  try {
+    let user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found.' });
+    }
+
+    let doctor = await Doctor.findById(doctorId);
+    if (!doctor) {
+      return res.status(404).json({ success: false, message: 'Doctor not found.' });
+    }
+     
+    //razorpay payment gateway
+
+    // Create a new appointment
+    const appointment = {
+      userId,
+      doctorId,
+      date,
+      time,
+      chat:true,  
+    };
+    const newAppointment = await Appointment.create(appointment);
+    await newAppointment.save();
+    res.status(201).json({ success: true, message: 'Appointment booked successfully.', appointment: newAppointment });
+
+  } catch (error) {
+    console.error('Error booking appointment:', error);
     res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
   }
 }

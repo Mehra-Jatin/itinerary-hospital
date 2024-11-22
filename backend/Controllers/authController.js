@@ -2,6 +2,8 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../Models/UserModel.js";
 import Doctor from "../Models/DoctorModel.js";
+import Appointment from "../Models/Appointement.js";
+import History from "../Models/History.js";
 
 // Register
 export const register = async (req, res) => {
@@ -140,5 +142,52 @@ export const login = async (req, res) => {
       success: false,
       message: "Server error. Please try again later.",
     });
+  }
+};
+
+//get user or doctor history
+
+export const getHistory = async (req, res) => {
+  const {id}= req.params;
+  try {
+    const user = await User.findById(id);
+    const doctor = await Doctor.findById(id);
+    if (!user && !doctor) {
+      return res.status(404).json({ success: false, message: "User or Doctor not found." });
+    }
+    
+    const history = await History.find({$or: [{userId:id}, {doctorId:id}]});
+    res.status(200).json({
+      success: true,
+      message: "History retrieved successfully.",
+      history: history,
+    });
+  }
+  catch (error) {
+    console.error("Error getting user appointment:", error);
+    res.status(500).json({ success: false, message: "Server error. Please try again later." });
+  }
+};
+
+// Get user or doctor appointment
+export const getAppointment = async (req, res) => {
+  const {id}= req.params;
+  try {
+    const user = await User.findById(id);
+    const doctor = await Doctor.findById(id);
+    if (!user && !doctor) {
+      return res.status(404).json({ success: false, message: "User or Doctor not found." });
+    }
+    
+    const appointment = await Appointment.find({$or: [{userId:id}, {doctorId:id}]});
+    res.status(200).json({
+      success: true,
+      message: "Appointment retrieved successfully.",
+      appointment: appointment,
+    });
+  }
+  catch (error) {
+    console.error("Error getting user appointment:", error);
+    res.status(500).json({ success: false, message: "Server error. Please try again later." });
   }
 };
