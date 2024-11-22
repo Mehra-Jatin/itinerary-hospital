@@ -1,0 +1,14 @@
+{
+    "1": [
+        { "id": 1, "sender": "user", "message": "Hi Khalid!", "timestamp": "10:00 AM" },
+        { "id": 2, "sender": "patient", "message": "Hello! How are you?", "timestamp": "10:01 AM" }
+      ],
+      "2": [
+        { "id": 1, "sender": "user", "message": "Hi Aisha!", "timestamp": "9:00 AM" },
+        { "id": 2, "sender": "patient", "message": "Good morning!", "timestamp": "9:05 AM" }
+      ],
+      "3": [
+        { "id": 1, "sender": "user", "message": "Hey Omar!", "timestamp": "8:00 AM" },
+        { "id": 2, "sender": "patient", "message": "Hey! Long time no see!", "timestamp": "8:15 AM" }
+      ]
+}
