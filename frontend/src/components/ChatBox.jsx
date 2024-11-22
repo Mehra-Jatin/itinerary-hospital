@@ -128,7 +128,7 @@ const ChatBox = () => {
 
             {/* Message Input */}
             <div className="bg-gray-800 py-4 flex items-center">
-              <input
+              <textarea
                 type="text"
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}

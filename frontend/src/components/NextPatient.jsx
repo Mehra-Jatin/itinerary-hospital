@@ -4,6 +4,7 @@ import { Phone, FileText, MessageSquare } from 'lucide-react';
 const NextPatient = () => {
   return (
     <div className="max-w-md p-6 bg-white rounded-lg shadow-sm ">
+      <h2 className='text-xl text-center mb-5'>Next Patients</h2>
       <div className="flex items-center gap-4 mb-6">
         <div className="w-16 h-16 rounded-full overflow-hidden">
           <img 

@@ -1,0 +1,67 @@
+[
+    {
+      "_id": "1",
+      "FirstName": "John",
+      "LastName": "Doe",
+      "email": "john.doe@example.com",
+      "password": "hashed_password_123",
+      "age": 30,
+      "gender": "Male",
+      "role": "patient",
+      "PhoneNo": 1234567890,
+      "appointments": [
+        {
+          "_id": "101",
+          "title": "Dental Checkup",
+          "description": "Routine dental checkup",
+          "date": "2024-11-25T10:00:00Z"
+        },
+        {
+          "_id": "102",
+          "title": "Eye Examination",
+          "description": "Comprehensive eye exam",
+          "date": "2024-12-01T14:00:00Z"
+        }
+      ],
+      "history": [
+        {
+          "_id": "201",
+          "details": "Visited for annual physical exam on 2023-10-15"
+        }
+      ],
+      "createdAt": "2024-01-01T12:00:00Z",
+      "updatedAt": "2024-11-20T15:00:00Z"
+    },
+    {
+      "_id": "2",
+      "FirstName": "Jane",
+      "LastName": "Smith",
+      "email": "jane.smith@example.com",
+      "password": "hashed_password_456",
+      "age": 25,
+      "gender": "Female",
+      "role": "admin",
+      "PhoneNo": 9876543210,
+      "appointments": [
+        {
+          "_id": "103",
+          "title": "Orthopedic Consultation",
+          "description": "Follow-up consultation for knee pain",
+          "date": "2024-11-30T10:00:00Z"
+        }
+      ],
+      "history": [
+        {
+          "_id": "202",
+          "details": "Emergency visit for flu symptoms on 2023-08-10"
+        },
+        {
+          "_id": "203",
+          "details": "Vaccination: Tetanus Booster on 2024-03-05"
+        }
+      ],
+      "createdAt": "2024-01-05T08:30:00Z",
+      "updatedAt": "2024-11-19T10:15:00Z"
+    }
+  ]
+  

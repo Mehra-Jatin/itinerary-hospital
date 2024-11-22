@@ -5,6 +5,10 @@ import { Bell, HelpCircle, Settings,HamIcon, Menu, Camera, LayoutDashboardIcon, 
 import { FaHamburger } from 'react-icons/fa';
 import NextPatient from '@/components/NextPatient';
 import ChatBox from '@/components/ChatBox';
+import Appointments from './Appoitments';
+import ScheduleTable from '@/components/Schedule';
+import SchedulePage from './SchedulesPage';
+import DoctorChat from './DoctorChatPage';
 
 function DoctorDashboardLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -29,7 +33,7 @@ function DoctorDashboardLayout() {
      
 
     {/* Key Metrics */}
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+    <div className="grid grid-cols-1  sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-6">
       <Card>
         <div className="flex justify-center items-center h-28 w-full ">
           <div className="w-2/5 flex justify-center">
@@ -110,7 +114,10 @@ function DoctorDashboardLayout() {
   <Card className='w-full justify-center flex shadow-slate-400'>
  <NextPatient /></Card>
 </div>
-  <ChatBox />
+
+  <DoctorChat />
+  <Appointments />
+  <SchedulePage />
     </>
   );
 }

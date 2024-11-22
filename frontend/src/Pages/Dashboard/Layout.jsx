@@ -46,19 +46,19 @@ function DashboardLayout({role}) {
 
     {/* Navigation Links */}
     <ul className="flex justify-end flex-col ml-4">
-      <li className="p-2 rounded gap-3 cursor-pointer mb-2 hover:bg-gray-300 flex">
+      <li className="p-2 bg-slate-50  rounded gap-3 cursor-pointer mb-2 hover:bg-gray-300 flex">
         <LayoutDashboardIcon /> <div>Dashboard</div>
       </li>
-      <li className="p-2 rounded gap-3 cursor-pointer mb-2 hover:bg-gray-300 flex">
+      <li className="p-2 hover:text-blue-800 rounded gap-3 cursor-pointer mb-2 hover:bg-gray-300 flex">
         <CalendarCheck /> <div>Schedule</div>
       </li>
-      <li className="p-2 rounded gap-3 cursor-pointer mb-2 hover:bg-gray-300 flex">
-        <User /> <div>Patients</div>
+      <li className="p-2 hover:text-blue-800 rounded gap-3 cursor-pointer mb-2 hover:bg-gray-300 flex">
+        <User /> <div>Appointments</div>
       </li>
-      <li className="p-2 rounded gap-3 cursor-pointer mb-2 hover:bg-gray-300 flex">
+      <li className="p-2 hover:text-blue-800 rounded gap-3 cursor-pointer mb-2 hover:bg-gray-300 flex">
         <MessageSquareText /> <div>Messages</div>
       </li>
-      <li className="p-2 rounded gap-3 cursor-pointer mb-2 hover:bg-gray-300 flex">
+      <li className="p-2 hover:text-blue-800 rounded gap-3 cursor-pointer mb-2 hover:bg-gray-300 flex">
         <History /> <div>History</div>
       </li>
     </ul>

@@ -20,6 +20,8 @@ export const AuthProvider = ({ children }) => {
         const userFromCookie = Cookies.get('user');
         if (userFromCookie) {
             try {
+                console.log(userFromCookie);
+                
                 const parsedUser = JSON.parse(userFromCookie);
                 setUser(parsedUser);
             } catch (error) {
