@@ -22,6 +22,7 @@ import DoctorDashboardLayout from "./Pages/Dashboard/doctor/DoctorDashboardLayou
 import DoctorNavigation from "./Pages/doctor/DoctorNavigation";
 import DocProfile from "./Pages/doctor/DocProfile";
 import AdminDashboardLayout from "./Pages/Dashboard/admin/AdminDashboardLayout";
+import UserHistory from "./Pages/user/UserHistory";
 
 // Define the router configuration with routes
 const router = createBrowserRouter([
@@ -58,6 +59,23 @@ const router = createBrowserRouter([
     ],
   },
 
+  
+
+  // Auth routes
+  {
+    path: "/auth",
+    element: <ProtectedLoginRoute><AuthLayout /></ProtectedLoginRoute>,
+    children: [
+      {
+        path: "/auth/login",
+        element: <Login />,
+      },
+      {
+        path: "/auth/register",
+        element: <Register />,
+      }
+    ]
+  },
   // patient routes
   {
     path: "/profile",
@@ -79,23 +97,11 @@ const router = createBrowserRouter([
         path: "/profile/appointements",
         element: <UserAppoienments />,
       },
-    ],
-  },
-
-  // Auth routes
-  {
-    path: "/auth",
-    element: <ProtectedLoginRoute><AuthLayout /></ProtectedLoginRoute>,
-    children: [
       {
-        path: "/auth/login",
-        element: <Login />,
+        path: "/profile/history",
+        element: <UserHistory />,
       },
-      {
-        path: "/auth/register",
-        element: <Register />,
-      }
-    ]
+    ],
   },
   {
     path: "/doctor-profile",
