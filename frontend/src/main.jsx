@@ -22,6 +22,7 @@ import DoctorDashboardLayout from "./Pages/Dashboard/doctor/DoctorDashboardLayou
 import DoctorNavigation from "./Pages/doctor/DoctorNavigation";
 import DocProfile from "./Pages/doctor/DocProfile";
 import AdminDashboardLayout from "./Pages/Dashboard/admin/AdminDashboardLayout";
+import DashboardLayout from "./Pages/Dashboard/Layout";
 
 // Define the router configuration with routes
 const router = createBrowserRouter([
@@ -119,7 +120,7 @@ const router = createBrowserRouter([
   {
     path: "/doctor-dashboard",
     element: <ProtectedRoute role="doctor">
-      <DoctorDashboardLayout />
+      <DashboardLayout role="doctor"/>
     </ProtectedRoute>,
     children: [
       {
