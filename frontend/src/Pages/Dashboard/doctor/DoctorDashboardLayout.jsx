@@ -3,6 +3,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Bell, HelpCircle, Settings,HamIcon, Menu, Camera, LayoutDashboardIcon, CalendarCheck, User, MessageSquareText, History, Users, DollarSign, Calendar, Heart } from 'lucide-react';
 import { FaHamburger } from 'react-icons/fa';
+import NextPatient from '@/components/NextPatient';
+import ChatBox from '@/components/ChatBox';
+import Appointments from './Appoitments';
+import ScheduleTable from '@/components/Schedule';
+import SchedulePage from './SchedulesPage';
+import DoctorChat from './DoctorChatPage';
 
 function DoctorDashboardLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -27,7 +33,7 @@ function DoctorDashboardLayout() {
      
 
     {/* Key Metrics */}
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+    <div className="grid grid-cols-1  sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-6">
       <Card>
         <div className="flex justify-center items-center h-28 w-full ">
           <div className="w-2/5 flex justify-center">
@@ -75,47 +81,43 @@ function DoctorDashboardLayout() {
       </Card>
     </div>
 
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2  gap-4 w-full">
   {/* Today's Appointments */}
-  <Card className="p-4">
+  <Card className="shadow-slate-400 h-screen overflow-auto">
     <h2 className="text-xl font-semibold mb-8 text-center ">Today's Appointments</h2>
-    <div className="grid grid-cols-1  gap-4">
-      <div className='flex justify-between'>
-        <div className='flex gap-5'>
+    <div className="grid grid-cols-1  gap-3 ">
+      <div className='flex justify-between  bg-blue-100  py-3 mx-2 rounded'>
+        <div className='flex gap-5 mx-2'>
           <div> <img src='https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' className='object-cover w-12 h-12 rounded-full'/> </div>
           <div>
             <p>Rudra</p>
             <p>Scoing</p>
           </div>
         </div>
-        <div>On Going</div>
+        <div className='mx-2 text-center'>On Going</div>
       </div>
-      <Card>
-        <CardContent>
-          <p>Jane Smith - 11:00 AM</p>
-          <Button variant="outline" className="mt-2">
-            Details
-          </Button>
-        </CardContent>
-      </Card>
+      <div className='flex justify-between mb-5 mx-2 rounded'>
+        <div className='flex gap-5 mx-2'>
+          <div> <img src='https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' className='object-cover w-12 h-12 rounded-full'/> </div>
+          <div>
+            <p>Rudra</p>
+            <p>Scoing</p>
+          </div>
+        </div>
+        <div className='mx-2'>12:00</div>
+      </div>
+      
     </div>
   </Card>
 
   {/* Appointment Requests */}
-  <Card className="p-4">
-    <h2 className="text-xl font-semibold mb-4">Appointment Requests</h2>
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <Card>
-        <CardContent>
-          <p>Michael Johnson - Pending</p>
-          <Button variant="secondary" className="mt-2">
-            Approve
-          </Button>
-        </CardContent>
-      </Card>
-    </div>
-  </Card>
+  <Card className='w-full justify-center flex shadow-slate-400'>
+ <NextPatient /></Card>
 </div>
+
+  <DoctorChat />
+  <Appointments />
+  <SchedulePage />
     </>
   );
 }
