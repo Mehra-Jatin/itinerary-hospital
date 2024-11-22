@@ -16,7 +16,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { User, ChevronDown, Calendar, Settings, LogOut, Menu, Home, FileText, Stethoscope, BookOpen, ShoppingBag, PhoneCall, LayoutDashboard, CalendarSearch, MessageSquareText } from 'lucide-react'
+import { User, ChevronDown, Calendar, Settings, LogOut, Menu, Home, FileText, Stethoscope, BookOpen, ShoppingBag, PhoneCall, LayoutDashboard, CalendarSearch, MessageSquareText, History } from 'lucide-react'
 import logoImg from '../components/Images/logo-header.png'
 import { useAuth } from '@/hooks/useAuth'
 
@@ -124,6 +124,9 @@ export default function Navbar() {
                   </DropdownMenuItem>
                   <DropdownMenuItem className="cursor-pointer">
                     <NavLink to="/profile/appointements" className="flex items-center"><Calendar className="mr-2 h-4 w-4" />My Appointments</NavLink>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer">
+                    <NavLink to="/profile/history" className="flex items-center"><History className="mr-2 h-4 w-4" />My History</NavLink>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="cursor-pointer">
                     <NavLink to="/profile/settings" className="flex items-center"><Settings className="mr-2 h-4 w-4" /> Settings </NavLink>

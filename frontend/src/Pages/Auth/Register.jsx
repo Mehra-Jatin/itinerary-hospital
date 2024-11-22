@@ -142,6 +142,7 @@ export default function Register() {
                     </button>
                 ))}
             </div>
+            {/* {User.status === 'pending' && ""} */}
         </div>
     );
 
