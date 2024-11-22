@@ -49,18 +49,18 @@ const userSchema = mongoose.Schema(
         message: props => `${props.value} is not a valid phone number!`
       },
     },
-    appointments: [
-     {
-      type: mongoose.Schema.Types.ObjectId,
-       ref: 'Appointment',
-       },
-     ],
-     history: [
-       {
-         type: mongoose.Schema.Types.ObjectId,
-         ref: 'History',
-       },
-     ],
+    // appointments: [
+    //  {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //    ref: 'Appointment',
+    //    },
+    //  ],
+    //  history: [
+    //    {
+    //      type: mongoose.Schema.Types.ObjectId,
+    //      ref: 'History',
+    //    },
+    //  ],
   },
   {
     timestamps: true,
