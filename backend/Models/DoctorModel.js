@@ -12,6 +12,10 @@ const doctorSchema = mongoose.Schema(
       type: String,
       default: '',
     },
+    Image: {
+      type: String,
+      default: '',
+    },
     email: {
       type: String,
       required: true,
@@ -64,18 +68,18 @@ const doctorSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    appointments: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Appointment',
-      },
-    ],
-    history: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'History',
-      },
-    ],
+    // appointments: [
+    //   {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'Appointment',
+    //   },
+    // ],
+    // history: [
+    //   {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'History',
+    //   },
+    // ],
   },
   {
     timestamps: true,
