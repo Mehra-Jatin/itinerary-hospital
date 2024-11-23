@@ -24,6 +24,7 @@ import DocProfile from "./Pages/doctor/DocProfile";
 import AdminDashboardLayout from "./Pages/Dashboard/admin/AdminDashboardLayout";
 import UserHistory from "./Pages/user/UserHistory";
 import DashboardLayout from "./Pages/Dashboard/Layout";
+import { Toaster } from "./components/ui/toaster";
 
 // Define the router configuration with routes
 const router = createBrowserRouter([
@@ -125,8 +126,9 @@ const router = createBrowserRouter([
   // doctor dashboard
   {
     path: "/doctor-dashboard",
-    element: <ProtectedRoute role="doctor">
-      <DashboardLayout role="doctor"/>
+    element: 
+    <ProtectedRoute role="doctor">
+      <DashboardLayout/>
     </ProtectedRoute>,
     children: [
       {
@@ -139,8 +141,9 @@ const router = createBrowserRouter([
   // admin dashboard
   {
     path: "/admin-dashboard",
-    element: <ProtectedRoute role="admin">
-      <AdminDashboardLayout />
+    element: 
+    <ProtectedRoute role="admin">
+      <DashboardLayout/>
     </ProtectedRoute>,
     // children: [
     //   {
@@ -174,6 +177,7 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AuthProvider>
       <RouterProvider router={router} />
+      <Toaster />
     </AuthProvider>
   </StrictMode>
 );

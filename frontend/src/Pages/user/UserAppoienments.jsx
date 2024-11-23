@@ -133,7 +133,7 @@ export default function UserAppoienments() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white py-8">
+        <div className="py-8">
             <div className="max-w-4xl mx-auto px-4">
                 <div className="flex items-center justify-between mb-8">
                     <h1 className="text-3xl font-bold text-orange-800">Today's Appointments</h1>

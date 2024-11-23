@@ -6,6 +6,7 @@ const PatientContext = createContext();
 export const PatientProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [appointmentHistory, setAppointmentHistory] = useState([]);
 
   const updatePatientProfile = useCallback(async (userId, formData) => {
     setIsLoading(true);
@@ -35,11 +36,47 @@ export const PatientProvider = ({ children }) => {
     }
   }, []);
 
+  const fetchAppointmentHistory = useCallback(async (userId) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await api.get(`/history/${userId}`);
+      if (response.data.success) {
+        // Transform the data to match our component's structure
+        const transformedData = response.data.history.map(appointment => ({
+          id: appointment._id,
+          patientName: appointment.userId.name,
+          doctorName: appointment.doctorId.name,
+          date: new Date(appointment.date).toISOString().split('T')[0],
+          time: appointment.time,
+          status: appointment.status,
+          type: appointment.type,
+          chatHistory: appointment.chatHistory || []
+        }));
+        setAppointmentHistory(transformedData);
+      }
+      setIsLoading(false);
+      return response.data;
+    } catch (err) {
+      setError(err.message || 'Failed to fetch appointment history');
+      setIsLoading(false);
+      throw err;
+    }
+  }, []);
+
+  // Function to clear history (useful when logging out)
+  const clearAppointmentHistory = useCallback(() => {
+    setAppointmentHistory([]);
+  }, []);
+
   const value = {
     isLoading,
     error,
+    appointmentHistory,
     updatePatientProfile,
     deletePatientAccount,
+    fetchAppointmentHistory,
+    clearAppointmentHistory
   };
 
   return (

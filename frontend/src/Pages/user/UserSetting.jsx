@@ -1,7 +1,7 @@
 import React from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { usePatient } from "@/contexts/PatientContext";
-// import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import {
   Card,
   CardContent,
@@ -39,23 +39,23 @@ import {
 const UserSettings = () => {
   const { user } = useAuth();
   const { isLoading } = usePatient();
-//   const { toast } = useToast();
+  const { toast } = useToast();
 
   const handleSaveNotifications = async (value) => {
     try {
       // API call would go here
-    //   toast({
-    //     title: "Settings Updated",
-    //     description: "Your notification preferences have been saved.",
-    //   });
-    alert("Settings Updated");
+      toast({
+        title: "Settings Updated",
+        description: "Your notification preferences have been saved.",
+      });
+    // alert("Settings Updated");
     } catch (error) {
-    //   toast({
-    //     title: "Error",
-    //     description: "Failed to update settings. Please try again.",
-    //     variant: "destructive",
-    //   });
-      alert("Failed to update settings. Please try again.");
+      toast({
+        title: "Error",
+        description: "Failed to update settings. Please try again.",
+        variant: "destructive",
+      });
+    //   alert("Failed to update settings. Please try again.");
     }
   };
 
@@ -260,3 +260,15 @@ const UserSettings = () => {
 };
 
 export default UserSettings;
+
+
+
+// import React from 'react'
+
+// function UserSetting() {
+//   return (
+//     <div>UserSetting</div>
+//   )
+// }
+
+// export default UserSetting

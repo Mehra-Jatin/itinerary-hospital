@@ -1,13 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
-import { Bell, HelpCircle, Settings,HamIcon, Menu, Camera, LayoutDashboardIcon, CalendarCheck, User, MessageSquareText, History, Users, DollarSign, Calendar, Heart } from 'lucide-react';
+import { Bell, HelpCircle, Settings, HamIcon, Menu, Camera, LayoutDashboardIcon, CalendarCheck, User, MessageSquareText, History, Users, DollarSign, Calendar, Heart } from 'lucide-react';
 import { FaHamburger } from 'react-icons/fa';
 import DoctorDashboardLayout from './doctor/DoctorDashboardLayout';
+import { useAuth } from '@/hooks/useAuth';
+import AdminDashboardLayout from './admin/AdminDashboardLayout';
+import Sidebar from './components/Sidebar';
 
-function DashboardLayout({role}) {
+function DashboardLayout({ role }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+
+  const { user } = useAuth();
+
+  console.log(user);
+  
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -64,48 +72,54 @@ function DashboardLayout({role}) {
     </ul>
   </aside>
 
-  {/* Main Content */}
-  <main className="flex-1 p-4 lg:p-6 overflow-auto w-full lg:w-78">
-    {/* Top Bar */}
-    <div className="flex justify-between items-center mb-6">
-      {/* Hamburger Menu */}
-      <button
-        className="lg:hidden text-gray-600 text-2xl focus:outline-none"
-        onClick={toggleSidebar}
-      >
-        <Menu />
-      </button>
+        {/* Main Content */}
+        <main className="flex-1 p-4 lg:p-6 overflow-auto w-full lg:w-78">
+          {/* Top Bar */}
+          <div className="flex justify-between items-center mb-6">
+            {/* Hamburger Menu */}
+            <button
+              className="lg:hidden text-gray-600 text-2xl focus:outline-none"
+              onClick={toggleSidebar}
+            >
+              <Menu />
+            </button>
 
-      {/* Top Bar Buttons */}
-      <div className="flex space-x-4 justify-end w-full">
-        <div>
-          <Button variant="primary">
-            {isMobile ? <Bell /> : <> <Bell /> Alert </>}
-          </Button>
-        </div>
-        <div>
-          <Button variant="primary">
-            {isMobile ? <HelpCircle /> : <> <HelpCircle /> Help </>}
-          </Button>
-        </div>
-        <div>
-          <Button variant="primary">
-            {isMobile ? <Settings /> : <> <Settings /> Setting </>}
-          </Button>
-        </div>
+            {/* Top Bar Buttons */}
+            <div className="flex space-x-4 justify-end w-full">
+              <div>
+                <Button variant="primary">
+                  {isMobile ? <Bell /> : <> <Bell /> Alert </>}
+                </Button>
+              </div>
+              <div>
+                <Button variant="primary">
+                  {isMobile ? <HelpCircle /> : <> <HelpCircle /> Help </>}
+                </Button>
+              </div>
+              <div>
+                <Button variant="primary">
+                  {isMobile ? <Settings /> : <> <Settings /> Setting </>}
+                </Button>
+              </div>
+            </div>
+          </div>
+
+
+
+          {user.role === "doctor" ? <DoctorDashboardLayout /> : <AdminDashboardLayout />}
+
+
+
+        </main>
+
+        {/* Overlay for Mobile */}
+        {isSidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+            onClick={toggleSidebar}
+          ></div>
+        )}
       </div>
-    </div>
-  {role==='doctor'? <DoctorDashboardLayout /> :""}
-  </main>
-
-  {/* Overlay for Mobile */}
-  {isSidebarOpen && (
-    <div
-      className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-      onClick={toggleSidebar}
-    ></div>
-  )}
-</div>
 
     </>
   );
