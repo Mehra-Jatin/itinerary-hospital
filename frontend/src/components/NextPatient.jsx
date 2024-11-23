@@ -3,7 +3,7 @@ import { Phone, FileText, MessageSquare } from 'lucide-react';
 
 const NextPatient = () => {
   return (
-    <div className="max-w-md p-6 bg-white rounded-lg shadow-sm ">
+    <div className="max-w-md p-6 bg-orange-200 rounded-lg shadow-lg ">
       <h2 className='text-xl text-center mb-5'>Next Patients</h2>
       <div className="flex items-center gap-4 mb-6">
         <div className="w-16 h-16 rounded-full overflow-hidden">
@@ -68,11 +68,11 @@ const NextPatient = () => {
     <Phone size={18} />
     (308) 555-0121
   </button>
-  <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-gray-700 text-sm leading-none">
+  <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-gray-700 text-sm leading-none bg-white">
     <FileText size={18} />
     Documents
   </button>
-  <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-gray-700 text-sm leading-none">
+  <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-gray-700 text-sm leading-none bg-white">
     <MessageSquare size={18} />
     Chat
   </button>
