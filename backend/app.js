@@ -3,6 +3,7 @@ import router from './Routes/userRoute.js';  // Your route file
 import connectDB from './config/db.js';  // Your DB connection
 import dotenv from 'dotenv';
 import cors from 'cors';
+import './Services/cronJobs.js';  // Your cron jobs
 // Load environment variables from .env file
 dotenv.config();
 

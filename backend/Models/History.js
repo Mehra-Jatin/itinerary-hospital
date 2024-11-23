@@ -13,7 +13,7 @@ const historySchema = mongoose.Schema(
         required: true,
         },
         date: {
-        type: Date,
+        type: Date,  //yyyy-mm-dd
         required: true,
         },
         description: {
