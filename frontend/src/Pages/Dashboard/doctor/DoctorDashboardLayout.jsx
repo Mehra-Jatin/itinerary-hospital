@@ -9,10 +9,15 @@ import Appointments from './Appoitments';
 import ScheduleTable from '@/components/Schedule';
 import SchedulePage from './SchedulesPage';
 import DoctorChat from './DoctorChatPage';
+import { useAuth } from '@/hooks/useAuth';
+import api from '@/utils/api';
+
 
 function DoctorDashboardLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [appointments, setAppointments] = useState([]);
+  const {user,loading,setUser}=useAuth()
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -26,6 +31,19 @@ function DoctorDashboardLayout() {
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        const response = await api.get('appointment/'+user._id);
+        setAppointments(response.data);
+      } catch (error) {
+        console.error('Error fetching appointments:', error);
+      }
+    };
+
+    fetchAppointments();
   }, []);
 
   return (
@@ -83,35 +101,35 @@ function DoctorDashboardLayout() {
 
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2  gap-4 w-full">
   {/* Today's Appointments */}
-  <Card className="shadow-slate-400 h-screen overflow-auto">
-    <h2 className="text-xl font-semibold mb-8 text-center ">Today's Appointments</h2>
-    <div className="grid grid-cols-1  gap-3 ">
-      <div className='flex justify-between  bg-blue-100  py-3 mx-2 rounded'>
-        <div className='flex gap-5 mx-2'>
-          <div> <img src='https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' className='object-cover w-12 h-12 rounded-full'/> </div>
-          <div>
-            <p>Rudra</p>
-            <p>Scoing</p>
+  <Card className="shadow-slate-400 h-screen overflow-auto border-none bg-orange-200 shadow-lg">
+    <h2 className="text-xl font-semibold mb-8 text-center mt-5">Today's Appointments</h2>
+    <div className="grid grid-cols-1 gap-3">
+        {appointments.map((appointment) => (
+          <div
+            key={appointment._id}
+            className="flex justify-between bg-blue-100 py-3 mx-2 rounded"
+          >
+            <div className="flex gap-5 mx-2">
+              <img
+                src={appointment.userId?.profilePicture || 'default-image.jpg'}
+                alt="Profile"
+                className="object-cover w-12 h-12 rounded-full"
+              />
+              <div>
+                <p>{appointment.userId?.name || 'Unknown User'}</p>
+                <p>{appointment.appointmentStatus}</p>
+              </div>
+            </div>
+            <div className="mx-2 text-center">
+              {appointment.time || 'No Time Provided'}
+            </div>
           </div>
-        </div>
-        <div className='mx-2 text-center'>On Going</div>
+        ))}
       </div>
-      <div className='flex justify-between mb-5 mx-2 rounded'>
-        <div className='flex gap-5 mx-2'>
-          <div> <img src='https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' className='object-cover w-12 h-12 rounded-full'/> </div>
-          <div>
-            <p>Rudra</p>
-            <p>Scoing</p>
-          </div>
-        </div>
-        <div className='mx-2'>12:00</div>
-      </div>
-      
-    </div>
   </Card>
 
   {/* Appointment Requests */}
-  <Card className='w-full justify-center flex shadow-slate-400'>
+  <Card className='w-full justify-center flex shadow-lg'>
  <NextPatient /></Card>
 </div>
 

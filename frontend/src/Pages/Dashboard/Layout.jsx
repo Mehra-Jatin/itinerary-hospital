@@ -4,6 +4,7 @@ import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Bell, HelpCircle, Settings,HamIcon, Menu, Camera, LayoutDashboardIcon, CalendarCheck, User, MessageSquareText, History, Users, DollarSign, Calendar, Heart } from 'lucide-react';
 import { FaHamburger } from 'react-icons/fa';
 import DoctorDashboardLayout from './doctor/DoctorDashboardLayout';
+import DashContent from './doctor/DashContent';
 
 function DashboardLayout({role}) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -34,34 +35,7 @@ function DashboardLayout({role}) {
   } lg:translate-x-0 lg:relative lg:w-52 w-44 bg-blue-500 min-h-screen overflow-auto`  }
 >
     {/* Profile Section */}
-    <div className="flex flex-col items-center mb-8 overflow-auto mt-10">
-      <img
-        className="rounded-full w-24 h-24"
-        src="https://images.unsplash.com/photo-1582750433449-648ed127bb54?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-        alt="Doctor Profile"
-      />
-      <h2 className="text-lg font-semibold">Dr. Stranger</h2>
-      <p className="text-sm text-gray-600">Dentist</p>
-    </div>
-
-    {/* Navigation Links */}
-    <ul className="flex justify-end flex-col ml-4">
-      <li className="p-2 bg-slate-50  rounded gap-3 cursor-pointer mb-2 hover:bg-gray-300 flex">
-        <LayoutDashboardIcon /> <div>Dashboard</div>
-      </li>
-      <li className="p-2 hover:text-blue-800 rounded gap-3 cursor-pointer mb-2 hover:bg-gray-300 flex">
-        <CalendarCheck /> <div>Schedule</div>
-      </li>
-      <li className="p-2 hover:text-blue-800 rounded gap-3 cursor-pointer mb-2 hover:bg-gray-300 flex">
-        <User /> <div>Appointments</div>
-      </li>
-      <li className="p-2 hover:text-blue-800 rounded gap-3 cursor-pointer mb-2 hover:bg-gray-300 flex">
-        <MessageSquareText /> <div>Messages</div>
-      </li>
-      <li className="p-2 hover:text-blue-800 rounded gap-3 cursor-pointer mb-2 hover:bg-gray-300 flex">
-        <History /> <div>History</div>
-      </li>
-    </ul>
+   {role ==='doctor' ?<DashContent /> :""}
   </aside>
 
   {/* Main Content */}
