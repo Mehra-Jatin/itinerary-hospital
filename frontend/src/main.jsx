@@ -24,6 +24,10 @@ import DocProfile from "./Pages/doctor/DocProfile";
 import AdminDashboardLayout from "./Pages/Dashboard/admin/AdminDashboardLayout";
 import UserHistory from "./Pages/user/UserHistory";
 import DashboardLayout from "./Pages/Dashboard/Layout";
+import SchedulePage from "./Pages/Dashboard/doctor/SchedulesPage";
+import DocAppointments from "./Pages/Dashboard/doctor/DocAppoitments";
+import DoctorChat from "./Pages/Dashboard/doctor/DoctorChatPage";
+import DoctHistoriesPage from "./Pages/Dashboard/doctor/DoctorHistory";
 
 // Define the router configuration with routes
 const router = createBrowserRouter([
@@ -129,10 +133,30 @@ const router = createBrowserRouter([
       <DashboardLayout role="doctor"/>
     </ProtectedRoute>,
     children: [
+      // {
+      //   path: "",
+      //   element: <DoctorProfile />,
+      // },
       {
         path: "",
-        element: <DoctorProfile />,
-      }
+        element: <DoctorDashboardLayout />,
+      },
+      {
+        path: "schedules",  
+        element: <SchedulePage />,
+      },
+      {
+        path: "appointments",  
+        element: <DocAppointments />,
+      },
+      {
+        path: "messages",  
+        element: <DoctorChat />,
+      },
+      {
+        path: "histories",  
+        element: <DoctHistoriesPage />,
+      },
     ]
   },
 
