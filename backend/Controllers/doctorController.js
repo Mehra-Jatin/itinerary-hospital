@@ -69,7 +69,7 @@ export const deleteDoctor = async (req, res) => {
       },
       debug: true,
     });
-    
+
     const mailOptions = {
       from: process.env.EMAIL,
       to: doctor.email,
@@ -197,6 +197,80 @@ export const getAllDoctors = async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching doctors:', error);
+    res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
+  }
+};
+
+
+// set doctor availability
+export const setAvailability = async (req, res) => {
+  const { doctorId } = req.params;
+  const { date } = req.body;
+  try{
+    const doctor = await Doctor.findById(doctorId);
+    if (!doctor) {
+      return res.status(404).json({ success: false, message: 'Doctor not found.' });
+    }
+    if(!doctor.availability.includes(date)){
+      doctor.availability.push(date);
+    }
+    await doctor.save();
+    res.status(200).json({ success: true, message: 'Availability set successfully.', doctor });
+
+  }catch(error){
+    console.error('Error setting availability:', error);
+    res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
+  }
+};
+
+// get doctor availability
+export const getAvailability = async (req, res) => {
+  const { doctorId } = req.params;
+  try{
+    const doctor = await Doctor.findById(doctorId);
+    if (!doctor) {
+      return res.status(404).json({ success: false, message: 'Doctor not found.' });
+    }
+    const now = new Date();
+    const currentDate = now.toISOString().split('T')[0]; // Convert to local date only (yyyy-mm-dd)
+
+    if (doctor.availability.length > 0) {
+      const updated = doctor.availability.filter(date => {
+         if (date >= currentDate) {
+          return date;
+         }
+      });
+
+      doctor.availability = updated; // Update availability array
+    }
+
+    await doctor.save();
+    res.status(200).json({ success: true, message: 'Availability retrieved successfully.', availablity: doctor.availability });
+
+  }catch(error){
+    console.error('Error getting availability:', error);
+    res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
+  }
+};
+
+// remove doctor availability
+export const removeAvailability = async (req, res) => {
+  const { doctorId } = req.params;
+  const { date } = req.body;
+  try{
+    const doctor = await Doctor.findById(doctorId);
+    if (!doctor) {
+      return res.status(404).json({ success: false, message: 'Doctor not found.' });
+    }
+    if(doctor.availability.includes(date)){
+      const updated = doctor.availability.filter(d => d !== date);
+      doctor.availability = updated;
+    }
+    await doctor.save();
+    res.status(200).json({ success: true, message: 'Availability removed successfully.', doctor });
+
+  }catch(error){
+    console.error('Error removing availability:', error);
     res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
   }
 };
