@@ -4,13 +4,14 @@ import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Bell, HelpCircle, Settings, Menu, LogOutIcon } from 'lucide-react';
 import { Outlet } from 'react-router-dom';
 import DashContent from './doctor/DashContent';
-import { AuthContext } from '@/contexts/AuthContext';
+// import { AuthContext } from '@/contexts/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 
 function DashboardLayout({ role }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   console.log(user);
   
@@ -29,7 +30,7 @@ function DashboardLayout({ role }) {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const { user, logout } = useContext(AuthContext);
+  
   return (
     <>
       <div className="flex w-full">
