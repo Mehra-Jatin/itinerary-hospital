@@ -1,73 +1,86 @@
-import { createContext, useEffect, useState } from "react";
-// import { useNavigate } from "react-router-dom";
+import { createContext, useCallback, useEffect, useState } from "react";
 import Cookies from 'js-cookie';
 import api from "@/utils/api";
-
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
-    // const navigate = useNavigate();
 
     useEffect(() => {
-        checkUserLoggedn();
+        checkUserLoggedIn();
     }, []);
 
-    const checkUserLoggedn = () => {
+    const checkUserLoggedIn = () => {
         const userFromCookie = Cookies.get('user');
-        if (userFromCookie) {
+        const tokenFromCookie = Cookies.get('token');
+        
+        if (userFromCookie && tokenFromCookie) {
             try {
-                console.log(userFromCookie);
-                
                 const parsedUser = JSON.parse(userFromCookie);
                 setUser(parsedUser);
             } catch (error) {
                 console.error('Error parsing user data:', error);
                 Cookies.remove('user');
+                Cookies.remove('token');
             }
         }
         setLoading(false);
-    }
+    };
+
+    const getToken = async () => {
+        try {
+            const token = Cookies.get('token');
+            if (!token) {
+                throw new Error('No token found');
+            }
+            return token;
+        } catch (error) {
+            console.error('Error getting token:', error);
+            logout();
+            throw new Error('Authentication failed');
+        }
+    };
 
     const login = async (email, password) => {
         try {
             const response = await api.post('/login', { email, password });
             if (response.status === 200 && response.data.success) {
-               setUser(response.data.user);
-               Cookies.set('user', JSON.stringify(response.data.user), { expires: 7 });
-               return { 
-                 success: true, 
-                 message: response.data.message, 
-                 user: response.data.user  // Explicitly return user
-               };
+                setUser(response.data.user);
+                Cookies.set('user', JSON.stringify(response.data.user), { expires: 7 });
+                Cookies.set('token', response.data.token, { expires: 7 });
+                return { 
+                    success: true, 
+                    message: response.data.message, 
+                    user: response.data.user
+                };
             } else {
                 return { 
-                  success: false, 
-                  message: response.data.message || 'Login failed.' 
+                    success: false, 
+                    message: response.data.message || 'Login failed.' 
                 };
             }
         } catch (error) {
             console.error('Error logging in:', error);
             return { 
-              success: false, 
-              message: error.response?.data?.message || 'An error occurred. Login failed.' 
+                success: false, 
+                message: error.response?.data?.message || 'An error occurred. Login failed.' 
             };
         }
-    }
+    };
 
     const register = async (userData) => {
         try {
             const registrationData = {
                 ...userData,
-                role: userData.role || 'patient'  // Add explicit role
+                role: userData.role || 'patient'
             };
             const response = await api.post('/register', registrationData);
             if (response.data.success) {
                 setUser(response.data.user);
                 Cookies.set('user', JSON.stringify(response.data.user), { expires: 7 });
+                Cookies.set('token', response.data.token, { expires: 7 });
                 return { 
                     success: true, 
                     user: response.data.user 
@@ -86,17 +99,31 @@ export const AuthProvider = ({ children }) => {
             };
         }
     };
-    
-      const logout = () => {
+
+    const updateUserData = useCallback((newData) => {
+        setUser(currentUser => ({
+          ...currentUser,
+          ...newData
+        }));
+      }, []);
+
+    const logout = () => {
         setUser(null);
         Cookies.remove('user');
-        // navigate('/auth/login');
-      };
-
+        Cookies.remove('token');
+    };
 
     return (
-        <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+        <AuthContext.Provider value={{ 
+            user, 
+            loading, 
+            login, 
+            register, 
+            logout,
+            getToken,
+            updateUserData
+        }}>
             {children}
         </AuthContext.Provider>
     );
-}
+};

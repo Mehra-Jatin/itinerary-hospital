@@ -6,15 +6,19 @@ import Navbar from './components/Navbar.jsx'
 import { Outlet } from 'react-router-dom'
 import Footer from './components/Footer.jsx'
 import { AuthProvider } from './contexts/AuthContext.jsx'
+import { DoctorProvider } from './contexts/DoctorContext'
 
 function App() {
   return (
     <AuthProvider>
-      <Navbar />
-      <Outlet />
-      <Footer />
+      <DoctorProvider>
+        <Navbar />
+        <Outlet />
+        <Footer />
+      </DoctorProvider>
+
     </AuthProvider>
-    
+
   )
 }
 
