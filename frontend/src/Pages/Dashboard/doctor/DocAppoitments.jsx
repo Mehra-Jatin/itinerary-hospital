@@ -1,187 +1,221 @@
 import { Save } from 'lucide-react';
 import React, { useState } from 'react';
-import { MdClose } from 'react-icons/md'; // Importing close icon from react-icons
+import { MdClose, MdChat } from 'react-icons/md'; // Chat Icon
+import { format, isWithinInterval } from 'date-fns';
 
 const AppointmentTable = () => {
-  // Dummy data for appointments
   const dummyAppointments = [
     {
-      "_id": "1",
-      "userId": {
-        "FirstName": "John",
-        "LastName": "Doe",
-        "Age": 28,
-        "appointmentDate": "2024-11-25",
-        "appointmentTime": "2024-11-25T14:30:00Z"
+      _id: '1',
+      userId: {
+        FirstName: 'John',
+        LastName: 'Doe',
+        Age: 28,
+        appointmentDate: '2024-11-25',
+        appointmentTime: '2024-11-25T14:30:00Z',
       },
-      "bookingDetails": {
-        "appointmentStatus": "Pending"
-      }
+      bookingDetails: { appointmentStatus: 'Pending' },
     },
     {
-      "_id": "2",
-      "userId": {
-        "FirstName": "Jane",
-        "LastName": "Smith",
-        "Age": 34,
-        "appointmentDate": "2024-11-26",
-        "appointmentTime": "2024-11-26T10:00:00Z"
+      _id: '2',
+      userId: {
+        FirstName: 'Jane',
+        LastName: 'Smith',
+        Age: 34,
+        appointmentDate: '2024-11-26',
+        appointmentTime: '2024-11-26T10:00:00Z',
       },
-      "bookingDetails": {
-        "appointmentStatus": "Confirmed"
-      }
+      bookingDetails: { appointmentStatus: 'Confirmed' },
     },
     {
-      "_id": "3",
-      "userId": {
-        "FirstName": "Alice",
-        "LastName": "Johnson",
-        "Age": 22,
-        "appointmentDate": "2024-11-27",
-        "appointmentTime": "2024-11-27T16:00:00Z"
+      _id: '3',
+      userId: {
+        FirstName: 'Alice',
+        LastName: 'Johnson',
+        Age: 22,
+        appointmentDate: '2024-11-27',
+        appointmentTime: '2024-11-27T16:00:00Z',
       },
-      "bookingDetails": {
-        "appointmentStatus": "Completed"
-      }
-    }
+      bookingDetails: { appointmentStatus: 'Completed' },
+    },
   ];
 
+  const [appointments, setAppointments] = useState(dummyAppointments);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [status, setStatus] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [appointments, setAppointments] = useState(dummyAppointments); // State to store appointments
+  const [filterStatus, setFilterStatus] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
-  // Function to handle row click
   const handleRowClick = (appointment) => {
     setSelectedAppointment(appointment);
-    setIsModalOpen(true); // Open the modal when a row is clicked
-    setStatus(appointment.bookingDetails.appointmentStatus); // Set current status
+    setIsModalOpen(true);
+    setStatus(appointment.bookingDetails.appointmentStatus);
   };
 
-  // Function to handle status change
-  const handleStatusChange = (event) => {
-    setStatus(event.target.value);
-  };
+  const handleStatusChange = (event) => setStatus(event.target.value);
 
-  // Function to close the modal
-  const closeModal = () => {
+  const handleUpdateStatus = () => {
+    setAppointments((prev) =>
+      prev.map((appt) =>
+        appt._id === selectedAppointment._id
+          ? {
+              ...appt,
+              bookingDetails: { ...appt.bookingDetails, appointmentStatus: status },
+            }
+          : appt
+      )
+    );
     setIsModalOpen(false);
   };
 
-  // Function to update the status (just updating local state for now)
-  const handleUpdateStatus = () => {
-    // Update the local state with the new status without server interaction
-    setAppointments((prevAppointments) =>
-      prevAppointments.map((appointment) =>
-        appointment._id === selectedAppointment._id
-          ? {
-              ...appointment,
-              bookingDetails: {
-                ...appointment.bookingDetails,
-                appointmentStatus: status,
-              },
-            }
-          : appointment
-      )
-    );
-    closeModal();
-  };
+  const filteredAppointments = appointments.filter((appointment) => {
+    const matchStatus = !filterStatus || appointment.bookingDetails.appointmentStatus === filterStatus;
+    const matchDate =
+      (!startDate && !endDate) ||
+      (startDate &&
+        endDate &&
+        isWithinInterval(new Date(appointment.userId.appointmentDate), {
+          start: new Date(startDate),
+          end: new Date(endDate),
+        }));
+    return matchStatus && matchDate;
+  });
 
   return (
-    <>
-      <table className="min-w-full table-auto bg-white shadow-md rounded-lg">
-        <thead>
-          <tr className="bg-blue-100">
-            <th className="py-3 px-4 text-left">First Name</th>
-            <th className="py-3 px-4 text-left">Last Name</th>
-            <th className="py-3 px-4 text-left">Age</th>
-            <th className="py-3 px-4 text-left">Appointment Date</th>
-            <th className="py-3 px-4 text-left">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {appointments.map((appointment) => {
-            const { FirstName, LastName, Age, appointmentDate, appointmentTime } = appointment.userId;
+    <div className="p-4">
+      {/* Filters */}
+      <div className="flex flex-col lg:flex-row gap-4 mb-6">
+        <select
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+          className="py-2 px-4 border rounded-md"
+        >
+          <option value="">All Statuses</option>
+          <option value="Completed">Completed</option>
+          <option value="Confirmed">Rescheduled</option>
+          <option value="Pending">Pending</option>
+          <option value="Cancelled">Cancelled</option>
+        </select>
+        <input
+          type="date"
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+          className="py-2 px-4 border rounded-md"
+        />
+        <input
+          type="date"
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
+          className="py-2 px-4 border rounded-md"
+        />
+      </div>
+
+      {/* Responsive Table */}
+      <div className="appointments-container">
+        <table className="appointments-table w-full border-collapse hidden lg:table">
+          <thead>
+            <tr>
+              <th className="border px-4 py-2">Name</th>
+              <th className="border px-4 py-2">Age</th>
+              <th className="border px-4 py-2">Date</th>
+              <th className="border px-4 py-2">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredAppointments.map((appointment) => {
+              const { FirstName, LastName, Age, appointmentDate } = appointment.userId;
+              const appointmentStatus = appointment.bookingDetails.appointmentStatus;
+
+              return (
+                <tr
+                  key={appointment._id}
+                  onClick={() => handleRowClick(appointment)}
+                  className="cursor-pointer hover:bg-orange-100"
+                >
+                  <td className="border px-4 py-2">{FirstName} {LastName}</td>
+                  <td className="border px-4 py-2">{Age}</td>
+                  <td className="border px-4 py-2">{format(new Date(appointmentDate), 'yyyy-MM-dd')}</td>
+                  <td className="border px-4 py-2">{appointmentStatus}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+
+        {/* Mobile View */}
+        <div className="mobile-view lg:hidden">
+          {filteredAppointments.map((appointment) => {
+            const { FirstName, LastName, Age, appointmentDate } = appointment.userId;
             const appointmentStatus = appointment.bookingDetails.appointmentStatus;
-            const formattedDate = new Date(appointmentDate).toLocaleDateString();
-            const formattedTime = new Date(appointmentTime).toLocaleTimeString();
 
             return (
-              <tr
+              <div
                 key={appointment._id}
-                className="cursor-pointer hover:bg-orange-100 hover:text-orange-500"
+                className="p-4 bg-white rounded-lg shadow-md mb-4 cursor-pointer hover:bg-orange-100"
                 onClick={() => handleRowClick(appointment)}
               >
-                <td className="py-3 px-4">{FirstName}</td>
-                <td className="py-3 px-4">{LastName}</td>
-                <td className="py-3 px-4">{Age}</td>
-                <td className="py-3 px-4">{formattedDate} {formattedTime}</td>
-                <td className="py-3 px-4">{appointmentStatus}</td>
-              </tr>
+                <p>
+                  <strong>{FirstName} {LastName}</strong>
+                </p>
+                <p>Age: {Age}</p>
+                <p>Date: {format(new Date(appointmentDate), 'yyyy-MM-dd')}</p>
+                <p>Status: {appointmentStatus}</p>
+              </div>
             );
           })}
-        </tbody>
-      </table>
+        </div>
+      </div>
 
-      {/* Modal for Appointment Details */}
+      {/* Modal */}
       {isModalOpen && selectedAppointment && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center overflow-auto h-screen">
-          <div className="bg-white p-8 rounded-lg w-full lg:w-1/3 max-h-screen overflow-y-auto relative">
-            {/* Close Icon in top-right corner */}
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center h-screen">
+          <div className="bg-white p-8 rounded-lg relative w-full lg:w-2/5">
             <MdClose
-              onClick={closeModal}
+              onClick={() => setIsModalOpen(false)}
               className="absolute top-2 right-2 cursor-pointer text-gray-700"
               size={24}
             />
-            
-            <div className="grid grid-cols-1 gap-4">
-              {/* Appointment Info as Cards */}
-              <div className="bg-blue-50 p-4 rounded-lg shadow-md">
-                <p><strong>First Name:</strong> {selectedAppointment.userId.FirstName}</p>
-                <p><strong>Last Name:</strong> {selectedAppointment.userId.LastName}</p>
-                <p><strong>Age:</strong> {selectedAppointment.userId.Age}</p>
-              </div>
-              <div className="bg-blue-50 p-4 rounded-lg shadow-md">
-                <p><strong>Appointment Date:</strong> {new Date(selectedAppointment.userId.appointmentDate).toLocaleDateString()}</p>
-                <p><strong>Appointment Time:</strong> {new Date(selectedAppointment.userId.appointmentTime).toLocaleTimeString()}</p>
-              </div>
-              <div className="bg-blue-50 p-4 rounded-lg shadow-md">
-                <p><strong>Status:</strong> {selectedAppointment.bookingDetails.appointmentStatus}</p>
-              </div>
-            </div>
+            <p><strong>First Name:</strong> {selectedAppointment.userId.FirstName}</p>
+            <p><strong>Last Name:</strong> {selectedAppointment.userId.LastName}</p>
+            <p><strong>Age:</strong> {selectedAppointment.userId.Age}</p>
+            <p><strong>Date:</strong> {selectedAppointment.userId.appointmentDate}</p>
+            <p><strong>Status:</strong> {status}</p>
 
             <div className="mt-4">
-              <label htmlFor="status" className="block mb-2">Update Status:</label>
+              <label>Update Status:</label>
               <select
-                id="status"
                 value={status}
                 onChange={handleStatusChange}
                 className="py-2 px-4 border rounded-md"
-                disabled={status === 'Pending'} // Disable update if status is 'Pending'
+                disabled={selectedAppointment.bookingDetails.appointmentStatus === 'Completed'}
               >
-                {status !== 'Pending' && (
-                  <>
-                    <option value="Confirmed">Confirmed</option>
-                    <option value="Completed">Completed</option>
-                    <option value="Cancelled">Cancelled</option>
-                  </>
-                )}
+                <option value="Confirmed">Rescheduled</option>
+                <option value="Cancelled">Cancelled</option>
               </select>
             </div>
 
             <div className="mt-4 flex justify-between items-center">
               <button
                 onClick={handleUpdateStatus}
-                className="bg-slate-100 text-orange-500 py-2 px-4 rounded-lg flex items-center hover:text-white hover:bg-orange-400 transition-all ease-in-out delay-150 hover:-translate-y-1 hover:scale-110"
+                className="py-2 px-4 bg-blue-500 text-white rounded-md"
               >
-                <Save />
-                Save Changes
+                <Save /> Save Changes
               </button>
+              {status !== 'Cancelled' && status !== 'Completed' && (
+                <button
+                  onClick={() => alert('Chat initiated!')}
+                  className="flex items-center text-white bg-green-500 p-2 rounded-full"
+                >
+                  <MdChat size={20} /> Chat
+                </button>
+              )}
             </div>
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

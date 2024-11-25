@@ -5,11 +5,13 @@ import { Bell, HelpCircle, Settings, Menu, LogOutIcon } from 'lucide-react';
 import { Outlet } from 'react-router-dom';
 import DashContent from './doctor/DashContent';
 import { AuthContext } from '@/contexts/AuthContext';
+import SettingsModal from './doctor/Components/Settings';
 
 function DashboardLayout({ role }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
@@ -18,6 +20,10 @@ function DashboardLayout({ role }) {
     setIsMobile(window.matchMedia('(max-width: 480px)').matches);
   };
 
+  const handelSettings =()=>{
+    isSettingsOpen(true)
+
+  }
   useEffect(() => {
     handleResize();
     window.addEventListener('resize', handleResize);
@@ -30,7 +36,7 @@ function DashboardLayout({ role }) {
       <div className="flex w-full">
         {/* Sidebar */}
         <aside
-          className={`fixed top-0 left-0 z-50 min-h-screen w-56 bg-blue-50 shadow-2xl transition-all duration-300 ease-in-out ${
+          className={`fixed top-0 left-0 z-50 min-h-screen w-56 bg-blue-300 shadow-2xl transition-all duration-300 ease-in-out ${
             isSidebarOpen ? 'transform translate-x-0' : 'transform -translate-x-full'
           } lg:translate-x-0 lg:relative`}
         >
@@ -64,18 +70,18 @@ function DashboardLayout({ role }) {
             {/* Top Bar Buttons */}
             <div className="flex space-x-4 justify-end w-full">
               <div>
-                <Button variant="primary">
-                  {isMobile ? <Bell /> : <> <Bell /> Alert </>}
+                <Button variant="primary" className='hover:bg-orange-200 rounded-full hover:text-orange-500 transition ease-in-out delay-150 hover:-translate-y hover:scale-110 duration-200'>
+                  {isMobile ? <Bell className='text-lg' /> : <> <Bell className='text-lg'/> Alert </>}
                 </Button>
               </div>
               <div>
-                <Button variant="primary">
-                  {isMobile ? <HelpCircle /> : <> <HelpCircle /> Help </>}
+                <Button variant="primary" className='hover:bg-orange-200 rounded-full hover:text-orange-500 transition ease-in-out delay-150 hover:-translate-y hover:scale-110 duration-200'c>
+                  {isMobile ? <HelpCircle className='text-lg'/> : <> <HelpCircle className='text-lg' /> Help </>}
                 </Button>
               </div>
               <div>
-                <Button variant="primary">
-                  {isMobile ? <Settings /> : <> <Settings /> Setting </>}
+                <Button variant="primary" className='hover:bg-orange-200 rounded-full hover:text-orange-500 transition ease-in-out delay-150 hover:-translate-y hover:scale-110 duration-200'>
+                  {isMobile ? <Settings className='text-lg' /> : <> <Settings className='text-lg' onClick={()=> handelSettings()} /> Setting </>}
                 </Button>
               </div>
             </div>
