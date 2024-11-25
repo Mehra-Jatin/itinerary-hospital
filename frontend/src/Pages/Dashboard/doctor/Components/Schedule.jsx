@@ -1,217 +1,137 @@
-import React, { useState } from 'react';
-import { format, parseISO, isBefore, isEqual, isAfter, isWithinInterval } from 'date-fns';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Delete, Edit } from 'lucide-react';
+import React, { useState } from "react";
+import { Calendar } from "../../../../components/ui/Calendar";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { format, addDays } from "date-fns"; // Add days for date manipulation
+import { Delete } from "lucide-react";
 
-const Scheduler = () => {
-  const initialSchedules = [
-    { id: 1, start: '2024-11-23T06:34', end: '2024-11-23T07:38', status: 'Confirmed' },
-    { id: 2, start: '2024-11-24T06:34', end: '2024-11-24T07:38', status: 'Canceled' },
-  ];
+const DoctorSchedule = () => {
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [availability, setAvailability] = useState({}); // Tracks available dates
+  const [bookedDates, setBookedDates] = useState([]); // Tracks permanently booked dates
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [schedules, setSchedules] = useState(initialSchedules);
-  const [form, setForm] = useState({ id: null, start: '', end: '', status: 'Confirmed' });
-  const [filter, setFilter] = useState({ start: '', end: '', status: '' });
+  const handleDateClick = (date) => {
+    // Add 1 day to the selected date to fix previous date issue
+    const nextDay = addDays(date, 1);
+    const formattedDate = format(nextDay, "yyyy-MM-dd");
 
-  const handleInputChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    // Prevent selecting already booked dates
+    if (bookedDates.includes(formattedDate)) {
+      return;
+    }
+
+    // Update the selected date and open the modal
+    setSelectedDate(formattedDate);
+    setIsModalOpen(true);
   };
 
-  const handleFilterChange = (e) => {
-    setFilter({ ...filter, [e.target.name]: e.target.value });
+  const toggleAvailability = () => {
+    if (!selectedDate) return; // Avoid processing if no date is selected
+
+    // Mark the selected date as available
+    setAvailability((prev) => ({
+      ...prev,
+      [selectedDate]: true,
+    }));
+
+    // Close the modal and reset the selected date
+    setIsModalOpen(false);
+    setSelectedDate(null); // Reset selected date after confirming availability
   };
 
-  const isOverlapping = (newStart, newEnd, excludeId = null) => {
-    return schedules.some(({ start, end, id }) => {
-      if (excludeId && id === excludeId) return false;
-      const startTime = parseISO(start);
-      const endTime = parseISO(end);
-      const newStartTime = parseISO(newStart);
-      const newEndTime = parseISO(newEnd);
-
-      return (
-        (isBefore(newStartTime, endTime) && isAfter(newEndTime, startTime)) ||
-        isEqual(newStartTime, startTime) ||
-        isEqual(newEndTime, endTime)
-      );
+  const deleteAvailability = (date) => {
+    setAvailability((prev) => {
+      const updatedAvailability = { ...prev };
+      delete updatedAvailability[date]; // Remove availability for the date
+      return updatedAvailability;
     });
+
+    // Mark the date as permanently booked and close the modal
+    setBookedDates((prev) => [...prev, date]);
+    setIsModalOpen(false); // Close the modal after booking
+    setSelectedDate(null); // Reset selected date after deleting
   };
 
-  const handleAddOrUpdate = () => {
-    const { id, start, end, status } = form;
-    const parsedStart = parseISO(start);
-    const parsedEnd = parseISO(end);
-
-    if (isBefore(parsedEnd, parsedStart) || isEqual(parsedEnd, parsedStart)) {
-      alert('End time must be after start time.');
-      return;
-    }
-
-    if (isOverlapping(start, end, id)) {
-      alert('This time slot is already booked. Please choose another.');
-      return;
-    }
-
-    const newSchedule = { id: id ?? Date.now(), start, end, status };
-
-    if (id) {
-      setSchedules((prev) => prev.map((item) => (item.id === id ? newSchedule : item)));
-    } else {
-      setSchedules((prev) => [...prev, newSchedule]);
-    }
-
-    setForm({ id: null, start: '', end: '', status: 'Confirmed' });
-  };
-
-  const handleDelete = (id) => {
-    setSchedules((prev) => prev.filter((item) => item.id !== id));
-  };
-
-  const handleEdit = (id) => {
-    const schedule = schedules.find((item) => item.id === id);
-    if (schedule) setForm(schedule);
-  };
-
-  const filteredSchedules = schedules.filter(({ start, status }) => {
-    const startDate = filter.start ? parseISO(filter.start) : null;
-    const endDate = filter.end ? parseISO(filter.end) : null;
-    const scheduleStart = parseISO(start);
-
-    const matchesDate =
-      (!startDate && !endDate) ||
-      (startDate && endDate && isWithinInterval(scheduleStart, { start: startDate, end: endDate })) ||
-      (startDate && isAfter(scheduleStart, startDate)) ||
-      (endDate && isBefore(scheduleStart, endDate));
-
-    const matchesStatus = !filter.status || status === filter.status;
-
-    return matchesDate && matchesStatus;
-  });
+  const isDateAvailable = (date) => availability[format(date, "yyyy-MM-dd")];
+  const isDateBooked = (date) => bookedDates.includes(format(date, "yyyy-MM-dd"));
 
   return (
-    <div className="p-6 max-w-2xl mx-auto bg-blue-50 rounded shadow-md">
-      <h1 className="text-2xl font-bold text-gray-700 mb-4 text-center">Appointment Scheduling</h1>
-      
-      {/* Form to Add/Update Schedule */}
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-600">Start Time:</label>
-        <input
-          type="datetime-local"
-          name="start"
-          value={form.start}
-          onChange={handleInputChange}
-          className="block w-full px-3 py-2 mt-1 border rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-        />
-        <label className="block text-sm font-medium text-gray-600 mt-4">End Time:</label>
-        <input
-          type="datetime-local"
-          name="end"
-          value={form.end}
-          onChange={handleInputChange}
-          className="block w-full px-3 py-2 mt-1 border rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-        />
-        
-        <button
-          onClick={handleAddOrUpdate}
-          className="mt-4 px-4 py-2 bg-blue-400 text-white rounded hover:bg-orange-500 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-200"
-        >
-          {form.id ? 'Update Schedule' : 'Add Schedule'}
-        </button>
-      </div>
+    <div className="p-6 space-y-6 w-full">
+      <h1 className="text-xl font-bold">Doctor's Scheduling</h1>
+      {/* Calendar */}
+      <Calendar
+        mode="single"
+        selected={selectedDate} // Make sure the selected date is passed as a prop to the Calendar
+        onSelect={handleDateClick}
+        className="rounded-md border w-fit"
+        dayClassName={(date) => {
+          const formattedDate = format(date, "yyyy-MM-dd");
 
-      {/* Filter Form */}
-      <div className="mb-6">
-        <h2 className="text-lg font-medium text-gray-700 mb-3 text-center">Filter by Date and Status</h2>
-        
-        <label className="block text-sm font-medium text-gray-600">Start Date:</label>
-        <input
-          type="date"
-          name="start"
-          value={filter.start}
-          onChange={handleFilterChange}
-          className="block w-full px-3 py-2 mt-1 border rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-        />
-        <label className="block text-sm font-medium text-gray-600 mt-4">End Date:</label>
-        <input
-          type="date"
-          name="end"
-          value={filter.end}
-          onChange={handleFilterChange}
-          className="block w-full px-3 py-2 mt-1 border rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-        />
-        <label className="block text-sm font-medium text-gray-600 mt-4">Status:</label>
-        <select
-          name="status"
-          value={filter.status}
-          onChange={handleFilterChange}
-          className="block w-full px-3 py-2 mt-1 border rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-        >
-          <option value="">All</option>
-          <option value="Confirmed">Confirmed</option>
-          <option value="Canceled">Canceled</option>
-        </select>
-      </div>
-
-      {/* Schedules Table */}
-      <table className="table-auto w-full border-collapse border border-gray-300">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="border border-gray-300 px-4 py-2">Start</th>
-            <th className="border border-gray-300 px-4 py-2">End</th>
-            <th className="border border-gray-300 px-4 py-2">Status</th>
-            <th className="border border-gray-300 px-4 py-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <AnimatePresence>
-            {filteredSchedules.map(({ id, start, end, status }) => (
-              <motion.tr
-                key={id}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="border border-gray-300"
+          // Styling based on availability and booked dates
+          if (bookedDates.includes(formattedDate)) {
+            return "bg-red-500 text-white rounded-full cursor-not-allowed"; // Highlight booked dates
+          }
+          if (availability[formattedDate]) {
+            return "bg-green-500 text-white rounded-full cursor-not-allowed"; // Highlight available dates
+          }
+          if (selectedDate === formattedDate) {
+            return "bg-blue-300 text-white rounded-full"; // Highlight selected dates
+          }
+          return "";
+        }}
+      />
+      {/* Modal for setting availability */}
+      {selectedDate && !availability[selectedDate] && (
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogContent>
+            <h2 className="text-lg font-semibold mb-4">
+              Set Availability for {format(new Date(selectedDate), "PP")}
+            </h2>
+            <p>Do you want to mark yourself available on this date?</p>
+            <div className="flex justify-end space-x-4 mt-4">
+              <Button variant="outline" onClick={() => setIsModalOpen(false)}>
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                className="bg-orange-600 text-white"
+                onClick={toggleAvailability}
               >
-                <td className="border border-gray-300 px-4 py-2">{format(parseISO(start), 'Pp')}</td>
-                <td className="border border-gray-300 px-4 py-2">{format(parseISO(end), 'Pp')}</td>
-                <td
-                  className={`border border-gray-300 px-4 py-2 ${
-                    status === 'Canceled' ? 'text-red-500' : 'text-green-500'
-                  }`}
-                >
-                  {status}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                <div className="mt-3 md:mt-0 flex">
-              <motion.button
-                onClick={() => handleEdit(id)}
-                whileHover={{ scale: 1.2, rotate: 10 }}
-                whileTap={{ scale: 0.9, rotate: -10 }}
-                className="mr-3 text-blue-500 hover:bg-blue-100 p-2 rounded"
-              >
-                <Edit />
-              </motion.button>
-              <motion.button
-                onClick={() => handleDelete(id)}
-                whileHover={{
-                  scale: 1.2,
-                  backgroundColor: 'rgb(255, 205, 205)',
-                  color: '#b91c1c',
-                }}
-                whileTap={{ scale: 0.9 }}
-                className="text-red-500 hover:bg-red-100 p-2 rounded"
-              >
-                <Delete />
-              </motion.button>
+                Confirm
+              </Button>
             </div>
-                </td>
-              </motion.tr>
+          </DialogContent>
+        </Dialog>
+      )}
+      {/* Display Available Dates */}
+      <div>
+        <h2 className="text-lg font-semibold">Available Dates:</h2>
+        {Object.keys(availability).length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {Object.keys(availability).map((date) => (
+              <div
+                key={date}
+                className="p-4 border rounded shadow flex justify-between items-center"
+              >
+                <span>{format(new Date(date), "PP")}</span>
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    deleteAvailability(date); // Delete availability and book the date
+                  }}
+                >
+                  <Delete />
+                </Button>
+              </div>
             ))}
-          </AnimatePresence>
-        </tbody>
-      </table>
+          </div>
+        ) : (
+          <p>No availability set yet.</p>
+        )}
+      </div>
     </div>
   );
 };
 
-export default Scheduler;
+export default DoctorSchedule;

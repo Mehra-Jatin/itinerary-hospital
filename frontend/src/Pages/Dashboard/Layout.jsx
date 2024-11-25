@@ -6,6 +6,7 @@ import AdminSidebar from './admin/AdminSidebar';
 import DashContent from './doctor/DashContent';
 import AdminDashboardLayout from './admin/AdminDashboard';
 import { Outlet } from 'react-router-dom';
+import DoctorDashboardLayout from './doctor/DoctorDashboardLayout';
 
 function DashboardLayout({ role }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -77,7 +78,8 @@ function DashboardLayout({ role }) {
         <main className="overflow-x-hidden overflow-y-auto bg-gray-100">
           <div className="max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
             {/* Your main content goes here */}
-            {role === 'doctor' ? <DoctorDashboardLayout /> : <Outlet />}
+            {/* {role === 'doctor' ? <DoctorDashboardLayout /> : <Outlet />} */}
+            <Outlet />
           </div>
         </main>
       </div>
@@ -94,4 +96,3 @@ function DashboardLayout({ role }) {
 }
 
 export default DashboardLayout;
-
