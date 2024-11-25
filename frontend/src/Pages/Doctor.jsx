@@ -655,7 +655,37 @@ const Button = ({ children, variant = 'primary', className = '', ...props }) => 
 
 // Enhanced Custom Checkbox with animation (unchanged)
 const CustomCheckbox = ({ label, name, count, onChange }) => {
-  // ... (unchanged)
+  return (
+    <label className="flex items-center justify-between group p-2 hover:bg-orange-50 rounded-md cursor-pointer transition-colors duration-200">
+      <div className="flex items-center gap-3">
+        <div className="relative">
+          <input
+            type="checkbox"
+            name={name}
+            id={name}
+            onChange={(e) => onChange(name, e.target.checked)}
+            className="peer hidden"
+          />
+          <div className="w-5 h-5 border-2 border-gray-300 rounded transition-colors duration-200 flex items-center justify-center peer-checked:border-orange-500 peer-checked:bg-orange-500">
+            <svg
+              className="w-3 h-3 text-white scale-0 transition-transform duration-200 peer-checked:scale-100"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+        </div>
+        <span className="text-gray-700 group-hover:text-orange-500 transition-colors duration-200">
+          {label}
+        </span>
+      </div>
+      {count !== undefined && (
+        <span className="text-sm text-gray-500">{count}</span>
+      )}
+    </label>
+  );
 };
 
 // Improved Search Bar Component
@@ -665,7 +695,7 @@ const SearchBar = ({ value, onChange }) => (
       type="text"
       value={value}
       onChange={onChange}
-      placeholder="Search by name, specialty, or location..."
+      placeholder="Search by name or specialty..."
       className="w-full p-4 pl-12 rounded-lg border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all duration-200"
     />
     <svg
@@ -709,7 +739,7 @@ const StarRating = ({ rating, size = 'base' }) => {
 const DoctorCard = ({ doctor }) => {
   const navigate = useNavigate();
 
-  console.log(doctor);
+  // console.log(doctor);
   
   
   return (
@@ -845,12 +875,6 @@ const Doctor = () => {
   });
 
   // Generate filter options
-  const locationOptions = [...new Set(doctors.map(d => d.location))].map(location => ({
-    label: location,
-    value: location,
-    count: doctors.filter(d => d.location === location).length
-  }));
-
   const specialtyOptions = [...new Set(doctors.map(d => d.specialty))].map(specialty => ({
     label: specialty,
     value: specialty,
@@ -909,13 +933,6 @@ const Doctor = () => {
               </button>
             </div>
             
-            <FilterSection 
-              title="Location" 
-              options={locationOptions}
-              selectedFilters={filters.location}
-              onChange={handleFilterChange}
-            />
-
             <FilterSection 
               title="Specialty" 
               options={specialtyOptions}

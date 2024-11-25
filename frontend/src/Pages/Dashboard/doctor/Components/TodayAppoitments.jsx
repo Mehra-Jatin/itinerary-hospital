@@ -3,8 +3,8 @@ import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import NextPatient from './NextPatient';
 
-export default function TodayAppoitments(){
-      // Dummy data for appointments
+export default function TodayAppoitments() {
+  // Dummy data for appointments
   const dummyAppointments = [
     {
       _id: '1',
@@ -73,7 +73,7 @@ export default function TodayAppoitments(){
       conditions: ['Obesity'],
     },
   ];
-  
+
 
   const [appointments, setAppointments] = useState(dummyAppointments);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
@@ -81,58 +81,59 @@ export default function TodayAppoitments(){
   const handleAppointmentClick = (appointment) => {
     setSelectedAppointment(appointment);
   };
-  console.log(selectedAppointment);
-  
-         {/* Appointments Section */}
-  return (       
-<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-  {/* Today's Appointments */}
-  <Card className="shadow-lg h-screen overflow-auto bg-blue-50 to-yellow-100">
-    <h2 className="text-xl font-semibold mb-8 text-center mt-5">Today's Appointments</h2>
-    <div className="grid gap-3">
-      {appointments.map((appointment) => {
-        if( appointment.bookingDetails.appointmentStatus!=='Confirmed') return;
-        return (
-       <motion.div
-          key={appointment._id}
-          className={`flex justify-between bg-blue-50 py-3 px-4 rounded-lg cursor-pointer hover:bg-orange-100 hover:text-orange-500 `}
-          whileHover={{ scale: 1.05 }}
-          onClick={() => handleAppointmentClick(appointment)}
-        >
-          <div className="flex gap-5">
-            <img
-              src={appointment.userId.profilePicture}
-              alt="Profile"
-              className="object-cover w-12 h-12 rounded-full"
-            />
-            <div>
-              <p className="font-semibold">
-                {appointment.userId.FirstName} {appointment.userId.LastName}
-              </p>
-              <p className="text-sm  hover:text-orange-600">{appointment.bookingDetails.appointmentStatus}</p>
-            </div>
-          </div>
-          <div className="text-gray-600">{appointment.bookingDetails.appointmentTime}</div>
-        </motion.div>
-      )}
-      )}
-    
-    </div>
-  </Card>
+  // console.log(selectedAppointment);
 
-  {/* Appointment Requests */}
-  <motion.div
-    className="w-full "
-    initial={{ opacity: 0, x: 50 }}
-    animate={selectedAppointment ? { opacity: 1, x: 0 } : { opacity: 0 }}
-    transition={{ duration: 0.5 }}
-  >
-      {selectedAppointment ? (
-        <NextPatient appointment={selectedAppointment} />
-      ) : (
-        <p className="text-center text-gray-500">Click on an appointment to see details.</p>
-      )}
-  </motion.div>
-</div>
+  {/* Appointments Section */ }
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Today's Appointments */}
+      <Card className="shadow-lg h-screen overflow-auto bg-blue-50 to-yellow-100">
+        <h2 className="text-xl font-semibold mb-8 text-center mt-5">Today's Appointments</h2>
+        <div className="grid gap-3">
+          {appointments.map((appointment) => {
+            if (appointment.bookingDetails.appointmentStatus !== 'Confirmed') return;
+            return (
+              <motion.div
+                key={appointment._id}
+                className={`flex justify-between bg-blue-50 py-3 px-4 rounded-lg cursor-pointer hover:bg-orange-100 hover:text-orange-500 `}
+                whileHover={{ scale: 1.05 }}
+                onClick={() => handleAppointmentClick(appointment)}
+              >
+                <div className="flex gap-5">
+                  <img
+                    src={appointment.userId.profilePicture}
+                    alt="Profile"
+                    className="object-cover w-12 h-12 rounded-full"
+                  />
+                  <div>
+                    <p className="font-semibold">
+                      {appointment.userId.FirstName} {appointment.userId.LastName}
+                    </p>
+                    <p className="text-sm  hover:text-orange-600">{appointment.bookingDetails.appointmentStatus}</p>
+                  </div>
+                </div>
+                <div className="text-gray-600">{appointment.bookingDetails.appointmentTime}</div>
+              </motion.div>
+            )
+          }
+          )}
+
+        </div>
+      </Card>
+
+      {/* Appointment Requests */}
+      <motion.div
+        className="w-full "
+        initial={{ opacity: 0, x: 50 }}
+        animate={selectedAppointment ? { opacity: 1, x: 0 } : { opacity: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        {selectedAppointment ? (
+          <NextPatient appointment={selectedAppointment} />
+        ) : (
+          <p className="text-center text-gray-500">Click on an appointment to see details.</p>
+        )}
+      </motion.div>
+    </div>
   )
 }

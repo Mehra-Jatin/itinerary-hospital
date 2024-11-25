@@ -28,7 +28,7 @@ export default function Login() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const result = await login(formData.email, formData.password);
-        console.log('Login Result:', result); // Add this line to log the result
+        // console.log('Login Result:', result); // Add this line to log the result
         if (result.success) { // Check if success is true then goes to the each dashboard
             if (result.user.role === 'patient') {
                 navigate('/profile');
