@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { usePatient } from "@/contexts/PatientContext";
 import {
@@ -24,35 +24,51 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-// import { useToast } from "@/components/ui/use-toast";
-import { 
-  UserCircle, 
-  Edit2, 
-  Save, 
-  X, 
-  Trash2, 
-  Mail, 
-  Phone, 
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  UserCircle,
+  Edit2,
+  Save,
+  X,
+  Trash2,
+  Mail,
+  Phone,
   Cake,
-  User, 
-  MapPin
+  User
 } from "lucide-react";
-import { Textarea } from "@/components/ui/textarea";
+
+import { useToast } from "@/hooks/use-toast";
 
 const UserProfile = () => {
-  const { user, loading, logout } = useAuth();
-  const { updatePatientProfile, deletePatientAccount, isLoading } = usePatient();
-  // const { toast } = useToast();
+  const { user, loading, logout, updateUserData } = useAuth();
+  const { updatePatientProfile, deletePatientAccount, isLoading, error } = usePatient();
   const [isEditing, setIsEditing] = useState(false);
+  const [validationError, setValidationError] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const { toast } = useToast()
+
+
   const [formData, setFormData] = useState({
     FirstName: user?.FirstName || "",
     LastName: user?.LastName || "",
     email: user?.email || "",
     PhoneNo: user?.PhoneNo || "",
     age: user?.age || "",
-    gender: user?.gender || "",
-    address: user?.address || "",
+    gender: user?.gender || ""
   });
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        FirstName: user.FirstName || "",
+        LastName: user.LastName || "",
+        email: user.email || "",
+        PhoneNo: user.PhoneNo || "",
+        age: user.age || "",
+        gender: user.gender || ""
+      });
+    }
+  }, [user]);
 
   if (loading) {
     return (
@@ -75,46 +91,84 @@ const UserProfile = () => {
     );
   }
 
+  const validateForm = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!formData.FirstName || !formData.LastName) {
+      setValidationError("First name and last name are required");
+      return false;
+    }
+    if (!formData.email) {
+      setValidationError("Email is required");
+      return false;
+    }
+    if (!emailRegex.test(formData.email)) {
+      setValidationError("Invalid email format");
+      return false;
+    }
+    if (formData.age && (isNaN(formData.age) || formData.age < 0 || formData.age > 150)) {
+      setValidationError("Please enter a valid age");
+      return false;
+    }
+
+    setValidationError("");
+    return true;
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    setValidationError(""); // Clear validation error when user starts typing
   };
 
   const handleSave = async () => {
+    if (!validateForm()) return;
+
     try {
-      const result = await updatePatientProfile(user.userId, formData);
+      setIsSaving(true);
+      if (!user?._id) {
+        throw new Error('User ID is missing');
+      }
+
+      const result = await updatePatientProfile(user._id, formData);
       if (result.success) {
-        // toast({
-        //   title: "Profile Updated",
-        //   description: "Your profile has been successfully updated.",
-        // });
+        // Update the user data in AuthContext
+        updateUserData({
+          ...user,
+          ...formData
+        });
         setIsEditing(false);
+
+        // Add a success toast or message
+        toast({
+          title: "Profile Updated",
+          description: "Your profile has been successfully updated.",
+          status: "success",
+          duration: 3000,
+        });
       }
     } catch (error) {
-      // toast({
-      //   title: "Error",
-      //   description: "Failed to update profile. Please try again.",
-      //   variant: "destructive",
-      // });
+      console.error("Failed to update profile:", error);
+      // Add an error toast or message
+      toast({
+        title: "Update Failed",
+        description: error.message,
+        status: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsSaving(false);
     }
   };
 
   const handleDelete = async () => {
     try {
-      const result = await deletePatientAccount(user.userId);
+      const result = await deletePatientAccount(user._id);
       if (result.success) {
-        // toast({
-        //   title: "Account Deleted",
-        //   description: "Your account has been successfully deleted.",
-        // });
-        logout();
+        // Logout is handled by PatientContext
       }
     } catch (error) {
-      // toast({
-      //   title: "Error",
-      //   description: "Failed to delete account. Please try again.",
-      //   variant: "destructive",
-      // });
+      console.error("Failed to delete account:", error);
     }
   };
 
@@ -128,19 +182,31 @@ const UserProfile = () => {
                 <Button
                   variant="outline"
                   size="icon"
-                  onClick={() => setIsEditing(false)}
+                  onClick={() => {
+                    setIsEditing(false);
+                    setValidationError("");
+                    setFormData({
+                      FirstName: user.FirstName || "",
+                      LastName: user.LastName || "",
+                      email: user.email || "",
+                      PhoneNo: user.PhoneNo || "",
+                      age: user.age || "",
+                      gender: user.gender || ""
+                    });
+                  }}
                   disabled={isLoading}
                 >
                   <X className="h-4 w-4" />
                 </Button>
                 <Button
                   variant="default"
-                  size=""
                   onClick={handleSave}
-                  disabled={isLoading}
+                  disabled={isSaving}
+                  className="flex items-center gap-2"
                 >
-                  <Save className="h-4 w-4" />
-                  <span>Save</span>
+                  {isSaving ? <LoadingSpinner /> : <Save className="h-4 w-4" />}
+                  <span>{isSaving ? 'Saving' : 'Save'}</span>
+                  {isSaving && <LoadingDots />}
                 </Button>
               </>
             ) : (
@@ -159,7 +225,7 @@ const UserProfile = () => {
               <UserCircle className="w-12 h-12 text-primary" />
             </div>
             <div>
-              <CardTitle className="text-2xl capitalize">
+              <CardTitle className="text-2xl">
                 {isEditing ? (
                   <div className="flex gap-2">
                     <Input
@@ -168,6 +234,7 @@ const UserProfile = () => {
                       onChange={handleInputChange}
                       className="w-32"
                       disabled={isLoading}
+                      placeholder="First Name"
                     />
                     <Input
                       name="LastName"
@@ -175,6 +242,7 @@ const UserProfile = () => {
                       onChange={handleInputChange}
                       className="w-32"
                       disabled={isLoading}
+                      placeholder="Last Name"
                     />
                   </div>
                 ) : (
@@ -187,6 +255,14 @@ const UserProfile = () => {
         </CardHeader>
 
         <CardContent className="space-y-6">
+          {(validationError || error) && (
+            <Alert variant="destructive">
+              <AlertDescription>
+                {validationError || error}
+              </AlertDescription>
+            </Alert>
+          )}
+
           <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label className="flex items-center gap-2">
@@ -195,9 +271,11 @@ const UserProfile = () => {
               {isEditing ? (
                 <Input
                   name="email"
+                  type="email"
                   value={formData.email}
                   onChange={handleInputChange}
                   disabled={isLoading}
+                  placeholder="email@example.com"
                 />
               ) : (
                 <p className="text-sm text-muted-foreground">{user.email}</p>
@@ -214,9 +292,12 @@ const UserProfile = () => {
                   value={formData.PhoneNo}
                   onChange={handleInputChange}
                   disabled={isLoading}
+                  placeholder="Phone number"
                 />
               ) : (
-                <p className="text-sm text-muted-foreground">{user.PhoneNo}</p>
+                <p className="text-sm text-muted-foreground">
+                  {user.PhoneNo || "Not specified"}
+                </p>
               )}
             </div>
 
@@ -231,9 +312,13 @@ const UserProfile = () => {
                   value={formData.age}
                   onChange={handleInputChange}
                   disabled={isLoading}
+                  min="0"
+                  max="150"
                 />
               ) : (
-                <p className="text-sm text-muted-foreground">{user.age ? user.age : "N/A"}</p>
+                <p className="text-sm text-muted-foreground">
+                  {user.age || "Not specified"}
+                </p>
               )}
             </div>
 
@@ -247,25 +332,12 @@ const UserProfile = () => {
                   value={formData.gender}
                   onChange={handleInputChange}
                   disabled={isLoading}
+                  placeholder="Gender"
                 />
               ) : (
-                <p className="text-sm text-muted-foreground">{user.gender}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label className="flex items-center gap-2">
-                <MapPin className="w-4 h-4" /> Address
-              </Label>
-              {isEditing ? (
-                <Textarea
-                  name="address"
-                  value={formData.address}
-                  onChange={handleInputChange}
-                  disabled={isLoading}
-                />
-              ) : (
-                <p className="text-sm text-muted-foreground">{user.address ? user.address : "N/A"}</p>
+                <p className="text-sm text-muted-foreground">
+                  {user.gender || "Not specified"}
+                </p>
               )}
             </div>
           </div>
@@ -274,8 +346,8 @@ const UserProfile = () => {
         <CardFooter className="flex justify-between pt-6">
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button 
-                variant="destructive" 
+              <Button
+                variant="destructive"
                 className="flex items-center gap-2"
                 disabled={isLoading}
               >
@@ -309,3 +381,16 @@ const UserProfile = () => {
 };
 
 export default UserProfile;
+
+
+const LoadingSpinner = () => (
+  <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full" />
+);
+
+const LoadingDots = () => (
+  <span className="flex gap-1">
+    <span className="animate-pulse">.</span>
+    <span className="animate-pulse delay-100">.</span>
+    <span className="animate-pulse delay-200">.</span>
+  </span>
+);

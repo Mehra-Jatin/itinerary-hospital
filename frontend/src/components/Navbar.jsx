@@ -32,6 +32,8 @@ export default function Navbar() {
     { name: "Contacts", path: "/contacts", icon: PhoneCall, hasDropdown: false },
   ]
 
+  // console.log(user);
+
 
   const handleLogout = () => {
     logout();

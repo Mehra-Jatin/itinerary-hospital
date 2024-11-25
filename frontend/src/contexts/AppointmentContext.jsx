@@ -4,46 +4,26 @@ const AppointmentContext = createContext();
 
 // This will be connected to backend later
 const sampleAppointments = [
-  // {
-  //   id: 1,
-  //   patientName: "John Smith",
-  //   doctorName: "Dr. Sarah Wilson",
-  //   date: new Date().toISOString().split('T')[0],
-  //   time: "10:00",
-  //   duration: 30,
-  //   status: "ongoing",
-  //   type: "General Checkup"
-  // },
-  // {
-  //   id: 2,
-  //   patientName: "Emily Brown",
-  //   doctorName: "Dr. Michael Lee",
-  //   date: new Date().toISOString().split('T')[0],
-  //   time: "11:30",
-  //   duration: 45,
-  //   status: "pending",
-  //   type: "Follow-up"
-  // },
-  // {
-  //   id: 3,
-  //   patientName: "James Wilson",
-  //   doctorName: "Dr. Lisa Chen",
-  //   date: new Date().toISOString().split('T')[0],
-  //   time: "14:00",
-  //   duration: 30,
-  //   status: "completed",
-  //   type: "Consultation"
-  // },
-  // {
-  //   id: 4,
-  //   patientName: "Sarah Johnson",
-  //   doctorName: "Dr. Robert Taylor",
-  //   date: new Date().toISOString().split('T')[0],
-  //   time: "15:30",
-  //   duration: 60,
-  //   status: "cancelled",
-  //   type: "Specialist Consultation"
-  // }
+  { id: 1, patientName: "John Smith", doctorName: "Dr. Sarah Wilson", date: new Date().toISOString().split('T')[0], time: "10:00", duration: 30, status: "ongoing", type: "General Checkup" },
+  { id: 2, patientName: "Emily Brown", doctorName: "Dr. Michael Lee", date: new Date().toISOString().split('T')[0], time: "11:30", duration: 45, status: "pending", type: "Follow-up" },
+  { id: 3, patientName: "James Wilson", doctorName: "Dr. Lisa Chen", date: new Date().toISOString().split('T')[0], time: "14:00", duration: 30, status: "completed", type: "Consultation" },
+  { id: 4, patientName: "Sarah Johnson", doctorName: "Dr. Robert Taylor", date: new Date().toISOString().split('T')[0], time: "15:30", duration: 60, status: "cancelled", type: "Specialist Consultation" },
+  { id: 5, patientName: "William Davis", doctorName: "Dr. Nancy Hall", date: new Date().toISOString().split('T')[0], time: "09:30", duration: 30, status: "pending", type: "Dental Checkup" },
+  { id: 6, patientName: "Sophia Martinez", doctorName: "Dr. Richard Moore", date: new Date().toISOString().split('T')[0], time: "12:15", duration: 45, status: "ongoing", type: "General Checkup" },
+  { id: 7, patientName: "Oliver Garcia", doctorName: "Dr. Angela Walker", date: new Date().toISOString().split('T')[0], time: "13:00", duration: 30, status: "completed", type: "Eye Exam" },
+  { id: 8, patientName: "Isabella Anderson", doctorName: "Dr. Charles Wright", date: new Date().toISOString().split('T')[0], time: "14:45", duration: 30, status: "cancelled", type: "Follow-up" },
+  { id: 9, patientName: "Liam Hernandez", doctorName: "Dr. Karen Adams", date: new Date().toISOString().split('T')[0], time: "10:30", duration: 60, status: "ongoing", type: "General Checkup" },
+  { id: 10, patientName: "Mia Robinson", doctorName: "Dr. Thomas White", date: new Date().toISOString().split('T')[0], time: "11:00", duration: 30, status: "completed", type: "Consultation" },
+  { id: 11, patientName: "Noah Martinez", doctorName: "Dr. Susan Young", date: new Date().toISOString().split('T')[0], time: "12:30", duration: 45, status: "pending", type: "Specialist Consultation" },
+  { id: 12, patientName: "Ava Clark", doctorName: "Dr. Kevin King", date: new Date().toISOString().split('T')[0], time: "13:15", duration: 30, status: "ongoing", type: "Follow-up" },
+  { id: 13, patientName: "Elijah Wright", doctorName: "Dr. Patricia Scott", date: new Date().toISOString().split('T')[0], time: "14:00", duration: 60, status: "completed", type: "General Checkup" },
+  { id: 14, patientName: "Charlotte Perez", doctorName: "Dr. Brian Green", date: new Date().toISOString().split('T')[0], time: "15:00", duration: 30, status: "cancelled", type: "Dental Checkup" },
+  { id: 15, patientName: "Lucas Hill", doctorName: "Dr. Elizabeth Harris", date: new Date().toISOString().split('T')[0], time: "16:00", duration: 30, status: "completed", type: "Eye Exam" },
+  { id: 16, patientName: "Amelia Scott", doctorName: "Dr. Eric Carter", date: new Date().toISOString().split('T')[0], time: "10:45", duration: 30, status: "ongoing", type: "Consultation" },
+  { id: 17, patientName: "Ethan Lewis", doctorName: "Dr. Megan Mitchell", date: new Date().toISOString().split('T')[0], time: "09:15", duration: 45, status: "pending", type: "Follow-up" },
+  { id: 18, patientName: "Harper Allen", doctorName: "Dr. Samuel Turner", date: new Date().toISOString().split('T')[0], time: "11:45", duration: 60, status: "completed", type: "General Checkup" },
+  { id: 19, patientName: "Jack Edwards", doctorName: "Dr. Diane Collins", date: new Date().toISOString().split('T')[0], time: "13:30", duration: 30, status: "cancelled", type: "Specialist Consultation" },
+  { id: 20, patientName: "Ella Lopez", doctorName: "Dr. Anthony Barnes", date: new Date().toISOString().split('T')[0], time: "15:30", duration: 45, status: "ongoing", type: "Eye Exam" },
 ];
 
 export const AppointmentProvider = ({ children }) => {

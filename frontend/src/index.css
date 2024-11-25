@@ -26,26 +26,4 @@
   }
 }
 
-::-webkit-scrollbar {
-  width: 10px;
-}
 
-/* Track */
-::-webkit-scrollbar-track {
-  background: #ffffff; 
-  /* border-radius: 20px; */
-  /* -webkit-border-ra/dius: 20px; */
-  /* -moz-border-radius: 20px;
-  -ms-border-radius: 20px;
-  -o-border-radius: 20px; */
-}
- 
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: #f2bca5; 
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: #bc6a57; 
-}
