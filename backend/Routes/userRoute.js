@@ -20,9 +20,10 @@ router.route('/users')
 router.route('/doctor/:doctorId').put(isAuthenticatedUser(), authorizeRoles('admin', 'doctor'), updateDoctor);
 router.route('/doctor/:doctorId').delete(isAuthenticatedUser(), authorizeRoles('admin','doctor'), deleteDoctor);
 router.route('/doctor/:doctorId').get(isAuthenticatedUser(), getDoctor);
-router.route('/doctors').get(isAuthenticatedUser(), authorizeRoles('admin', 'patient'), getAllDoctors);
+router.route('/doctors').get(getAllDoctors);
 
-router.route('/validate/:doctorId').put(isAuthenticatedUser(),authorizeRoles('admin'),validateDoctor);
+router.route('/acceptvalidate/:doctorId').put(isAuthenticatedUser(),authorizeRoles('admin'),validateDoctor);
+router.route('/canclevalidate/:doctorId').delete(isAuthenticatedUser(),authorizeRoles('admin'),deleteDoctor);
 router.route('/history/:id').get(isAuthenticatedUser(),authorizeRoles('admin','patient','doctor'),getHistory);
 router.route('/appointment/:id').get(isAuthenticatedUser(),authorizeRoles('admin','patient','doctor'),getAppointment);
 

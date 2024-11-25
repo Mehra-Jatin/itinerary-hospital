@@ -179,6 +179,25 @@ export const getAppointment = async (req, res) => {
       return res.status(404).json({ success: false, message: "User or Doctor not found." });
     }
     // 
+    const now = new Date();
+    // "2024-11-25T00:00:00.000Z"
+    const offset= 5.5*60*60*1000;
+    const compare = new Date(now.getTime() + offset);
+    console.log(compare);
+    const expiredAppointments = await Appointment.find({
+      endtime: {$lte: compare}, 
+      chat:true,
+    });
+    if(expiredAppointments.length>0){
+        const updated = await Appointment.updateMany(
+            {
+            _id: {$in: expiredAppointments.map(appointment => appointment._id)},
+           }, 
+           {$set:{chat:false}}
+        );
+       
+    }
+    
     const appointment = await Appointment.find({$or: [{userId:id}, {doctorId:id}]});
     res.status(200).json({
       success: true,
