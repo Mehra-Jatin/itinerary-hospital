@@ -1,4 +1,4 @@
-import ScheduleTable from "@/components/Schedule";
+import ScheduleTable from "@/Pages/Dashboard/doctor/Components/Schedule";
 
 export default function SchedulePage(){
   return  <ScheduleTable />

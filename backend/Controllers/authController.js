@@ -178,7 +178,7 @@ export const getAppointment = async (req, res) => {
     if (!user && !doctor) {
       return res.status(404).json({ success: false, message: "User or Doctor not found." });
     }
-    
+    // 
     const appointment = await Appointment.find({$or: [{userId:id}, {doctorId:id}]});
     res.status(200).json({
       success: true,
