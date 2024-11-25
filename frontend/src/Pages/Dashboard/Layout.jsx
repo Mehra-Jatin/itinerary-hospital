@@ -1,105 +1,97 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Bell, HelpCircle, Settings, Menu, LogOutIcon } from 'lucide-react';
-import { Outlet } from 'react-router-dom';
-import DashContent from './doctor/DashContent';
-// import { AuthContext } from '@/contexts/AuthContext';
 import { useAuth } from '@/hooks/useAuth';
+import AdminSidebar from './admin/AdminSidebar';
+import DashContent from './doctor/DashContent';
+import AdminDashboardLayout from './admin/AdminDashboard';
+import { Outlet } from 'react-router-dom';
 
 function DashboardLayout({ role }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-
   const { user, logout } = useAuth();
-
-  console.log(user);
-  
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const handleResize = () => {
-    setIsMobile(window.matchMedia('(max-width: 480px)').matches);
-  };
-
   useEffect(() => {
-    handleResize();
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setIsSidebarOpen(true);
+      } else {
+        setIsSidebarOpen(false);
+      }
+    };
+
     window.addEventListener('resize', handleResize);
+    handleResize(); // Call once to set initial state
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  console.log(user.role);
   
+
   return (
-    <>
-      <div className="flex w-full">
-        {/* Sidebar */}
-        <aside
-          className={`fixed top-0 left-0 z-50 min-h-screen w-56 bg-blue-50 shadow-2xl transition-all duration-300 ease-in-out ${
-            isSidebarOpen ? 'transform translate-x-0' : 'transform -translate-x-full'
-          } lg:translate-x-0 lg:relative`}
-        >
-          {/* Profile Section */}
-          {role === 'doctor' ? <DashContent /> : ''}
-          <div className='text-center'>
-            
-            {user ? (
-              <div onClick={logout} className='hover:bg-orange-700 hover:text-white py-2 px-1 rounded-md flex ml-6 cursor-pointer gap-4 top-0 relative hover:transition-all  ease-in-out delay-150 hover:scale-110 duration-300'>
-                <button ><LogOutIcon /> </button>
-                <p>Logout</p>
-                </div>
-            ) : (
-                <p>Please log in to access the dashboard.</p>
-            )}
-        </div> 
-        </aside>
+    <div className="flex h-screen overflow-hidden bg-gray-100">
+      {/* Sidebar */}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-80 sm:w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="h-full flex flex-col">
+          {user.role === 'doctor' ? <DashContent /> : <AdminSidebar />}
+        </div>
+      </aside>
 
-        {/* Main Content */}
-        <main className="flex-1 p-4 lg:p-6 overflow-auto w-full lg:w-78">
-          {/* Top Bar */}
-          <div className="flex justify-between items-center mb-6">
-            {/* Hamburger Menu */}
-            <button
-              className="lg:hidden text-gray-600 text-2xl focus:outline-none"
-              onClick={toggleSidebar}
-            >
-              <Menu />
-            </button>
+      {/* Main Content */}
+      <div className="flex w-full flex-col overflow-hidden">
+        {/* Top Bar */}
+        <header className="bg-white shadow-sm z-10">
+          <div className="max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center py-4">
+              <button
+                className="text-gray-500 focus:outline-none focus:text-gray-600 lg:hidden"
+                onClick={toggleSidebar}
+              >
+                <Menu className="h-6 w-6" />
+              </button> 
+              <p className='font-semibold text-lg'> <span className="text-orange-500 capitalize ">{user.role}</span> Dashboard</p>
+              {/* <div className="flex items-center space-x-4">
+                <Button variant="ghost" size="icon">
+                  <Bell className="h-5 w-5" />
+                </Button>
+                <Button variant="ghost" size="icon">
+                  <HelpCircle className="h-5 w-5" />
+                </Button>
+                <Button variant="ghost" size="icon">
+                  <Settings className="h-5 w-5" />
+                </Button>
+              </div> */}
+            </div>
+          </div>
+        </header>
 
-      {/* Top Bar Buttons */}
-      <div className="flex space-x-4 justify-end w-full">
-        <div>
-          <Button variant="primary">
-            {isMobile ? <Bell /> : <> <Bell /> Alert </>}
-          </Button>
-        </div>
-        <div>
-          <Button variant="primary">
-            {isMobile ? <HelpCircle /> : <> <HelpCircle /> Help </>}
-          </Button>
-        </div>
-        <div>
-          <Button variant="primary">
-            {isMobile ? <Settings /> : <> <Settings /> Setting </>}
-          </Button>
-        </div>
+        {/* Page Content */}
+        <main className="overflow-x-hidden overflow-y-auto bg-gray-100">
+          <div className="max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+            {/* Your main content goes here */}
+            {role === 'doctor' ? <DoctorDashboardLayout /> : <Outlet />}
+          </div>
+        </main>
       </div>
+
+      {/* Overlay for Mobile */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-gray-600 bg-opacity-75 z-40 lg:hidden"
+          onClick={toggleSidebar}
+        ></div>
+      )}
     </div>
-  {role==='doctor'? <DoctorDashboardLayout /> :""}
-  </main>
-
-  {/* Overlay for Mobile */}
-  {isSidebarOpen && (
-    <div
-      className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-      onClick={toggleSidebar}
-    ></div>
-  )}
-</div>
-
-    </>
   );
 }
 
 export default DashboardLayout;
+

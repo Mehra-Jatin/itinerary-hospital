@@ -19,7 +19,7 @@ export const DoctorProvider = ({ children }) => {
       // Get the token properly
       const token = typeof getToken === 'function' ? await getToken() : getToken;
       
-      console.log('Fetching doctors with token:', token ? 'Token exists' : 'No token'); // Debug token
+      // console.log('Fetching doctors with token:', token ? 'Token exists' : 'No token'); // Debug token
 
       const config = {
         headers: {
@@ -28,13 +28,13 @@ export const DoctorProvider = ({ children }) => {
         }
       };
 
-      console.log('Making API request to:', `${api.defaults.baseURL}/doctors`); // Debug URL
+      // console.log('Making API request to:', `${api.defaults.baseURL}/doctors`); // Debug URL
 
       const response = await api.get('/doctors', config);
-      console.log('Raw API response:', response); // Debug full response
+      // console.log('Raw API response:', response); // Debug full response
 
       if (response.data.success) {
-        console.log('Doctors data received:', response.data.doctors); // Debug doctors data
+        // console.log('Doctors data received:', response.data.doctors); // Debug doctors data
         setDoctors(response.data.doctors);
       } else {
         console.error('API returned success: false', response.data);
@@ -57,7 +57,7 @@ export const DoctorProvider = ({ children }) => {
 
   useEffect(() => {
     const token = typeof getToken === 'function' ? getToken() : getToken;
-    console.log('Token in useEffect:', token ? 'Token exists' : 'No token'); // Debug token in useEffect
+    // console.log('Token in useEffect:', token ? 'Token exists' : 'No token'); // Debug token in useEffect
     
     if (token) {
       fetchDoctors();
