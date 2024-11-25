@@ -1,6 +1,6 @@
 import express from 'express';
 import { updateUser, deleteUser, getUser, getAllUsers,BookAppointment } from '../Controllers/userController.js';
-import { updateDoctor, deleteDoctor, getDoctor, getAllDoctors,validateDoctor } from '../Controllers/doctorController.js';
+import { updateDoctor, deleteDoctor, getDoctor, getAllDoctors,validateDoctor ,setAvailability,getAvailability ,removeAvailability} from '../Controllers/doctorController.js';
 import { register, login ,getHistory, getAppointment, updateAppointment} from '../Controllers/authController.js';
 import { authorizeRoles, isAuthenticatedUser } from '../Middleware/roleMiddleware.js';
 
@@ -21,7 +21,9 @@ router.route('/doctor/:doctorId').put(isAuthenticatedUser(), authorizeRoles('adm
 router.route('/doctor/:doctorId').delete(isAuthenticatedUser(), authorizeRoles('admin','doctor'), deleteDoctor);
 router.route('/doctor/:doctorId').get(isAuthenticatedUser(), getDoctor);
 router.route('/doctors').get(getAllDoctors);
-
+router.route('/setavailability/:doctorId').put(isAuthenticatedUser(),authorizeRoles('doctor'),setAvailability);
+router.route('/getavailability/:doctorId').get(isAuthenticatedUser(),authorizeRoles('doctor'),getAvailability);
+router.route('/cancleavailability/:doctorId').put(isAuthenticatedUser(),authorizeRoles('doctor'),removeAvailability);
 router.route('/acceptvalidate/:doctorId').put(isAuthenticatedUser(),authorizeRoles('admin'),validateDoctor);
 router.route('/canclevalidate/:doctorId').delete(isAuthenticatedUser(),authorizeRoles('admin'),deleteDoctor);
 router.route('/history/:id').get(isAuthenticatedUser(),authorizeRoles('admin','patient','doctor'),getHistory);

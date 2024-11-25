@@ -68,6 +68,10 @@ const doctorSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    availability:{
+      type:Array,
+      default:[] // yyyy-mm-dd
+    },
     // appointments: [
     //   {
     //     type: mongoose.Schema.Types.ObjectId,
