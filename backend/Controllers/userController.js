@@ -106,6 +106,8 @@ export const getAllUsers = async (req, res) => {
   }
 }
 
+
+
 export const BookAppointment = async (req, res) => {
 
   const {userId, doctorId, date, time } = req.body;

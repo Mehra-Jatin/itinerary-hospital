@@ -6,7 +6,7 @@ import { createBrowserRouter, Link, RouterProvider } from "react-router-dom";
 import Home from "./Pages/Home.jsx"; // Import the Home component
 import Doctor from "./Pages/Doctor.jsx";
 import DoctorProfile from "./Pages/DoctorProfile.jsx";
-import Appointment from "./Pages/Appointment.jsx"; // Import the Appointment component
+import BookAppointment from "./Pages/BookAppointment";
 import UserProfile from "./Pages/user/UserProfile.jsx";
 import UserAppoienments from "./Pages/user/UserAppoienments.jsx";
 import UserSetting from "./Pages/user/UserSetting.jsx";
@@ -52,24 +52,14 @@ const router = createBrowserRouter([
       {
         path: "doctor", // This will render the Doctor component at "/doctor"
         element: <Doctor />,
-        // children: [
-        //   {
-        //     path: "doctorprofile",  // This will render the DoctorProfile component at "/doctor/doctorprofile"
-        //     element: <DoctorProfile />,
-        //   },
-        //   {
-        //     path: "appointment",  // This will render the Appointment component at "/doctor/appointment"
-        //     element: <Appointment />,
-        //   },
-        // ],
       },
       {
-        path: "/doctor/doctorprofile", // This will now render the Home component when navigating to "/"
+        path: "/doctor/:id", // This will now render the Home component when navigating to "/"
         element: <DoctorProfile />, // The component for the homepage
       },
       {
-        path: "/doctor/appointement", // This will now render the Home component when navigating to "/"
-        element: <Appointment />, // The component for the homepage
+        path: "/doctor/appointment/:id", // This will now render the Home component when navigating to "/"
+        element: <BookAppointment />, // The component for the homepage
       },
     ],
   },
