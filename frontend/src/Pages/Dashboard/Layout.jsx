@@ -4,11 +4,17 @@ import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Bell, HelpCircle, Settings, Menu, LogOutIcon } from 'lucide-react';
 import { Outlet } from 'react-router-dom';
 import DashContent from './doctor/DashContent';
-import { AuthContext } from '@/contexts/AuthContext';
+// import { AuthContext } from '@/contexts/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 
 function DashboardLayout({ role }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+
+  const { user, logout } = useAuth();
+
+  console.log(user);
+  
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -24,7 +30,7 @@ function DashboardLayout({ role }) {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const { user, logout } = useContext(AuthContext);
+  
   return (
     <>
       <div className="flex w-full">
@@ -61,36 +67,37 @@ function DashboardLayout({ role }) {
               <Menu />
             </button>
 
-            {/* Top Bar Buttons */}
-            <div className="flex space-x-4 justify-end w-full">
-              <div>
-                <Button variant="primary">
-                  {isMobile ? <Bell /> : <> <Bell /> Alert </>}
-                </Button>
-              </div>
-              <div>
-                <Button variant="primary">
-                  {isMobile ? <HelpCircle /> : <> <HelpCircle /> Help </>}
-                </Button>
-              </div>
-              <div>
-                <Button variant="primary">
-                  {isMobile ? <Settings /> : <> <Settings /> Setting </>}
-                </Button>
-              </div>
-            </div>
-          </div>
-          <Outlet />
-        </main>
-
-        {/* Overlay for Mobile */}
-        {isSidebarOpen && (
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-            onClick={toggleSidebar}
-          ></div>
-        )}
+      {/* Top Bar Buttons */}
+      <div className="flex space-x-4 justify-end w-full">
+        <div>
+          <Button variant="primary">
+            {isMobile ? <Bell /> : <> <Bell /> Alert </>}
+          </Button>
+        </div>
+        <div>
+          <Button variant="primary">
+            {isMobile ? <HelpCircle /> : <> <HelpCircle /> Help </>}
+          </Button>
+        </div>
+        <div>
+          <Button variant="primary">
+            {isMobile ? <Settings /> : <> <Settings /> Setting </>}
+          </Button>
+        </div>
       </div>
+    </div>
+  {role==='doctor'? <DoctorDashboardLayout /> :""}
+  </main>
+
+  {/* Overlay for Mobile */}
+  {isSidebarOpen && (
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+      onClick={toggleSidebar}
+    ></div>
+  )}
+</div>
+
     </>
   );
 }
