@@ -38,6 +38,8 @@ import ManagePatients from "./Pages/Dashboard/admin/pages/ManagePatient";
 import AdminSetting from "./Pages/Dashboard/admin/pages/AdminSetting";
 import AdminTransaction from "./Pages/Dashboard/admin/pages/AdminTransaction";
 import AdminNotification from "./Pages/Dashboard/admin/pages/AdminNotification";
+import DoctorMessages from "./Pages/Dashboard/admin/pages/DoctorMessages";
+import PatientMessages from "./Pages/Dashboard/admin/pages/PatientMessages";
 
 // Define the router configuration with routes
 const router = createBrowserRouter([
@@ -192,6 +194,14 @@ const router = createBrowserRouter([
       {
         path: "transactions",  
         element: <AdminTransaction />,
+      },
+      {
+        path: "doctor-messages",  
+        element: <DoctorMessages />,
+      },
+      {
+        path: "patient-messages",  
+        element: <PatientMessages />,
       },
       {
         path: "notifications",  

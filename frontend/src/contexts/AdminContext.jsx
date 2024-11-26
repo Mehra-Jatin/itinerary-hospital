@@ -55,7 +55,7 @@ export const AdminProvider = ({ children }) => {
                 },
             };
             const response = await api.get('/doctors', config);
-            console.log(response.data);
+            // console.log(response.data);
             
             const doctorList = response.data.doctors || [];
             const verified = doctorList.filter(doctor => doctor.isValidated);
@@ -111,6 +111,7 @@ export const AdminProvider = ({ children }) => {
     };
 
     const fetchPatients = async () => {
+        setLoading(true);
         try {
             const token = await getToken();
             const config = {
@@ -121,7 +122,7 @@ export const AdminProvider = ({ children }) => {
             };
             const response = await api.get('/users', config);
             console.log(response.data);
-            const patientList = response.data.patients || [];
+            const patientList = response.data.users?.filter(user => user.role === 'patient') || [];
             setPatients(patientList);
         } catch (error) {
             console.error('Error fetching patients:', error);
@@ -130,11 +131,46 @@ export const AdminProvider = ({ children }) => {
                 description: "Could not fetch patients",
                 variant: "destructive",
             });
+        } finally {
+            setLoading(false);
         }
     }
 
+    // Delete patient account
+    const deletePatientAccount = async (patientId) => {
+        try {
+            const token = await getToken();
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            };
+            const response = await api.delete(`/users/${patientId}`, config);
+            return response.data;
+        } catch (error) {
+            console.error('Error deleting patient account:', error);
+            toast({
+                title: "Error",
+                description: "Could not delete patient account",
+                variant: "destructive",
+            });
+        }
+    };
+
     return (
-        <AdminContext.Provider value={{ doctors, verifiedDoctors, loading, fetchDoctors, fetchVerifiedDoctors, handleValidation, fetchPatients }}>
+        <AdminContext.Provider value={{ 
+            loading, 
+            doctors, 
+            verifiedDoctors, 
+            fetchDoctors, 
+            fetchVerifiedDoctors, 
+            handleValidation, 
+            fetchPatients, 
+            Patients, 
+            deletePatientAccount,
+
+        }}>
             {children}
         </AdminContext.Provider>
     );

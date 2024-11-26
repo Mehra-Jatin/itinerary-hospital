@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from "@/hooks/useAuth";
-import { LayoutDashboard, UserCog, Users, CalendarCheck, Receipt, Bell, Settings, LogOut, ChevronRight, ChevronDown, Dot } from 'lucide-react';
+import { LayoutDashboard, UserCog, Users, CalendarCheck, Receipt, Bell, Settings, LogOut, ChevronRight, ChevronDown, Dot, Mail } from 'lucide-react';
 import { Link, useLocation } from "react-router-dom";
 import NotificationCount from './components/NotificationCount';
 
@@ -57,6 +57,14 @@ const AdminSidebar = () => {
     { path: "/admin-dashboard/manage-patients", icon: Users, label: "Manage Patients" },
     { path: "/admin-dashboard/manage-appointments", icon: CalendarCheck, label: "Manage Appointments" },
     { path: "/admin-dashboard/transactions", icon: Receipt, label: "Transactions" },
+    { 
+      icon: Mail, 
+      label: "Support", 
+      subItems: [
+            { path: "/admin-dashboard/doctor-messages", icon: Dot, label: "Doctor Messages" },
+            { path: "/admin-dashboard/patient-messages", icon: Dot, label: "Patient Messages" }
+      ]
+    },
   ];
 
   const bottomNavItems = [
@@ -70,7 +78,7 @@ const AdminSidebar = () => {
   ];
 
   return (
-    <div className="bg-white p-6 h-full w-80 sm:w-64 flex flex-col border-r border-gray-200 ">
+    <div className="bg-white p-6 h-full w-80 sm:w-72 flex flex-col border-r border-gray-200 ">
       {/* Profile Section */}
       <div className="flex flex-col items-center mb-8">
         <div className="relative">
