@@ -1,52 +1,51 @@
 import { Save } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { MdClose, MdChat } from 'react-icons/md'; // Chat Icon
 import { format, isWithinInterval } from 'date-fns';
+import axios from 'axios';
+import { AuthContext } from '@/contexts/AuthContext'; // Assuming AuthContext is defined and provides user info and token
 
 const AppointmentTable = () => {
-  const dummyAppointments = [
-    {
-      _id: '1',
-      userId: {
-        FirstName: 'John',
-        LastName: 'Doe',
-        Age: 28,
-        appointmentDate: '2024-11-25',
-        appointmentTime: '2024-11-25T14:30:00Z',
-      },
-      bookingDetails: { appointmentStatus: 'Pending' },
-    },
-    {
-      _id: '2',
-      userId: {
-        FirstName: 'Jane',
-        LastName: 'Smith',
-        Age: 34,
-        appointmentDate: '2024-11-26',
-        appointmentTime: '2024-11-26T10:00:00Z',
-      },
-      bookingDetails: { appointmentStatus: 'Confirmed' },
-    },
-    {
-      _id: '3',
-      userId: {
-        FirstName: 'Alice',
-        LastName: 'Johnson',
-        Age: 22,
-        appointmentDate: '2024-11-27',
-        appointmentTime: '2024-11-27T16:00:00Z',
-      },
-      bookingDetails: { appointmentStatus: 'Completed' },
-    },
-  ];
-
-  const [appointments, setAppointments] = useState(dummyAppointments);
+  const { user, getToken } = useContext(AuthContext); // Context to get user and token
+  const [appointments, setAppointments] = useState([]);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [status, setStatus] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filterStatus, setFilterStatus] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch appointments when the component mounts
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        setLoading(true); // Set loading to true when the request starts
+        const Token = await getToken(); // Ensure you await the token
+        const response = await axios.get(`http://localhost:4000/api/v1/appointment/${user._id}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${Token}`, // Send the token in headers
+          },
+        });
+
+        if (response.status === 200) {
+          console.log(response.data);
+          
+          setAppointments(response.data.appointment); // Store the appointment data in state
+        } else {
+          throw new Error(response.data.message || 'Failed to fetch appointments');
+        }
+      } catch (err) {
+        setError(err.response?.data?.message || err.message); // Handle any errors
+      } finally {
+        setLoading(false); // Set loading to false once the request is finished
+      }
+    };
+
+    fetchAppointments();
+  }, [user._id, getToken]); // Dependency array includes user._id and getToken to re-fetch when user changes
 
   const handleRowClick = (appointment) => {
     setSelectedAppointment(appointment);
@@ -54,21 +53,47 @@ const AppointmentTable = () => {
     setStatus(appointment.bookingDetails.appointmentStatus);
   };
 
-  const handleStatusChange = (event) => setStatus(event.target.value);
-
-  const handleUpdateStatus = () => {
-    setAppointments((prev) =>
-      prev.map((appt) =>
-        appt._id === selectedAppointment._id
-          ? {
-              ...appt,
-              bookingDetails: { ...appt.bookingDetails, appointmentStatus: status },
-            }
-          : appt
-      )
-    );
-    setIsModalOpen(false);
+  const handleUpdateStatus = async () => {
+    try {
+      const Token = await getToken(); // Get the token from AuthContext
+      const response = await axios.patch(
+        `http://localhost:4000/api/v1/appointment/update`,
+        {
+          appointmentId: selectedAppointment._id,
+          status: status,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${Token}`,
+          },
+        }
+      );
+  
+      if (response.data.success) {
+        // Update the local state with the new status
+        setAppointments((prev) =>
+          prev.map((appt) =>
+            appt._id === selectedAppointment._id
+              ? {
+                  ...appt,
+                  bookingDetails: { ...appt.bookingDetails, appointmentStatus: status },
+                }
+              : appt
+          )
+        );
+        alert("Appointment status updated successfully!");
+      } else {
+        alert(response.data.message || "Failed to update status.");
+      }
+    } catch (error) {
+      console.error("Error updating status:", error);
+      alert("Error updating status. Please try again later.");
+    } finally {
+      setIsModalOpen(false); // Close the modal after the update
+    }
   };
+  
 
   const filteredAppointments = appointments.filter((appointment) => {
     const matchStatus = !filterStatus || appointment.bookingDetails.appointmentStatus === filterStatus;
@@ -83,8 +108,16 @@ const AppointmentTable = () => {
     return matchStatus && matchDate;
   });
 
+  
+
   return (
     <div className="p-4">
+      {/* Error Message */}
+      {error && <div className="text-red-500">{error}</div>}
+
+      {/* Loading State */}
+      {loading && <div>Loading...</div>}
+
       {/* Filters */}
       <div className="flex flex-col lg:flex-row gap-4 mb-6">
         <select
