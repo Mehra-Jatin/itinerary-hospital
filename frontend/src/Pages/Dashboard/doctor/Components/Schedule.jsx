@@ -1,68 +1,60 @@
 import React, { useState } from "react";
 import { Calendar } from "../../../../components/ui/Calendar";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { format } from "date-fns";
-import { Delete, Edit } from "lucide-react";
+import { format, addDays } from "date-fns"; // Add days for date manipulation
+import { Delete } from "lucide-react";
 
 const DoctorSchedule = () => {
   const [selectedDate, setSelectedDate] = useState(null);
-  const [timeSlots, setTimeSlots] = useState([]);
-  const [availability, setAvailability] = useState({});
+  const [availability, setAvailability] = useState({}); // Tracks available dates
+  const [bookedDates, setBookedDates] = useState([]); // Tracks permanently booked dates
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleDateClick = (date) => {
-    setSelectedDate(date);
-  };
+    // Add 1 day to the selected date to fix previous date issue
+    const nextDay = addDays(date, 1);
+    const formattedDate = format(nextDay, "yyyy-MM-dd");
 
-  const isSlotConflicting = (newSlot) => {
-    const existingSlots = availability[selectedDate]
-      ? availability[selectedDate]
-      : [];
-    return existingSlots.some(
-      (slot) =>
-        (newSlot.start >= slot.start && newSlot.start < slot.end) || // Overlapping start
-        (newSlot.end > slot.start && newSlot.end <= slot.end) || // Overlapping end
-        (newSlot.start <= slot.start && newSlot.end >= slot.end) // Enclosing an existing slot
-    );
-  };
-
-  const addTimeSlot = (start, end) => {
-    const newSlot = { start, end };
-    if (isSlotConflicting(newSlot)) {
-      alert("This time slot overlaps with an existing one!");
+    // Prevent selecting already booked dates
+    if (bookedDates.includes(formattedDate)) {
       return;
     }
 
-    setAvailability((prev) => {
-      const slots = prev[selectedDate] || [];
-      return {
-        ...prev,
-        [selectedDate]: [...slots, newSlot],
-      };
-    });
+    // Update the selected date and open the modal
+    setSelectedDate(formattedDate);
+    setIsModalOpen(true);
   };
 
-  const deleteTimeSlot = (index) => {
-    setAvailability((prev) => {
-      const slots = prev[selectedDate] || [];
-      const updatedSlots = slots.filter((_, i) => i !== index);
-      return { ...prev, [selectedDate]: updatedSlots };
-    });
+  const toggleAvailability = () => {
+    if (!selectedDate) return; // Avoid processing if no date is selected
+
+    // Mark the selected date as available
+    setAvailability((prev) => ({
+      ...prev,
+      [selectedDate]: true,
+    }));
+
+    // Close the modal and reset the selected date
+    setIsModalOpen(false);
+    setSelectedDate(null); // Reset selected date after confirming availability
   };
 
-  const editTimeSlot = (index, newStart, newEnd) => {
-    const newSlot = { start: newStart, end: newEnd };
-    if (isSlotConflicting(newSlot)) {
-      alert("This time slot overlaps with an existing one!");
-      return;
-    }
-
+  const deleteAvailability = (date) => {
     setAvailability((prev) => {
-      const slots = prev[selectedDate] || [];
-      slots[index] = newSlot;
-      return { ...prev, [selectedDate]: [...slots] };
+      const updatedAvailability = { ...prev };
+      delete updatedAvailability[date]; // Remove availability for the date
+      return updatedAvailability;
     });
+
+    // Mark the date as permanently booked and close the modal
+    setBookedDates((prev) => [...prev, date]);
+    setIsModalOpen(false); // Close the modal after booking
+    setSelectedDate(null); // Reset selected date after deleting
   };
+
+  const isDateAvailable = (date) => availability[format(date, "yyyy-MM-dd")];
+  const isDateBooked = (date) => bookedDates.includes(format(date, "yyyy-MM-dd"));
 
   return (
     <div className="p-6 space-y-6 w-full">
@@ -70,92 +62,72 @@ const DoctorSchedule = () => {
       {/* Calendar */}
       <Calendar
         mode="single"
-        selected={selectedDate}
+        selected={selectedDate} // Make sure the selected date is passed as a prop to the Calendar
         onSelect={handleDateClick}
         className="rounded-md border w-fit"
+        dayClassName={(date) => {
+          const formattedDate = format(date, "yyyy-MM-dd");
+
+          // Styling based on availability and booked dates
+          if (bookedDates.includes(formattedDate)) {
+            return "bg-red-500 text-white rounded-full cursor-not-allowed"; // Highlight booked dates
+          }
+          if (availability[formattedDate]) {
+            return "bg-green-500 text-white rounded-full cursor-not-allowed"; // Highlight available dates
+          }
+          if (selectedDate === formattedDate) {
+            return "bg-blue-300 text-white rounded-full"; // Highlight selected dates
+          }
+          return "";
+        }}
       />
-      {/* Time Slot Dialog */}
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button variant="primary" disabled={!selectedDate} className={`bg-orange-500 text-white ${selectedDate || 'cursor-not-allowed'}`}>
-            Add Time Slots
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <h2 className="text-lg font-semibold mb-4">
-            Set Time Slots for {selectedDate ? format(selectedDate, "PP") : ""}
-          </h2>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              const formData = new FormData(e.target);
-              const start = formData.get("start");
-              const end = formData.get("end");
-              addTimeSlot(start, end);
-            }}
-            className="space-y-4"
-          >
-            <div className="flex space-x-4">
-              <input
-                type="time"
-                name="start"
-                required
-                className="border rounded-md p-2"
-              />
-              <input
-                type="time"
-                name="end"
-                required
-                className="border rounded-md p-2"
-              />
+      {/* Modal for setting availability */}
+      {selectedDate && !availability[selectedDate] && (
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogContent>
+            <h2 className="text-lg font-semibold mb-4">
+              Set Availability for {format(new Date(selectedDate), "PP")}
+            </h2>
+            <p>Do you want to mark yourself available on this date?</p>
+            <div className="flex justify-end space-x-4 mt-4">
+              <Button variant="outline" onClick={() => setIsModalOpen(false)}>
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                className="bg-orange-600 text-white"
+                onClick={toggleAvailability}
+              >
+                Confirm
+              </Button>
             </div>
-            <Button type="submit" variant="outline" className='bg-orange-600 text-white transition duration-200 delay-200'>
-              Add Slot
-            </Button>
-          </form>
-        </DialogContent>
-      </Dialog>
-      {/* Display Availability */}
+          </DialogContent>
+        </Dialog>
+      )}
+      {/* Display Available Dates */}
       <div>
-        <h2 className="text-lg font-semibold">Scheduled Availability:</h2>
-        {selectedDate && availability[selectedDate] ? (
-          <ul className="list-disc pl-6 space-y-2">
-            {availability[selectedDate].map((slot, index) => (
-              <li key={index} className="flex justify-between items-center">
-                <span>
-                  {slot.start} - {slot.end}
-                </span>
-                <div className="flex space-x-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      const newStart = prompt(
-                        "Enter new start time (HH:mm):",
-                        slot.start
-                      );
-                      const newEnd = prompt(
-                        "Enter new end time (HH:mm):",
-                        slot.end
-                      );
-                      if (newStart && newEnd) {
-                        editTimeSlot(index, newStart, newEnd);
-                      }
-                    }}
-                  >
-                   <Edit className=""/>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    onClick={() => deleteTimeSlot(index)}
-                  >
-                    <Delete className="bg"/>
-                  </Button>
-                </div>
-              </li>
+        <h2 className="text-lg font-semibold">Available Dates:</h2>
+        {Object.keys(availability).length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {Object.keys(availability).map((date) => (
+              <div
+                key={date}
+                className="p-4 border rounded shadow flex justify-between items-center"
+              >
+                <span>{format(new Date(date), "PP")}</span>
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    deleteAvailability(date); // Delete availability and book the date
+                  }}
+                >
+                  <Delete />
+                </Button>
+              </div>
             ))}
-          </ul>
+          </div>
         ) : (
-          <p>No availability set for this date.</p>
+          <p>No availability set yet.</p>
         )}
       </div>
     </div>

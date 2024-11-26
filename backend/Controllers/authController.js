@@ -197,14 +197,8 @@ export const getAppointment = async (req, res) => {
         );
        
     }
-    console.log('doc',id);
-    
-    // const apts=await Appointment.find()
-    // console.log('sdn',apts);
     
     const appointment = await Appointment.find({$or: [{userId:id}, {doctorId:id}]});
-    console.log('app',appointment);
-    
     res.status(200).json({
       success: true,
       message: "Appointment retrieved successfully.",

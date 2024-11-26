@@ -21,7 +21,7 @@ import DoctorLayout from "./Pages/doctor/DoctorLayout";
 import DoctorDashboardLayout from "./Pages/Dashboard/doctor/DoctorDashboardLayout";
 import DoctorNavigation from "./Pages/doctor/DoctorNavigation";
 import DocProfile from "./Pages/doctor/DocProfile";
-import AdminDashboardLayout from "./Pages/Dashboard/admin/AdminDashboardLayout";
+
 import UserHistory from "./Pages/user/UserHistory";
 import DashboardLayout from "./Pages/Dashboard/Layout";
 import SchedulePage from "./Pages/Dashboard/doctor/SchedulesPage";
@@ -29,6 +29,15 @@ import DocAppointments from "./Pages/Dashboard/doctor/DocAppoitments";
 import DoctorChat from "./Pages/Dashboard/doctor/DoctorChatPage";
 import DoctHistoriesPage from "./Pages/Dashboard/doctor/DoctorHistory";
 import { Toaster } from "./components/ui/toaster";
+
+import AdminDashboard from "./Pages/Dashboard/admin/AdminDashboard";
+import ManageDoctors from "./Pages/Dashboard/admin/pages/ManageDoctor";
+import VerifyDoctors from "./Pages/Dashboard/admin/pages/VerifyDoctor";
+import ManageAppointments from "./Pages/Dashboard/admin/pages/ManageAppointment";
+import ManagePatients from "./Pages/Dashboard/admin/pages/ManagePatient";
+import AdminSetting from "./Pages/Dashboard/admin/pages/AdminSetting";
+import AdminTransaction from "./Pages/Dashboard/admin/pages/AdminTransaction";
+import AdminNotification from "./Pages/Dashboard/admin/pages/AdminNotification";
 
 // Define the router configuration with routes
 const router = createBrowserRouter([
@@ -169,12 +178,41 @@ const router = createBrowserRouter([
     <ProtectedRoute role="admin">
       <DashboardLayout/>
     </ProtectedRoute>,
-    // children: [
-    //   {
-    //     path: "",
-    //     element: <DocProfile />,
-    //   }
-    // ]
+    children: [
+      {
+        path: "",
+        element: <AdminDashboard />,
+      },
+      {
+        path: "manage-doctors",  
+        element: <ManageDoctors />,
+      },
+      {
+        path: "verify-doctors",  
+        element: <VerifyDoctors />,
+      },
+      {
+        path: "manage-appointments",
+        element: <ManageAppointments />,
+      },
+      {
+        path: "manage-patients",  
+        element: <ManagePatients />,
+      },
+      {
+        path: "transactions",  
+        element: <AdminTransaction />,
+      },
+      {
+        path: "notifications",  
+        element: <AdminNotification />,
+      },
+      {
+        path: "settings",  
+        element: <AdminSetting />,
+      },
+      
+    ]
   },
 
 

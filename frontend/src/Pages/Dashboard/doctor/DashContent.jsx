@@ -6,6 +6,7 @@ export default function DashContent() {
   const { user, loading, setUser } = useAuth();
   const location = useLocation(); // Get the current location/path
 
+  // console.log(user);
   console.log('dsad',user);
 
   if (loading) {
