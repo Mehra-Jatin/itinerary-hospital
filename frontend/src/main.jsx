@@ -131,7 +131,7 @@ const router = createBrowserRouter([
     path: "/doctor-dashboard",
     element: 
     <ProtectedRoute role="doctor">
-      <DashboardLayout/>
+      <DashboardLayout role='doctor'/>
     </ProtectedRoute>,
     children: [
       // {
