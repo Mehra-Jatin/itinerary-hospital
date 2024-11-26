@@ -1,638 +1,7 @@
-// // import { useState } from "react";
-// // import { useNavigate } from "react-router-dom";
-
-// // // Custom Checkbox Component
-// // const CustomCheckbox = ({ label, name, onChange }) => {
-// //   const handleCheckboxChange = (e) => {
-// //     const { checked } = e.target;
-// //     onChange(name, checked);
-// //   };
-// //   const navigate=useNavigate();
-// //   return (
-// //     <label className="flex cursor-pointer items-center text-gray-700 font-bold hover:text-orange-500 space-x-3">
-// //       <input
-// //         className="peer hidden"
-// //         id={name}
-// //         name={name}
-// //         type="checkbox"
-// //         onChange={handleCheckboxChange}
-// //       />
-// //       <span className="w-5 h-5 border-2 border-gray-400 rounded-sm flex justify-center items-center peer-checked:border-orange-500 peer-checked:bg-orange-500">
-// //         <svg
-// //           className="hidden peer-checked:block w-4 h-4 text-white"
-// //           fill="currentColor"
-// //           xmlns="http://www.w3.org/2000/svg"
-// //           viewBox="0 0 20 20"
-// //         >
-// //           <path d="M16.707 5.293a1 1 0 00-1.414-1.414L7 12.172 4.707 9.879a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l8-8z" />
-// //         </svg>
-// //       </span>
-// //       <span>{label}</span>
-// //     </label>
-// //   );
-// // };
-
-// // // Filter Sidebar Component
-// // const FilterSidebar = ({ onFilterChange }) => {
-// //   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-// //   const handleCheckboxChange = (name, checked) => {
-// //     onFilterChange(name, checked);
-// //   };
-
-// //   return (
-// //     <>
-// //       {/* Sidebar for large screens */}
-// //       <div className="hidden lg:block p-6 bg-white shadow-md rounded-lg space-y-6 w-1/4 pb-3">
-// //         <h2 className="text-xl font-bold mb-4 border-b pb-2 text-orange-500">
-// //           Filter by:
-// //         </h2>
-// //         <FilterItems onCheckboxChange={handleCheckboxChange} />
-// //       </div>
-
-// //       {/* Dropdown for small screens */}
-// //       <div className="lg:hidden">
-// //         <button
-// //           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-// //           className="w-full p-3 bg-orange-500 text-white rounded-lg font-bold mb-4"
-// //         >
-// //           {isDropdownOpen ? "Close Filters" : "Open Filterssssss"}
-// //         </button>
-// //         {isDropdownOpen && (
-// //           <div className="p-6 bg-white shadow-md rounded-lg space-y-6">
-// //             <h2 className="text-xl font-bold mb-4 border-b pb-2 text-orange-500">
-// //               Filter by:
-// //             </h2>
-// //             <FilterItems onCheckboxChange={handleCheckboxChange} />
-// //           </div>
-// //         )}
-// //       </div>
-// //     </>
-// //   );
-// // };
-
-// // // Filter Items Component
-// // const FilterItems = ({ onCheckboxChange }) => (
-// //   <>
-// //     {/* Location Filter */}
-// //     <div>
-// //       <h3 className="text-lg font-bold mb-2">Location</h3>
-// //       <div className="space-y-2">
-// //         {["Mumbai", "Delhi", "Bangalore", "Chennai"].map((location, index) => (
-// //           <CustomCheckbox
-// //             key={index}
-// //             label={location}
-// //             name={`location-${location}`}
-// //             onChange={onCheckboxChange}
-// //           />
-// //         ))}
-// //       </div>
-// //     </div>
-
-// //     {/* Specialty Filter */}
-// //     <div>
-// //       <h3 className="text-lg font-bold mb-2">Specialty</h3>
-// //       <div className="space-y-2">
-// //         {["Cardiologist", "Dermatologist", "Orthopedist", "Pediatrician"].map(
-// //           (specialty, index) => (
-// //             <CustomCheckbox
-// //               key={index}
-// //               label={specialty}
-// //               name={`specialty-${specialty}`}
-// //               onChange={onCheckboxChange}
-// //             />
-// //           )
-// //         )}
-// //       </div>
-// //     </div>
-
-// //     {/* Rating Filter */}
-// //     {/* Rating Filter */}
-// // <div>
-// //   <h3 className="text-lg font-bold mb-2">Rating</h3>
-// //   <div className="space-y-2">
-// //     {["5", "4", "3"].map((rating, index) => (
-// //       <CustomCheckbox
-// //         key={index}
-// //         label={`${rating} Stars`}
-// //         name={`rating-${rating}`}
-// //         onChange={onCheckboxChange}
-// //       />
-// //     ))}
-// //   </div>
-// // </div>
-
-// //   </>
-// // );
-
-// // // Star Rating Component
-// // const StarRating = ({ rating }) => {
-// //   const fullStars = Math.floor(rating);
-// //   // const halfStar = rating % 1 !== 0;
-// //   const emptyStars = 5 - Math.ceil(rating);
-
-// //   return (
-// //     <div className="flex">
-// //       {[...Array(fullStars)].map((_, index) => (
-// //         <span key={index} className="text-yellow-500 text-lg">
-// //           ⭐
-// //         </span>
-// //       ))}
-// //       {/* {halfStar && <span className="text-yellow-500 text-lg">⭐</span>} */}
-// //       {[...Array(emptyStars)].map((_, index) => (
-// //         <span key={index} className="text-gray-400 text-lg">
-// //           ☆
-// //         </span>
-// //       ))}
-// //     </div>
-// //   );
-// // };
-
-
-// // // Doctor Listing Component
-// // const DoctorCard = ({ doctor }) => {
-// //   const navigate = useNavigate(); // Ensure the navigate hook is used here
-
-// //   return (
-// //     <div className="p-6 bg-white shadow-lg rounded-lg mb-6 flex flex-col md:flex-row gap-4 md:items-center sm:items-start">
-// //       {/* Doctor Image */}
-// //       <img
-// //         src={doctor.image}
-// //         alt={doctor.name}
-// //         className="w-24 h-24 rounded-full object-cover border-2 border-orange-500"
-// //       />
-// //       <div className="flex-1">
-// //         {/* Doctor Information */}
-// //         <h3 className="text-xl font-bold text-gray-800">{doctor.name}</h3>
-// //         <p className="text-orange-500">{doctor.specialty}</p>
-// //         <p className="text-gray-500">{doctor.location}</p>
-
-// //         {/* Description */}
-// //         <p className="mt-2 text-sm text-gray-600">{doctor.description}</p>
-
-// //         {/* Rating and Button */}
-// //         <div className="flex flex-col md:flex-row items-center justify-between mt-4 gap-4">
-// //           <StarRating rating={parseFloat(doctor.rating)} />
-// //           <button
-// //             className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 w-full md:w-auto"
-// //             onClick={() => navigate(`doctorprofile`)} // Pass dynamic doctor name in the URL
-// //           >
-// //             View Profile
-// //           </button>
-// //         </div>
-// //       </div>
-// //     </div>
-// //   );
-// // };
-
-
-// // // Main Doctor Component
-// // const Doctor = () => {
-// //   // Sample doctor data
-// //   const doctors = [
-// //     {
-// //       name: "Dr. Pranay Maurya",
-// //       specialty: "Cardiologist",
-// //       location: "Mumbai",
-// //       rating: "5",
-// //       description: "Specialist in cardiovascular treatments.",
-// //       image: "https://via.placeholder.com/150",
-// //     },
-// //     {
-// //       name: "Dr. Sahil Sharma",
-// //       specialty: "Cardiologist",
-// //       location: "Mumbai",
-// //       rating: "5",
-// //       description:
-// //         "Experienced Cardiologist specializing in heart-related issues.",
-// //       image: "https://via.placeholder.com/150",
-// //     },
-// //     {
-// //       name: "Dr. Rudra Maurya",
-// //       specialty: "Cardiologist",
-// //       location: "Mumbai",
-// //       rating: "4",
-// //       description:
-// //         "Experienced Cardiologist specializing in heart-related issues.",
-// //       image: "https://via.placeholder.com/150",
-// //     },
-// //     {
-// //       name: "Dr. Sneha Kapoor",
-// //       specialty: "Dermatologist",
-// //       location: "Delhi",
-// //       rating: "4",
-// //       description:
-// //         "Specialist in skin care, acne, and dermatological treatments.",
-// //       image: "https://via.placeholder.com/150",
-// //     },
-// //     {
-// //       name: "Dr. Amit Sharma",
-// //       specialty: "Orthopedist",
-// //       location: "Bangalore",
-// //       rating: "5",
-// //       description: "Expert in treating musculoskeletal disorders and injuries.",
-// //       image: "https://via.placeholder.com/150",
-// //     },
-// //     // Add more doctor data...
-// //   ];
-
-// //   const [filteredDoctors, setFilteredDoctors] = useState(doctors);
-// //   const [searchQuery, setSearchQuery] = useState("");
-// //   const [filters, setFilters] = useState({
-// //     location: [],
-// //     specialty: [],
-// //     rating: [],
-// //   });
-
-// //   const handleFilterChange = (filterName, isChecked) => {
-// //     const [filterType, filterValue] = filterName.split("-");
-  
-// //     setFilters((prevFilters) => {
-// //       const newFilters = { ...prevFilters };
-// //       if (isChecked) {
-// //         newFilters[filterType] = [...newFilters[filterType], filterValue];
-// //       } else {
-// //         newFilters[filterType] = newFilters[filterType].filter(
-// //           (item) => item !== filterValue
-// //         );
-// //       }
-// //       return newFilters;
-// //     });
-// //   };
-  
-
-// //   const handleSearchChange = (e) => {
-// //     setSearchQuery(e.target.value.toLowerCase());
-// //   };
-
-// //   const filteredList = doctors.filter((doctor) => {
-// //     // Search filter
-// //     const matchesSearch =
-// //       doctor.name.toLowerCase().includes(searchQuery) ||
-// //       doctor.specialty.toLowerCase().includes(searchQuery) ||
-// //       doctor.location.toLowerCase().includes(searchQuery);
-  
-// //     // Location filter
-// //     const matchesLocation =
-// //       filters.location.length === 0 ||
-// //       filters.location.includes(doctor.location);
-  
-// //     // Specialty filter
-// //     const matchesSpecialty =
-// //       filters.specialty.length === 0 ||
-// //       filters.specialty.includes(doctor.specialty);
-  
-// //     // Rating filter
-// //     const matchesRating =
-// //       filters.rating.length === 0 ||
-// //       filters.rating.some((rating) => parseFloat(doctor.rating) == parseFloat(rating));
-  
-// //     return matchesSearch && matchesLocation && matchesSpecialty && matchesRating;
-// //   });
-  
-// //   return (
-// //     <div className="flex flex-col lg:flex-row bg-gray-50 min-h-screen p-6">
-// //       <FilterSidebar onFilterChange={handleFilterChange} />
-// //       <div className="flex-1 px-6 pt-3">
-// //         <input
-// //           type="text"
-// //           placeholder="Search doctors..."
-// //           className="w-full p-3 border rounded-lg mb-6"
-// //           onChange={handleSearchChange}
-// //         />
-// //         {filteredList.map((doctor, index) => (
-// //           <DoctorCard key={index} doctor={doctor} />
-// //         ))}
-// //       </div>
-// //     </div>
-// //   );
-// // };
-
-// // export default Doctor;
-
-
-
-
-
-// // this code with proper doctor fetching and filtering
-
-// import { useDoctor } from "@/contexts/DoctorContext";
-// import { useState } from "react";
-// import { useNavigate } from "react-router-dom";
-
-
-// // Custom Checkbox Component
-// const CustomCheckbox = ({ label, name, onChange }) => {
-//   const handleCheckboxChange = (e) => {
-//     const { checked } = e.target;
-//     onChange(name, checked);
-//   };
-
-//   return (
-//     <label className="flex cursor-pointer items-center text-gray-700 font-bold hover:text-orange-500 space-x-3">
-//       <input
-//         className="peer hidden"
-//         id={name}
-//         name={name}
-//         type="checkbox"
-//         onChange={handleCheckboxChange}
-//       />
-//       <span className="w-5 h-5 border-2 border-gray-400 rounded-sm flex justify-center items-center peer-checked:border-orange-500 peer-checked:bg-orange-500">
-//         <svg
-//           className="hidden peer-checked:block w-4 h-4 text-white"
-//           fill="currentColor"
-//           xmlns="http://www.w3.org/2000/svg"
-//           viewBox="0 0 20 20"
-//         >
-//           <path d="M16.707 5.293a1 1 0 00-1.414-1.414L7 12.172 4.707 9.879a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l8-8z" />
-//         </svg>
-//       </span>
-//       <span>{label}</span>
-//     </label>
-//   );
-// };
-
-// // Star Rating Component
-// const StarRating = ({ rating }) => {
-//   const fullStars = Math.floor(rating);
-//   const emptyStars = 5 - Math.ceil(rating);
-
-//   return (
-//     <div className="flex">
-//       {[...Array(fullStars)].map((_, index) => (
-//         <span key={index} className="text-yellow-500 text-lg">
-//           ⭐
-//         </span>
-//       ))}
-//       {[...Array(emptyStars)].map((_, index) => (
-//         <span key={index} className="text-gray-400 text-lg">
-//           ☆
-//         </span>
-//       ))}
-//     </div>
-//   );
-// };
-
-// // Doctor Card Component
-// const DoctorCard = ({ doctor }) => {
-//   const navigate = useNavigate();
-
-//   return (
-//     <div className="p-6 bg-white shadow-lg rounded-lg mb-6 flex flex-col md:flex-row gap-4 md:items-center sm:items-start">
-//       {/* Doctor Image */}
-//       <img
-//         src={doctor.avatar?.url || '/default-doctor-image.png'} // Add a default image path
-//         alt={doctor.name}
-//         className="w-24 h-24 rounded-full object-cover border-2 border-orange-500"
-//       />
-//       <div className="flex-1">
-//         {/* Doctor Information */}
-//         <h3 className="text-xl font-bold text-gray-800">{doctor.name}</h3>
-//         <p className="text-orange-500">{doctor.specialty}</p>
-//         <p className="text-gray-500">{doctor.location}</p>
-        
-//         {/* Additional Details */}
-//         <div className="mt-2 text-sm text-gray-600 space-y-1">
-//           <p>{doctor.description}</p>
-//           <p>Experience: {doctor.experience} years</p>
-//           <p>Consultation Fee: ₹{doctor.consultationFee}</p>
-//         </div>
-
-//         {/* Rating and Actions */}
-//         <div className="flex flex-col md:flex-row items-center justify-between mt-4 gap-4">
-//           <div className="flex items-center gap-2">
-//             <StarRating rating={doctor.rating || 0} />
-//             <span className="text-sm text-gray-600">
-//               ({doctor.numOfReviews || 0} reviews)
-//             </span>
-//           </div>
-          
-//           <div className="flex gap-2 w-full md:w-auto">
-//             <button
-//               className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 flex-1 md:flex-none"
-//               onClick={() => navigate(`/doctor/${doctor._id}`)}
-//             >
-//               View Profile
-//             </button>
-//             <button
-//               className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 flex-1 md:flex-none"
-//               onClick={() => navigate(`/book-appointment/${doctor._id}`)}
-//             >
-//               Book Now
-//             </button>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// // Filter Items Component
-// const FilterItems = ({ onCheckboxChange }) => (
-//   <>
-//     {/* Location Filter */}
-//     <div>
-//       <h3 className="text-lg font-bold mb-2">Location</h3>
-//       <div className="space-y-2">
-//         {["Mumbai", "Delhi", "Bangalore", "Chennai"].map((location) => (
-//           <CustomCheckbox
-//             key={location}
-//             label={location}
-//             name={`location-${location}`}
-//             onChange={onCheckboxChange}
-//           />
-//         ))}
-//       </div>
-//     </div>
-
-//     {/* Specialty Filter */}
-//     <div>
-//       <h3 className="text-lg font-bold mb-2">Specialty</h3>
-//       <div className="space-y-2">
-//         {["Cardiologist", "Dermatologist", "Orthopedist", "Pediatrician"].map(
-//           (specialty) => (
-//             <CustomCheckbox
-//               key={specialty}
-//               label={specialty}
-//               name={`specialty-${specialty}`}
-//               onChange={onCheckboxChange}
-//             />
-//           )
-//         )}
-//       </div>
-//     </div>
-
-//     {/* Rating Filter */}
-//     <div>
-//       <h3 className="text-lg font-bold mb-2">Rating</h3>
-//       <div className="space-y-2">
-//         {["5", "4", "3"].map((rating) => (
-//           <CustomCheckbox
-//             key={rating}
-//             label={`${rating} Stars & Up`}
-//             name={`rating-${rating}`}
-//             onChange={onCheckboxChange}
-//           />
-//         ))}
-//       </div>
-//     </div>
-//   </>
-// );
-
-// // Filter Sidebar Component
-// const FilterSidebar = ({ onFilterChange }) => {
-//   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-//   return (
-//     <>
-//       {/* Sidebar for large screens */}
-//       <div className="hidden lg:block p-6 bg-white shadow-md rounded-lg space-y-6 w-1/4 h-fit">
-//         <h2 className="text-xl font-bold mb-4 border-b pb-2 text-orange-500">
-//           Filter by:
-//         </h2>
-//         <FilterItems onCheckboxChange={onFilterChange} />
-//       </div>
-
-//       {/* Dropdown for small screens */}
-//       <div className="lg:hidden w-full mb-6">
-//         <button
-//           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-//           className="w-full p-3 bg-orange-500 text-white rounded-lg font-bold"
-//         >
-//           {isDropdownOpen ? "Close Filters" : "Open Filters"}
-//         </button>
-//         {isDropdownOpen && (
-//           <div className="p-6 bg-white shadow-md rounded-lg space-y-6 mt-4">
-//             <h2 className="text-xl font-bold mb-4 border-b pb-2 text-orange-500">
-//               Filter by:
-//             </h2>
-//             <FilterItems onCheckboxChange={onFilterChange} />
-//           </div>
-//         )}
-//       </div>
-//     </>
-//   );
-// };
-
-// // Main Doctor Component
-// const Doctor = () => {
-//   const { doctors, loading, error } = useDoctor();
-//   const [searchQuery, setSearchQuery] = useState("");
-//   const [filters, setFilters] = useState({
-//     location: [],
-//     specialty: [],
-//     rating: [],
-//   });
-
-//   console.log(doctors);
-  
-
-//   const handleFilterChange = (filterName, isChecked) => {
-//     const [filterType, filterValue] = filterName.split("-");
-  
-//     setFilters((prevFilters) => {
-//       const newFilters = { ...prevFilters };
-//       if (isChecked) {
-//         newFilters[filterType] = [...newFilters[filterType], filterValue];
-//       } else {
-//         newFilters[filterType] = newFilters[filterType].filter(
-//           (item) => item !== filterValue
-//         );
-//       }
-//       return newFilters;
-//     });
-//   };
-
-//   const handleSearchChange = (e) => {
-//     setSearchQuery(e.target.value.toLowerCase());
-//   };
-
-//   const filteredList = doctors.filter((doctor) => {
-//     const matchesSearch =
-//       doctor.name.toLowerCase().includes(searchQuery) ||
-//       doctor.specialty.toLowerCase().includes(searchQuery) ||
-//       doctor.location.toLowerCase().includes(searchQuery);
-  
-//     const matchesLocation =
-//       filters.location.length === 0 ||
-//       filters.location.includes(doctor.location);
-  
-//     const matchesSpecialty =
-//       filters.specialty.length === 0 ||
-//       filters.specialty.includes(doctor.specialty);
-  
-//     const matchesRating =
-//       filters.rating.length === 0 ||
-//       filters.rating.some((rating) => doctor.rating >= parseFloat(rating));
-  
-//     return matchesSearch && matchesLocation && matchesSpecialty && matchesRating;
-//   });
-
-//   if (loading) {
-//     return (
-//       <div className="flex justify-center items-center min-h-screen">
-//         <div className="text-xl font-bold text-orange-500">Loading...</div>
-//       </div>
-//     );
-//   }
-
-//   if (doctors.length === 0) {
-//     return (
-//       <div className="flex justify-center items-center min-h-screen">
-//         <div className="text-xl font-bold text-red-500">No doctors found.</div>
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="flex flex-col lg:flex-row bg-gray-50 min-h-screen p-6 gap-6">
-//       <FilterSidebar onFilterChange={handleFilterChange} />
-//       <div className="flex-1">
-//         {/* Search and Results Count */}
-//         <div className="mb-6 space-y-4">
-//           <div className="relative">
-//             <input
-//               type="text"
-//               placeholder="Search doctors by name, specialty, or location..."
-//               className="w-full p-3 pr-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-//               onChange={handleSearchChange}
-//             />
-//             <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-//               🔍
-//             </span>
-//           </div>
-//           <p className="text-gray-600">
-//             Found {filteredList.length} doctor{filteredList.length !== 1 ? 's' : ''}
-//           </p>
-//         </div>
-
-//         {/* Doctor Cards */}
-//         {filteredList.length > 0 ? (
-//           <div className="space-y-6">
-//             {filteredList.map((doctor) => (
-//               <DoctorCard key={doctor._id} doctor={doctor} />
-//             ))}
-//           </div>
-//         ) : (
-//           <div className="text-center p-6 bg-white rounded-lg shadow">
-//             <p className="text-xl text-gray-600">No doctors found matching your criteria</p>
-//             <p className="text-gray-500 mt-2">Try adjusting your filters or search term</p>
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Doctor;
-
-
-
-
 import React, { useState, useEffect } from 'react';
 import { useDoctor } from '@/contexts/DoctorContext';
-import { useNavigate } from 'react-router-dom';
-import { Eye, GraduationCap } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Eye, GraduationCap, SearchX, X } from 'lucide-react';
 
 // Reusable Button Component (unchanged)
 const Button = ({ children, variant = 'primary', className = '', ...props }) => {
@@ -689,25 +58,43 @@ const CustomCheckbox = ({ label, name, count, onChange }) => {
 };
 
 // Improved Search Bar Component
-const SearchBar = ({ value, onChange }) => (
-  <div className="relative">
-    <input
-      type="text"
-      value={value}
-      onChange={onChange}
-      placeholder="Search by name or specialty..."
-      className="w-full p-4 pl-12 rounded-lg border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all duration-200"
-    />
-    <svg
-      className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-    </svg>
-  </div>
-);
+const SearchBar = ({ value, onChange, placeholder = "Search..." }) => {
+  return (
+    <div className="relative">
+      <input
+        type="text"
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        className="w-full p-4 pl-12 pr-12 rounded-lg border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all duration-200"
+      />
+      {/* Search Icon */}
+      <svg
+        className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+      
+      {/* Clear Button */}
+      {value && (
+        <button
+          onClick={() => {
+            // Create a synthetic event to clear the input
+            const event = { target: { value: '' } };
+            onChange(event);
+          }}
+          className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors duration-200"
+          aria-label="Clear search"
+        >
+          <X className="w-5 h-5" />
+        </button>
+      )}
+    </div>
+  );
+};
 
 // Enhanced Star Rating (unchanged)
 const StarRating = ({ rating, size = 'base' }) => {
@@ -743,7 +130,7 @@ const DoctorCard = ({ doctor }) => {
   
   
   return (
-    <div className="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden" onClick={() => navigate(`/doctor/${doctor._id}`)}>
+    <div className="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden cursor-pointer hover:border-orange-300 hover:border" title='Click to view' onClick={() => navigate(`/doctor/${doctor._id}`)}>
       <div className="p-6">
         <div className="flex flex-col md:flex-row gap-6">
           <div className="flex-shrink-0">
@@ -838,13 +225,52 @@ const FilterSection = ({ title, options, selectedFilters, onChange }) => (
 // Main Doctor Component
 const Doctor = () => {
   const { doctors, loading, error } = useDoctor();
-  const [searchQuery, setSearchQuery] = useState("");
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Parse URL query parameters
+  const parseQueryParams = () => {
+    const searchParams = new URLSearchParams(location.search);
+    return {
+      query: searchParams.get('q') || '',
+      specialty: searchParams.getAll('specialty'),
+      rating: searchParams.getAll('rating')
+    };
+  };
+
+  // Initial state from URL
+  const initialParams = parseQueryParams();
+  
+  const [searchQuery, setSearchQuery] = useState(initialParams.query);
   const [filters, setFilters] = useState({
     location: [],
-    specialty: [],
-    rating: [],
+    specialty: initialParams.specialty,
+    rating: initialParams.rating,
   });
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  // Update URL when filters or search change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    
+    // Add search query
+    if (searchQuery) {
+      params.set('q', searchQuery);
+    }
+    
+    // Add specialty filters
+    filters.specialty.forEach(spec => {
+      params.append('specialty', spec);
+    });
+    
+    // Add rating filters
+    filters.rating.forEach(rate => {
+      params.append('rating', rate);
+    });
+
+    // Update URL without page reload
+    navigate(`${location.pathname}?${params.toString()}`, { replace: true });
+  }, [searchQuery, filters, navigate, location.pathname]);
 
   const handleFilterChange = (filterName, isChecked) => {
     const [filterType, filterValue] = filterName.split("-");
@@ -856,11 +282,26 @@ const Doctor = () => {
     }));
   };
 
-  const filteredDoctors = doctors.filter(doctor => {
-    const matchesSearch = 
-      (doctor.name?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
-      (doctor.specialty?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
-      (doctor.location?.toLowerCase() || '').includes(searchQuery.toLowerCase());
+  // Filter only validated doctors
+  const validatedDoctors = doctors.filter(doctor => doctor.isValidated);
+
+  const filteredDoctors = validatedDoctors.filter(doctor => {
+    // Improved search logic to check multiple fields
+    const searchTermLower = searchQuery.toLowerCase().trim();
+    const matchesSearch = searchTermLower === '' || (
+      // Check first name
+      doctor.FirstName?.toLowerCase().includes(searchTermLower) ||
+      // Check last name
+      doctor.LastName?.toLowerCase().includes(searchTermLower) ||
+      // Check full name
+      `${doctor.FirstName} ${doctor.LastName}`.toLowerCase().includes(searchTermLower) ||
+      // Check specialty
+      doctor.specialty?.toLowerCase().includes(searchTermLower) ||
+      // Check specialization
+      doctor.specialization?.toLowerCase().includes(searchTermLower) ||
+      // Check location
+      doctor.location?.toLowerCase().includes(searchTermLower)
+    );
 
     const matchesLocation = filters.location.length === 0 || 
       filters.location.includes(doctor.location);
@@ -874,18 +315,55 @@ const Doctor = () => {
     return matchesSearch && matchesLocation && matchesSpecialty && matchesRating;
   });
 
-  // Generate filter options
-  const specialtyOptions = [...new Set(doctors.map(d => d.specialty))].map(specialty => ({
+  // Generate filter options based on validated doctors
+  const specialtyOptions = [...new Set(validatedDoctors.map(d => d.specialty))].map(specialty => ({
     label: specialty,
     value: specialty,
-    count: doctors.filter(d => d.specialty === specialty).length
+    count: validatedDoctors.filter(d => d.specialty === specialty).length
   }));
 
   const ratingOptions = [
-    { label: '4 Stars & Above', value: '4', count: doctors.filter(d => d.rating >= 4).length },
-    { label: '3 Stars & Above', value: '3', count: doctors.filter(d => d.rating >= 3).length },
-    { label: '2 Stars & Above', value: '2', count: doctors.filter(d => d.rating >= 2).length },
+    { label: '4 Stars & Above', value: '4', count: validatedDoctors.filter(d => d.rating >= 4).length },
+    { label: '3 Stars & Above', value: '3', count: validatedDoctors.filter(d => d.rating >= 3).length },
+    { label: '2 Stars & Above', value: '2', count: validatedDoctors.filter(d => d.rating >= 2).length },
   ];
+
+  // Clear all filters and search
+  const clearAllFilters = () => {
+    setSearchQuery('');
+    setFilters({ location: [], specialty: [], rating: [] });
+  };
+
+  // NoResults Component remains the same
+  const NoResults = ({ searchQuery, hasActiveFilters }) => {
+    let message = "No doctors found";
+    let subMessage = "Try adjusting your search or filters";
+
+    if (searchQuery) {
+      message = `No doctors match "${searchQuery}"`;
+    }
+
+    if (hasActiveFilters) {
+      subMessage = "Remove some filters to see more results";
+    }
+
+    return (
+      <div className="text-center py-10 bg-white rounded-xl shadow-md">
+        <SearchX className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+        <h3 className="text-xl font-semibold text-gray-600 mb-2">{message}</h3>
+        <p className="text-gray-500">{subMessage}</p>
+        
+        {(searchQuery || hasActiveFilters) && (
+          <button 
+            onClick={clearAllFilters}
+            className="mt-4 px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors"
+          >
+            Clear Search & Filters
+          </button>
+        )}
+      </div>
+    );
+  };
 
   if (loading) {
     return (
@@ -909,12 +387,22 @@ const Doctor = () => {
     );
   }
 
+  // Check if there are any active filters
+  const hasActiveFilters = 
+    filters.location.length > 0 || 
+    filters.specialty.length > 0 || 
+    filters.rating.length > 0;
+
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-6">Find a Doctor</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-6">Find a Verified Doctor</h1>
         
-        <SearchBar value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+        <SearchBar 
+          value={searchQuery} 
+          onChange={(e) => setSearchQuery(e.target.value)} 
+          placeholder="Search by name, specialty, or location..."
+        />
 
         <div className="mt-6 flex flex-col lg:flex-row gap-6">
           {/* Filter Sidebar */}
@@ -926,7 +414,10 @@ const Doctor = () => {
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold text-gray-900">Filters</h2>
               <button 
-                onClick={() => setFilters({ location: [], specialty: [], rating: [] })}
+                onClick={() => {
+                  setFilters({ location: [], specialty: [], rating: [] });
+                  setSearchQuery('');
+                }}
                 className="text-sm text-orange-500 hover:text-orange-600"
               >
                 Clear All
@@ -951,7 +442,10 @@ const Doctor = () => {
           {/* Doctor List */}
           <div className="lg:w-3/4">
             <div className="mb-4 flex justify-between items-center">
-              <p className="text-gray-600">{filteredDoctors.length} doctors found</p>
+              <p className="text-gray-600">
+                {filteredDoctors.length} verified 
+                {filteredDoctors.length === 1 ? ' doctor' : ' doctors'} found
+              </p>
               <Button 
                 variant="outline"
                 onClick={() => setIsFilterOpen(!isFilterOpen)}
@@ -963,11 +457,19 @@ const Doctor = () => {
                 {isFilterOpen ? 'Hide Filters' : 'Show Filters'}
               </Button>
             </div>
-            <div className="space-y-6">
-              {filteredDoctors.map((doctor) => (
-                <DoctorCard key={doctor._id} doctor={doctor} />
-              ))}
-            </div>
+            
+            {filteredDoctors.length === 0 ? (
+              <NoResults 
+                searchQuery={searchQuery} 
+                hasActiveFilters={hasActiveFilters}
+              />
+            ) : (
+              <div className="space-y-6">
+                {filteredDoctors.map((doctor) => (
+                  <DoctorCard key={doctor._id} doctor={doctor} />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -976,4 +478,3 @@ const Doctor = () => {
 };
 
 export default Doctor;
-

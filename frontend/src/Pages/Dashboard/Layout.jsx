@@ -6,6 +6,8 @@ import AdminSidebar from './admin/AdminSidebar';
 import DashContent from './doctor/DashContent';
 import AdminDashboardLayout from './admin/AdminDashboard';
 import { Outlet } from 'react-router-dom';
+import { AdminProvider } from '@/contexts/AdminContext';
+import DashboardNavbar from './DashboardNavbar';
 
 function DashboardLayout({ role }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -29,7 +31,7 @@ function DashboardLayout({ role }) {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  console.log(user.role);
+  // console.log(user.role);
 
 
   return (
@@ -38,7 +40,7 @@ function DashboardLayout({ role }) {
       <div className="flex h-screen overflow-hidden">
         {/* Sidebar */}
         <aside
-          className={`fixed inset-y-0 left-0 z-50 w-80 sm:w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          className={`fixed inset-y-0 left-0 z-50 w-80 sm:w-72 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
             }`}
         >
           <div className="h-full flex flex-col">
@@ -58,24 +60,13 @@ function DashboardLayout({ role }) {
                 >
                   <Menu className="h-6 w-6" />
                 </button>
-                <p className='font-semibold text-lg'> <span className="text-orange-500 capitalize ">{user.role}</span> Dashboard</p>
-                {/* <div className="flex items-center space-x-4">
-                <Button variant="ghost" size="icon">
-                  <Bell className="h-5 w-5" />
-                </Button>
-                <Button variant="ghost" size="icon">
-                  <HelpCircle className="h-5 w-5" />
-                </Button>
-                <Button variant="ghost" size="icon">
-                  <Settings className="h-5 w-5" />
-                </Button>
-              </div> */}
+               <DashboardNavbar role={user.role}/>
               </div>
             </div>
           </header>
 
         {/* Page Content */}
-        <main className="overflow-x-hidden overflow-y-auto bg-gray-100">
+        <main className="overflow-x-hidden overflow-y-auto">
           <div className="max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
             {/* Your main content goes here */}
             {/* {role === 'doctor' ? <DoctorDashboardLayout /> : <Outlet />} */}

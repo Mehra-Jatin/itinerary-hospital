@@ -31,7 +31,7 @@ const AppointmentTable = () => {
         });
 
         if (response.status === 200) {
-          console.log(response.data);
+          // console.log(response.data);
           
           setAppointments(response.data.appointment); // Store the appointment data in state
         } else {

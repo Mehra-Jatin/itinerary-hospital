@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }) => {
     const getToken = async () => {
         try {
             const token = Cookies.get('token');
-            console.log('bjbj',token);
+            // console.log('bjbj',token);
             
             if (!token) {
                 throw new Error('No token found');
