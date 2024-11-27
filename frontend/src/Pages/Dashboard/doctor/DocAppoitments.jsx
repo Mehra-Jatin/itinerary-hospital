@@ -30,6 +30,9 @@ const AppointmentTable = () => {
         });
 
         if (response.status === 200) {
+          // console.log(response.data);
+          
+          setAppointments(response.data.appointment); // Store the appointment data in state
           // Fetch user details for each appointment concurrently
           const userResponses = await Promise.all(
             response.data.appointment.map(async (appointment) => {

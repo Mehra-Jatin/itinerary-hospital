@@ -17,8 +17,24 @@ export default function TodayAppointments() {
   useEffect(() => {
     const fetchAppointmentsAndUsers = async () => {
       try {
+        const Token =await getToken()
+        // console.log('tk',Token);
+        
         const token = await getToken();
         setLoading(true);
+        const response = await axios.get(`http://localhost:4000/api/v1/appointment/${user._id}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${Token}`, // Ensure getToken is a function call if it fetches the token
+          },
+        });
+        // console.log('log',response.data);
+        
+        if (response.status === 200) { // Use `response.status` for axios instead of `response.ok`
+          setAppointments(response.data.appointment); // Access `response.data` for the data payload
+        } else {
+          throw new Error(response.data.message || 'Failed to fetch appointments');
+        }
 
         // Fetch appointments
         const appointmentResponse = await axios.get(
