@@ -203,6 +203,7 @@ export const getAppointment = async (req, res) => {
       success: true,
       message: "Appointment retrieved successfully.",
       appointment: appointment,
+      
     });
   }
   catch (error) {

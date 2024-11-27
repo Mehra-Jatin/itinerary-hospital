@@ -1,137 +1,195 @@
-import React, { useState } from "react";
-import { Calendar } from "../../../../components/ui/Calendar";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { format, addDays } from "date-fns"; // Add days for date manipulation
-import { Delete } from "lucide-react";
+import React, { useState, useEffect, useContext } from 'react';
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
+import { Dialog, DialogTrigger, DialogContent, DialogTitle } from '@radix-ui/react-dialog';
+import axios from 'axios';
+import { AuthContext } from '@/contexts/AuthContext';
+import { CircleX, MessagesSquareIcon } from 'lucide-react';
 
-const DoctorSchedule = () => {
+const AvailabilityManager = () => {
+  const { user, getToken } = useContext(AuthContext);
   const [selectedDate, setSelectedDate] = useState(null);
-  const [availability, setAvailability] = useState({}); // Tracks available dates
-  const [bookedDates, setBookedDates] = useState([]); // Tracks permanently booked dates
+  const [scheduledDates, setScheduledDates] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [fetchError, setFetchError] = useState(null);
+  const [removeDate, setRemoveDate] = useState(null); // State to hold the date to be removed
 
-  const handleDateClick = (date) => {
-    // Add 1 day to the selected date to fix previous date issue
-    const nextDay = addDays(date, 1);
-    const formattedDate = format(nextDay, "yyyy-MM-dd");
+  useEffect(() => {
+    const fetchAvailability = async () => {
+      try {
+        const token = await getToken();
+        const response = await axios.get(`http://localhost:4000/api/v1/getavailability/${user._id}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        setScheduledDates(response.data.availablity);
+      } catch (error) {
+        console.error(error);
+        setFetchError("Failed to load scheduled dates.");
+      }
+    };
+    fetchAvailability();
+  }, [getToken, user]);
 
-    // Prevent selecting already booked dates
-    if (bookedDates.includes(formattedDate)) {
-      return;
-    }
-
-    // Update the selected date and open the modal
-    setSelectedDate(formattedDate);
+  const handleSelectDate = (date) => {
+    setSelectedDate(date);
     setIsModalOpen(true);
   };
 
-  const toggleAvailability = () => {
-    if (!selectedDate) return; // Avoid processing if no date is selected
-
-    // Mark the selected date as available
-    setAvailability((prev) => ({
-      ...prev,
-      [selectedDate]: true,
-    }));
-
-    // Close the modal and reset the selected date
-    setIsModalOpen(false);
-    setSelectedDate(null); // Reset selected date after confirming availability
+  const confirmDateSelection = async () => {
+    try {
+      const token = await getToken();
+      await axios.put(
+        `http://localhost:4000/api/v1/setavailability/${user._id}`,
+        { date: selectedDate.toISOString().split('T')[0] },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        }
+      );
+      setScheduledDates((prev) => [...prev, selectedDate.toISOString().split('T')[0]]);
+      setIsModalOpen(false);
+      setSelectedDate(null);  // Clear the selected date after confirmation
+    } catch (error) {
+      console.error(error);
+      alert("Failed to set the selected date. Please try again.");
+    }
   };
 
-  const deleteAvailability = (date) => {
-    setAvailability((prev) => {
-      const updatedAvailability = { ...prev };
-      delete updatedAvailability[date]; // Remove availability for the date
-      return updatedAvailability;
-    });
+  const isDateDisabled = (date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set to midnight to compare only the date, not the time
+    const formattedDate = date.toISOString().split('T')[0];
 
-    // Mark the date as permanently booked and close the modal
-    setBookedDates((prev) => [...prev, date]);
-    setIsModalOpen(false); // Close the modal after booking
-    setSelectedDate(null); // Reset selected date after deleting
+    // Disable past dates (before today) and already scheduled dates, but allow today
+    return date < today || scheduledDates.includes(formattedDate);
   };
 
-  const isDateAvailable = (date) => availability[format(date, "yyyy-MM-dd")];
-  const isDateBooked = (date) => bookedDates.includes(format(date, "yyyy-MM-dd"));
+  // Handler to open modal for date removal
+  const handleRemoveDate = (date) => {
+    setRemoveDate(date);
+    setIsModalOpen(true);
+  };
+
+  // Confirm removal of the date
+  const confirmRemoveDate = async () => {
+    try {
+      const token = await getToken();
+      await axios.put(
+        `http://localhost:4000/api/v1/cancleavailability/${user._id}`,
+        { date: removeDate },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        }
+      );
+      setScheduledDates((prev) => prev.filter((date) => date !== removeDate)); // Remove the date from the list
+      setIsModalOpen(false);
+      setRemoveDate(null);  // Clear the remove date after confirmation
+    } catch (error) {
+      console.error(error);
+      alert("Failed to remove the selected date. Please try again.");
+    }
+  };
 
   return (
-    <div className="p-6 space-y-6 w-full">
-      <h1 className="text-xl font-bold">Doctor's Scheduling</h1>
-      {/* Calendar */}
-      <Calendar
-        mode="single"
-        selected={selectedDate} // Make sure the selected date is passed as a prop to the Calendar
-        onSelect={handleDateClick}
-        className="rounded-md border w-fit"
-        dayClassName={(date) => {
-          const formattedDate = format(date, "yyyy-MM-dd");
+    <div className="p-6 max-w-screen-lg mx-auto">
+      <h2 className="text-2xl font-bold mb-4 text-center">Manage Your Availability</h2>
 
-          // Styling based on availability and booked dates
-          if (bookedDates.includes(formattedDate)) {
-            return "bg-red-500 text-white rounded-full cursor-not-allowed"; // Highlight booked dates
-          }
-          if (availability[formattedDate]) {
-            return "bg-green-500 text-white rounded-full cursor-not-allowed"; // Highlight available dates
-          }
-          if (selectedDate === formattedDate) {
-            return "bg-blue-300 text-white rounded-full"; // Highlight selected dates
-          }
-          return "";
-        }}
-      />
-      {/* Modal for setting availability */}
-      {selectedDate && !availability[selectedDate] && (
-        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogContent>
-            <h2 className="text-lg font-semibold mb-4">
-              Set Availability for {format(new Date(selectedDate), "PP")}
-            </h2>
-            <p>Do you want to mark yourself available on this date?</p>
-            <div className="flex justify-end space-x-4 mt-4">
-              <Button variant="outline" onClick={() => setIsModalOpen(false)}>
-                Cancel
-              </Button>
-              <Button
-                variant="primary"
-                className="bg-orange-600 text-white"
-                onClick={toggleAvailability}
-              >
-                Confirm
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
-      {/* Display Available Dates */}
-      <div>
-        <h2 className="text-lg font-semibold">Available Dates:</h2>
-        {Object.keys(availability).length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {Object.keys(availability).map((date) => (
-              <div
-                key={date}
-                className="p-4 border rounded shadow flex justify-between items-center"
-              >
-                <span>{format(new Date(date), "PP")}</span>
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    deleteAvailability(date); // Delete availability and book the date
-                  }}
-                >
-                  <Delete />
-                </Button>
-              </div>
-            ))}
+      {fetchError && <p className="text-red-500">{fetchError}</p>}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Date Picker */}
+        <div className="w-full">
+          <h3 className="text-lg font-semibold mb-2">Select a Date:</h3>
+          <div className="bg-gray-50 p-4 rounded-lg shadow-lg">
+            <DatePicker
+              selected={selectedDate}
+              onChange={(date) => handleSelectDate(date)}
+              filterDate={(date) => !isDateDisabled(date)}
+              inline
+              className="custom-datepicker w-full rounded-md border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
+              calendarClassName="rounded-md shadow-xl"
+              dayClassName={(date) => 
+                isDateDisabled(date) 
+                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
+                  : 'bg-white text-gray-800 hover:bg-blue-100 hover:text-blue-600 transition duration-200'
+              }
+            />
           </div>
-        ) : (
-          <p>No availability set yet.</p>
-        )}
+        </div>
+
+        {/* Scheduled Dates */}
+        <div className="w-full">
+          <h3 className="text-lg font-semibold mb-2">Scheduled Dates:</h3>
+          <div className="bg-gray-50 p-4 rounded-lg shadow-lg">
+            <table className="table-auto w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-gray-200 hover:bg-gray-300 transition-colors duration-200">
+                  <th className="px-4 py-2">#</th>
+                  <th className="px-4 py-2">Date</th>
+                  <th className="px-4 py-2">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {scheduledDates.map((date, index) => (
+                  <tr key={index} className="hover:bg-blue-100 transition-colors duration-300">
+                    <td className="border px-4 py-2">{index + 1}</td>
+                    <td className="border px-4 py-2">{date}</td>
+                    <td className="border px-4 py-2">
+                      <button 
+                        onClick={() => handleRemoveDate(date)} 
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <CircleX />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
+
+      {/* Modal */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent 
+          className="bg-white rounded-lg shadow-xl p-6 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md transition-all scale-100 duration-300"
+        >
+          <DialogTitle className="text-xl font-bold mb-4 text-center">
+            {removeDate ? 'Confirm Date Removal' : 'Confirm Date Selection'}
+          </DialogTitle>
+          <p className="text-center text-lg font-semibold mb-4">
+            {removeDate 
+              ? `Are you sure you want to remove the date >${removeDate}?`
+              : `Do you want to select ${selectedDate?.toLocaleDateString()}?`}
+          </p>
+          <div className="mt-6 flex justify-center gap-4">
+            <button
+              className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400  transform transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300"
+              onClick={() => {
+                setIsModalOpen(false);
+                setRemoveDate(null);  // Reset removeDate and selectedDate when modal is closed
+                setSelectedDate(null);
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              className="bg-orange-600 text-white px-5 py-2 rounded hover:text-orange-400 hover:bg-orange-200 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300"
+              onClick={removeDate ? confirmRemoveDate : confirmDateSelection}
+            >
+              Confirm
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
 
-export default DoctorSchedule;
+export default AvailabilityManager;

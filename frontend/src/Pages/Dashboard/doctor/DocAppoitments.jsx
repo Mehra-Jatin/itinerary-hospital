@@ -1,12 +1,12 @@
 import { Save } from 'lucide-react';
 import React, { useState, useEffect, useContext } from 'react';
-import { MdClose, MdChat } from 'react-icons/md'; // Chat Icon
+import { MdClose, MdChat } from 'react-icons/md';
 import { format, isWithinInterval } from 'date-fns';
 import axios from 'axios';
-import { AuthContext } from '@/contexts/AuthContext'; // Assuming AuthContext is defined and provides user info and token
+import { AuthContext } from '@/contexts/AuthContext';
 
 const AppointmentTable = () => {
-  const { user, getToken } = useContext(AuthContext); // Context to get user and token
+  const { user, getToken } = useContext(AuthContext);
   const [appointments, setAppointments] = useState([]);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [status, setStatus] = useState('');
@@ -17,45 +17,62 @@ const AppointmentTable = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch appointments when the component mounts
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        setLoading(true); // Set loading to true when the request starts
-        const Token = await getToken(); // Ensure you await the token
+        setLoading(true);
+        const Token = await getToken();
         const response = await axios.get(`http://localhost:4000/api/v1/appointment/${user._id}`, {
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${Token}`, // Send the token in headers
+            'Authorization': `Bearer ${Token}`,
           },
         });
 
         if (response.status === 200) {
-          console.log(response.data);
-          
-          setAppointments(response.data.appointment); // Store the appointment data in state
+          // Fetch user details for each appointment concurrently
+          const userResponses = await Promise.all(
+            response.data.appointment.map(async (appointment) => {
+              if (appointment.userId) {
+                const userResponse = await axios.get(
+                  `http://localhost:4000/api/v1/user/${appointment.userId}`,
+                  {
+                    headers: {
+                      'Content-Type': 'application/json',
+                      Authorization: `Bearer ${Token}`,
+                    },
+                  }
+                );
+                return { ...appointment, userData: userResponse.data.user };
+              }
+              return appointment;
+            })
+          );
+          setAppointments(userResponses);
         } else {
           throw new Error(response.data.message || 'Failed to fetch appointments');
         }
       } catch (err) {
-        setError(err.response?.data?.message || err.message); // Handle any errors
+        setError(err.response?.data?.message || err.message);
       } finally {
-        setLoading(false); // Set loading to false once the request is finished
+        setLoading(false);
       }
     };
 
     fetchAppointments();
-  }, [user._id, getToken]); // Dependency array includes user._id and getToken to re-fetch when user changes
+  }, [user._id, getToken]);
 
   const handleRowClick = (appointment) => {
     setSelectedAppointment(appointment);
     setIsModalOpen(true);
-    setStatus(appointment.bookingDetails.appointmentStatus);
+    setStatus(appointment.appointmentStatus);
   };
 
   const handleUpdateStatus = async () => {
+    if (status === 'Completed') return; // Prevent updating Completed status
+
     try {
-      const Token = await getToken(); // Get the token from AuthContext
+      const Token = await getToken();
       const response = await axios.patch(
         `http://localhost:4000/api/v1/appointment/update`,
         {
@@ -69,15 +86,14 @@ const AppointmentTable = () => {
           },
         }
       );
-  
+
       if (response.data.success) {
-        // Update the local state with the new status
         setAppointments((prev) =>
           prev.map((appt) =>
             appt._id === selectedAppointment._id
               ? {
                   ...appt,
-                  bookingDetails: { ...appt.bookingDetails, appointmentStatus: status },
+                  appointmentStatus: status,
                 }
               : appt
           )
@@ -90,25 +106,22 @@ const AppointmentTable = () => {
       console.error("Error updating status:", error);
       alert("Error updating status. Please try again later.");
     } finally {
-      setIsModalOpen(false); // Close the modal after the update
+      setIsModalOpen(false);
     }
   };
-  
 
   const filteredAppointments = appointments.filter((appointment) => {
-    const matchStatus = !filterStatus || appointment.bookingDetails.appointmentStatus === filterStatus;
+    const matchStatus = !filterStatus || appointment.appointmentStatus === filterStatus;
     const matchDate =
       (!startDate && !endDate) ||
       (startDate &&
         endDate &&
-        isWithinInterval(new Date(appointment.userId.appointmentDate), {
+        isWithinInterval(new Date(appointment.date), {
           start: new Date(startDate),
           end: new Date(endDate),
         }));
     return matchStatus && matchDate;
   });
-
-  
 
   return (
     <div className="p-4">
@@ -127,8 +140,7 @@ const AppointmentTable = () => {
         >
           <option value="">All Statuses</option>
           <option value="Completed">Completed</option>
-          <option value="Confirmed">Rescheduled</option>
-          <option value="Pending">Pending</option>
+          <option value="Confirmed">Confirmed</option>
           <option value="Cancelled">Cancelled</option>
         </select>
         <input
@@ -146,8 +158,8 @@ const AppointmentTable = () => {
       </div>
 
       {/* Responsive Table */}
-      <div className="appointments-container">
-        <table className="appointments-table w-full border-collapse hidden lg:table">
+      <div className="appointments-container w-full">
+        <table className="appointments-table w-full  border-collapse hidden lg:table shadow-lg bg-white">
           <thead>
             <tr>
               <th className="border px-4 py-2">Name</th>
@@ -158,8 +170,15 @@ const AppointmentTable = () => {
           </thead>
           <tbody>
             {filteredAppointments.map((appointment) => {
-              const { FirstName, LastName, Age, appointmentDate } = appointment.userId;
-              const appointmentStatus = appointment.bookingDetails.appointmentStatus;
+              console.log('f',appointment.userData);
+              
+              const { FirstName, LastName, age } = appointment.userData;
+              const appointmentStatus = appointment.appointmentStatus;
+              const Age=age
+              // Format date safely
+              const formattedDate = appointment.date && !isNaN(new Date(appointment.date))
+                ? format(new Date(appointment.date), 'yyyy-MM-dd')
+                : 'Invalid Date';
 
               return (
                 <tr
@@ -169,7 +188,7 @@ const AppointmentTable = () => {
                 >
                   <td className="border px-4 py-2">{FirstName} {LastName}</td>
                   <td className="border px-4 py-2">{Age}</td>
-                  <td className="border px-4 py-2">{format(new Date(appointmentDate), 'yyyy-MM-dd')}</td>
+                  <td className="border px-4 py-2">{formattedDate}</td>
                   <td className="border px-4 py-2">{appointmentStatus}</td>
                 </tr>
               );
@@ -180,8 +199,18 @@ const AppointmentTable = () => {
         {/* Mobile View */}
         <div className="mobile-view lg:hidden">
           {filteredAppointments.map((appointment) => {
-            const { FirstName, LastName, Age, appointmentDate } = appointment.userId;
-            const appointmentStatus = appointment.bookingDetails.appointmentStatus;
+            console.log('ac',appointment.userData);
+            
+            const { FirstName, LastName, age } = appointment.userData;
+            const appointmentStatus = appointment.appointmentStatus;
+            const Age=age
+            console.log('ag',Age);
+            
+
+            // Format date safely
+            const formattedDate = appointment.date && !isNaN(new Date(appointment.date))
+              ? format(new Date(appointment.date), 'yyyy-MM-dd')
+              : 'Invalid Date';
 
             return (
               <div
@@ -193,7 +222,7 @@ const AppointmentTable = () => {
                   <strong>{FirstName} {LastName}</strong>
                 </p>
                 <p>Age: {Age}</p>
-                <p>Date: {format(new Date(appointmentDate), 'yyyy-MM-dd')}</p>
+                <p>Date: {formattedDate}</p>
                 <p>Status: {appointmentStatus}</p>
               </div>
             );
@@ -210,41 +239,31 @@ const AppointmentTable = () => {
               className="absolute top-2 right-2 cursor-pointer text-gray-700"
               size={24}
             />
-            <p><strong>First Name:</strong> {selectedAppointment.userId.FirstName}</p>
-            <p><strong>Last Name:</strong> {selectedAppointment.userId.LastName}</p>
-            <p><strong>Age:</strong> {selectedAppointment.userId.Age}</p>
-            <p><strong>Date:</strong> {selectedAppointment.userId.appointmentDate}</p>
-            <p><strong>Status:</strong> {status}</p>
+            <p><strong>First Name:</strong> {selectedAppointment.userData.FirstName}</p>
+            <p><strong>Last Name:</strong> {selectedAppointment.userData.LastName}</p>
+            <p><strong>Age:</strong> {selectedAppointment.userData.Age}</p>
+            <p><strong>Appointment Date:</strong> {format(new Date(selectedAppointment.date), 'yyyy-MM-dd')}</p>
+            <p><strong>Status:</strong> {selectedAppointment.appointmentStatus}</p>
 
             <div className="mt-4">
-              <label>Update Status:</label>
+              <label className="block text-sm">Status:</label>
               <select
                 value={status}
-                onChange={handleStatusChange}
-                className="py-2 px-4 border rounded-md"
-                disabled={selectedAppointment.bookingDetails.appointmentStatus === 'Completed'}
+                onChange={(e) => setStatus(e.target.value)}
+                disabled={status === 'Completed'}
+                className="py-2 px-4 border rounded-md w-full"
               >
-                <option value="Confirmed">Rescheduled</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Completed">Completed</option>
                 <option value="Cancelled">Cancelled</option>
               </select>
             </div>
-
-            <div className="mt-4 flex justify-between items-center">
-              <button
-                onClick={handleUpdateStatus}
-                className="py-2 px-4 bg-blue-500 text-white rounded-md"
-              >
-                <Save /> Save Changes
-              </button>
-              {status !== 'Cancelled' && status !== 'Completed' && (
-                <button
-                  onClick={() => alert('Chat initiated!')}
-                  className="flex items-center text-white bg-green-500 p-2 rounded-full"
-                >
-                  <MdChat size={20} /> Chat
-                </button>
-              )}
-            </div>
+            <button
+              onClick={handleUpdateStatus}
+              className="mt-4 bg-green-500 text-white py-2 px-6 rounded-md"
+            >
+              <Save size={18} /> Update Status
+            </button>
           </div>
         </div>
       )}

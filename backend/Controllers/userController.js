@@ -55,11 +55,15 @@ export const deleteUser = async (req, res) => {
 
 // Get User
 export const getUser = async (req, res) => {
+  // console.log('nm');
+  
   const { userId } = req.params;
 
   try {
     // Get user by userId
     const user = await User.findById(userId);
+    console.log('user,',user);
+    
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found.' });
     }
