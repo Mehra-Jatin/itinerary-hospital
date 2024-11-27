@@ -19,6 +19,7 @@ router.route('/users')
 
 router.route('/doctor/:doctorId').put(isAuthenticatedUser(), authorizeRoles('admin', 'doctor'), updateDoctor);
 router.route('/doctor/:doctorId').delete(isAuthenticatedUser(), authorizeRoles('admin','doctor'), deleteDoctor);
+
 router.route('/doctor/:doctorId').get(isAuthenticatedUser(), getDoctor);
 router.route('/doctors').get(getAllDoctors);
 router.route('/setavailability/:doctorId').put(isAuthenticatedUser(),authorizeRoles('doctor'),setAvailability);

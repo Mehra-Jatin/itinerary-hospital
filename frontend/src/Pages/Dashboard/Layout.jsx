@@ -69,8 +69,8 @@ function DashboardLayout({ role }) {
         <main className="overflow-x-hidden overflow-y-auto">
           <div className="max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
             {/* Your main content goes here */}
-            {/* {role === 'doctor' ? <DoctorDashboardLayout /> : <Outlet />} */}
-            <Outlet />
+            {role === 'doctor' ?  <Outlet />:''}
+            {/* <Outlet /> */}
           </div>
         </main>
       </div>

@@ -40,6 +40,8 @@ import AdminTransaction from "./Pages/Dashboard/admin/pages/AdminTransaction";
 import AdminNotification from "./Pages/Dashboard/admin/pages/AdminNotification";
 import DoctorMessages from "./Pages/Dashboard/admin/pages/DoctorMessages";
 import PatientMessages from "./Pages/Dashboard/admin/pages/PatientMessages";
+import ManageAppt from "./Pages/Dashboard/doctor/ManageAppointments";
+import UserSettings from "./Pages/Dashboard/doctor/Settings";
 
 // Define the router configuration with routes
 const router = createBrowserRouter([
@@ -149,7 +151,11 @@ const router = createBrowserRouter([
         element: <SchedulePage />,
       },
       {
-        path: "appointments",  
+        path: "appointments/manage-appointments",  
+        element: <ManageAppt />,
+      },
+      {
+        path: "appointments/view-appointments",  
         element: <DocAppointments />,
       },
       {
@@ -159,6 +165,10 @@ const router = createBrowserRouter([
       {
         path: "histories",  
         element: <DoctHistoriesPage />,
+      },
+      {
+        path: "settings",  
+        element: < UserSettings/>,
       },
     ]
   },

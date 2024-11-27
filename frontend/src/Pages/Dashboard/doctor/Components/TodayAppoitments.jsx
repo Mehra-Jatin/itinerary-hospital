@@ -5,21 +5,22 @@ import NextPatient from './NextPatient';
 import axios from 'axios';
 import { AuthContext } from '@/contexts/AuthContext';
 
-
 export default function TodayAppointments() {
   const [appointments, setAppointments] = useState([]);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const {user,getToken}=useContext(AuthContext)
+  const [userDetails, setUserDetails] = useState({});
+  const { user, getToken } = useContext(AuthContext);
 
-  // Fetch appointments from the backend
+  // Fetch appointments and user data
   useEffect(() => {
-    const fetchAppointments = async () => {
+    const fetchAppointmentsAndUsers = async () => {
       try {
         const Token =await getToken()
         // console.log('tk',Token);
         
+        const token = await getToken();
         setLoading(true);
         const response = await axios.get(`http://localhost:4000/api/v1/appointment/${user._id}`, {
           headers: {
@@ -34,15 +35,76 @@ export default function TodayAppointments() {
         } else {
           throw new Error(response.data.message || 'Failed to fetch appointments');
         }
+
+        // Fetch appointments
+        const appointmentResponse = await axios.get(
+          `http://localhost:4000/api/v1/appointment/${user._id}`,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const { appointment: fetchedAppointments } = appointmentResponse.data;
+
+        if (appointmentResponse.status !== 200) {
+          throw new Error(appointmentResponse.data.message || 'Failed to fetch appointments');
+        }
+
+        // Filter appointments by today's date
+        const today = new Date();
+        const todayAppointments = fetchedAppointments.filter((appointment) => {
+          console.log('appt',appointment);
+          
+          const appointmentDate = new Date(appointment.date); // Adjust key based on your backend date field
+          console.log('dt',appointmentDate);
+          
+          return (
+            appointmentDate.getFullYear() === today.getFullYear() &&
+            appointmentDate.getMonth() === today.getMonth() &&
+            appointmentDate.getDate() === today.getDate()
+          );
+        });
+
+        setAppointments(todayAppointments);
+
+        // Fetch user details for each userId
+        const userResponses = await Promise.all(
+          todayAppointments.map(async (appointment) => {
+            if (appointment.userId) {
+              const userResponse = await axios.get(
+                `http://localhost:4000/api/v1/user/${appointment.userId}`,
+                {
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+              );
+              return { userId: appointment.userId, userData: userResponse.data.user };
+            }
+            return null;
+          })
+        );
+
+        // Transform user responses into a dictionary for quick lookup
+        const userDataMap = userResponses.reduce((acc, userResponse) => {
+          if (userResponse) acc[userResponse.userId] = userResponse.userData;
+          return acc;
+        }, {});
+
+        setUserDetails(userDataMap);
       } catch (err) {
-        setError(err.response?.data?.message || err.message); // Handle server error messages properly
+        setError(err.response?.data?.message || err.message);
       } finally {
         setLoading(false);
-      } 
+      }
     };
 
-    fetchAppointments();
-  }, []);
+    fetchAppointmentsAndUsers();
+  }, [user, getToken]);
 
   const handleAppointmentClick = (appointment) => {
     setSelectedAppointment(appointment);
@@ -64,22 +126,25 @@ export default function TodayAppointments() {
         <div className="grid gap-3">
           {appointments.map((appointment) => {
             if (appointment.appointmentStatus !== 'confirmed') return null;
+
+            const userData = userDetails[appointment.userId] || {};
+
             return (
               <motion.div
                 key={appointment._id}
-                className={`flex justify-between bg-blue-50 py-3 px-4 rounded-lg cursor-pointer hover:bg-orange-100 hover:text-orange-500`}
+                className="flex justify-between bg-blue-50 py-3 px-4 rounded-lg cursor-pointer hover:bg-orange-100 hover:text-orange-500"
                 whileHover={{ scale: 1.05 }}
                 onClick={() => handleAppointmentClick(appointment)}
               >
                 <div className="flex gap-5">
                   <img
-                    src={appointment.userId?.profilePicture || '/default-profile.jpg'}
+                    src={userData.profilePicture || '/default-profile.jpg'}
                     alt="Profile"
                     className="object-cover w-12 h-12 rounded-full"
                   />
                   <div>
                     <p className="font-semibold">
-                      {appointment.userId?.FirstName} {appointment.userId?.LastName}
+                      {userData.FirstName} {userData.LastName}
                     </p>
                     <p className="text-sm hover:text-orange-600">
                       {appointment.appointmentStatus}
@@ -93,7 +158,7 @@ export default function TodayAppointments() {
         </div>
       </Card>
 
-      {/* Appointment Requests */}
+      {/* Appointment Details */}
       <motion.div
         className="w-full"
         initial={{ opacity: 0, x: 50 }}
