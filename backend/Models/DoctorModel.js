@@ -72,6 +72,7 @@ const doctorSchema = mongoose.Schema(
       type:Array,
       default:[] // yyyy-mm-dd
     },
+    
     // appointments: [
     //   {
     //     type: mongoose.Schema.Types.ObjectId,
