@@ -58,6 +58,8 @@ export const getUser = async (req, res) => {
   // console.log('nm');
   
   const { userId } = req.params;
+  console.log('mdskn',userId);
+  
 
   try {
     // Get user by userId
