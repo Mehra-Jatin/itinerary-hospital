@@ -121,7 +121,7 @@ export const BookAppointment = async (req, res) => {
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found.' });
     }
-
+    
     let doctor = await Doctor.findById(doctorId);
     if (!doctor) {
       return res.status(404).json({ success: false, message: 'Doctor not found.' });
@@ -131,13 +131,13 @@ export const BookAppointment = async (req, res) => {
     if (alreadyBooked) {
       return res.status(400).json({ success: false, message: `Appointment already booked for ${date} and ${time}` });
     }
-
+        
 //  ensure the time is in IST
 const appointmentStart = new Date(`${date}T${time}:00`);
 const offset = 5.5 * 60 * 60 * 1000; // Convert 5.5 hours to milliseconds
 // Add 1 hour to the start time to get the endtime
 const endtime = new Date(appointmentStart.getTime() + 60 * 60 * 1000 +offset); // Add 1 hour (in milliseconds)
-
+ 
 
     // Create a new appointment
     const appointment = {
