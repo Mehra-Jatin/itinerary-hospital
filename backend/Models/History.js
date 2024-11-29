@@ -16,13 +16,13 @@ const historySchema = mongoose.Schema(
         type: Date,  //yyyy-mm-dd
         required: true,
         },
-        description: {
-        type: String,
+        time: {
+        type: String, //hh:mm
         required: true,
         },
-        prescription: {
-         type: String,
-            required: true,
+        appointmentStatus: {
+        type: String,
+        required: true,
         },
         
     },

@@ -1,82 +1,75 @@
-import { Save } from 'lucide-react';
 import React, { useState, useEffect, useContext } from 'react';
-import { MdClose, MdChat } from 'react-icons/md';
-import { format, isWithinInterval } from 'date-fns';
 import axios from 'axios';
+import Modal from './Components/TableModal';
 import { AuthContext } from '@/contexts/AuthContext';
 
-const AppointmentTable = () => {
-  const { user, getToken } = useContext(AuthContext);
+const DocAppointment = () => {
   const [appointments, setAppointments] = useState([]);
+  const [filteredAppointments, setFilteredAppointments] = useState([]);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
-  const [status, setStatus] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [filterStatus, setFilterStatus] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [statusFilter, setStatusFilter] = useState('');
+  const [dateFilter, setDateFilter] = useState('');
+  const { user, getToken } = useContext(AuthContext);
 
   useEffect(() => {
-    const fetchAppointments = async () => {
-      try {
-        setLoading(true);
-        const Token = await getToken();
-        const response = await axios.get(`http://localhost:4000/api/v1/appointment/${user._id}`, {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${Token}`,
-          },
-        });
-
-        if (response.status === 200) {
-          // console.log(response.data);
-          
-          setAppointments(response.data.appointment); // Store the appointment data in state
-          // Fetch user details for each appointment concurrently
-          const userResponses = await Promise.all(
-            response.data.appointment.map(async (appointment) => {
-              if (appointment.userId) {
-                const userResponse = await axios.get(
-                  `http://localhost:4000/api/v1/user/${appointment.userId}`,
-                  {
-                    headers: {
-                      'Content-Type': 'application/json',
-                      Authorization: `Bearer ${Token}`,
-                    },
-                  }
-                );
-                return { ...appointment, userData: userResponse.data.user };
-              }
-              return appointment;
-            })
-          );
-          setAppointments(userResponses);
-        } else {
-          throw new Error(response.data.message || 'Failed to fetch appointments');
-        }
-      } catch (err) {
-        setError(err.response?.data?.message || err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchAppointments();
-  }, [user._id, getToken]);
+  }, []);
+
+  useEffect(() => {
+    filterAppointments();
+  }, [appointments, statusFilter, dateFilter]);
+
+  const fetchAppointments = async () => {
+    const Token = await getToken();
+    try {
+      const response = await axios.get(`http://localhost:4000/api/v1/appointment/${user._id}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${Token}`,
+        },
+      });
+
+      const appointmentsWithUserDetails = await Promise.all(
+        response.data.appointment.map(async (appointment) => {
+          const userResponse = await axios.get(
+            `http://localhost:4000/api/v1/user/${appointment.userId}`,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${Token}`,
+              },
+            }
+          );
+          return { ...appointment, user: userResponse.data.user };
+        })
+      );
+      setAppointments(appointmentsWithUserDetails);
+    } catch (error) {
+      console.error('Error fetching appointments:', error);
+    }
+  };
+
+  const filterAppointments = () => {
+    let filtered = [...appointments];
+    if (statusFilter) {
+      filtered = filtered.filter((a) => a.appointmentStatus === statusFilter);
+    }
+    if (dateFilter) {
+      filtered = filtered.filter((a) => a.date.startsWith(dateFilter));
+    }
+    setFilteredAppointments(filtered);
+  };
 
   const handleRowClick = (appointment) => {
     setSelectedAppointment(appointment);
-    setIsModalOpen(true);
-    setStatus(appointment.appointmentStatus);
+    setModalOpen(true);
   };
 
-  const handleUpdateStatus = async () => {
-    if (status === 'Completed') return; // Prevent updating Completed status
-
+  const updateAppointmentStatus = async (status) => {
+    const Token = await getToken();
     try {
-      const Token = await getToken();
-      const response = await axios.patch(
+      await axios.put(
         `http://localhost:4000/api/v1/appointment/update`,
         {
           appointmentId: selectedAppointment._id,
@@ -85,193 +78,109 @@ const AppointmentTable = () => {
         {
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${Token}`,
+            Authorization: `Bearer ${Token}`,
           },
         }
       );
-
-      if (response.data.success) {
-        setAppointments((prev) =>
-          prev.map((appt) =>
-            appt._id === selectedAppointment._id
-              ? {
-                  ...appt,
-                  appointmentStatus: status,
-                }
-              : appt
-          )
-        );
-        alert("Appointment status updated successfully!");
-      } else {
-        alert(response.data.message || "Failed to update status.");
-      }
+      fetchAppointments();
+      setModalOpen(false);
     } catch (error) {
-      console.error("Error updating status:", error);
-      alert("Error updating status. Please try again later.");
-    } finally {
-      setIsModalOpen(false);
+      console.error('Error updating status:', error);
     }
   };
 
-  const filteredAppointments = appointments.filter((appointment) => {
-    const matchStatus = !filterStatus || appointment.appointmentStatus === filterStatus;
-    const matchDate =
-      (!startDate && !endDate) ||
-      (startDate &&
-        endDate &&
-        isWithinInterval(new Date(appointment.date), {
-          start: new Date(startDate),
-          end: new Date(endDate),
-        }));
-    return matchStatus && matchDate;
-  });
+  const formatDate = (date) => {
+    return date.split('T')[0]; // Converts "2024-11-29T10:16:00.000Z" → "2024-11-29"
+  };
 
   return (
-    <div className="p-4">
-      {/* Error Message */}
-      {error && <div className="text-red-500">{error}</div>}
-
-      {/* Loading State */}
-      {loading && <div>Loading...</div>}
-
-      {/* Filters */}
-      <div className="flex flex-col lg:flex-row gap-4 mb-6">
+    <div className="p-6 shadow-orange-300 shadow-lg rounded-lg">
+      <h1 className="text-2xl font-bold mb-4">Appointments</h1>
+      <div className="flex gap-4 mb-4">
+        <input
+          type="date"
+          className="border p-2 rounded"
+          onChange={(e) => setDateFilter(e.target.value)}
+        />
         <select
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value)}
-          className="py-2 px-4 border rounded-md"
+          className="border p-2 rounded"
+          onChange={(e) => setStatusFilter(e.target.value)}
         >
-          <option value="">All Statuses</option>
-          <option value="Completed">Completed</option>
-          <option value="Confirmed">Confirmed</option>
-          <option value="Cancelled">Cancelled</option>
+          <option value="">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
         </select>
-        <input
-          type="date"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
-          className="py-2 px-4 border rounded-md"
-        />
-        <input
-          type="date"
-          value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
-          className="py-2 px-4 border rounded-md"
-        />
       </div>
+      <div className="w-full">
+  <table className="table-auto w-full border-collapse border border-gray-300 hidden md:table">
+    <thead>
+      <tr className="bg-gray-100">
+        <th className="border px-4 py-2">Name</th>
+        <th className="border px-4 py-2">Age</th>
+        <th className="border px-4 py-2">Appointment Date</th>
+        <th className="border px-4 py-2">Appointment Time</th>
+        <th className="border px-4 py-2">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {filteredAppointments.map((appointment) => (
+        <tr
+          key={appointment._id}
+          className="rounded-lg cursor-pointer hover:bg-orange-500 hover:text-white ease-in-out delay-150 hover:-translate-y-0 hover:scale-110 duration-200"
+          onClick={() => handleRowClick(appointment)}
+        >
+          <td className="border px-4 py-2">
+            {appointment.user.FirstName} {appointment.user.LastName}
+          </td>
+          <td className="border px-4 py-2">{appointment.user.age}</td>
+          <td className="border px-4 py-2">{formatDate(appointment.date)}</td>
+          <td className="border px-4 py-2">{appointment.time}</td>
+          <td className="border px-4 py-2">{appointment.appointmentStatus}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
 
-      {/* Responsive Table */}
-      <div className="appointments-container w-full">
-        <table className="appointments-table w-full  border-collapse hidden lg:table shadow-lg bg-white">
-          <thead>
-            <tr>
-              <th className="border px-4 py-2">Name</th>
-              <th className="border px-4 py-2">Age</th>
-              <th className="border px-4 py-2">Date</th>
-              <th className="border px-4 py-2">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredAppointments.map((appointment) => {
-              console.log('f',appointment.userData);
-              
-              const { FirstName, LastName, age } = appointment.userData;
-              const appointmentStatus = appointment.appointmentStatus;
-              const Age=age
-              // Format date safely
-              const formattedDate = appointment.date && !isNaN(new Date(appointment.date))
-                ? format(new Date(appointment.date), 'yyyy-MM-dd')
-                : 'Invalid Date';
-
-              return (
-                <tr
-                  key={appointment._id}
-                  onClick={() => handleRowClick(appointment)}
-                  className="cursor-pointer hover:bg-orange-100"
-                >
-                  <td className="border px-4 py-2">{FirstName} {LastName}</td>
-                  <td className="border px-4 py-2">{Age}</td>
-                  <td className="border px-4 py-2">{formattedDate}</td>
-                  <td className="border px-4 py-2">{appointmentStatus}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-
-        {/* Mobile View */}
-        <div className="mobile-view lg:hidden">
-          {filteredAppointments.map((appointment) => {
-            console.log('ac',appointment.userData);
-            
-            const { FirstName, LastName, age } = appointment.userData;
-            const appointmentStatus = appointment.appointmentStatus;
-            const Age=age
-            console.log('ag',Age);
-            
-
-            // Format date safely
-            const formattedDate = appointment.date && !isNaN(new Date(appointment.date))
-              ? format(new Date(appointment.date), 'yyyy-MM-dd')
-              : 'Invalid Date';
-
-            return (
-              <div
-                key={appointment._id}
-                className="p-4 bg-white rounded-lg shadow-md mb-4 cursor-pointer hover:bg-orange-100"
-                onClick={() => handleRowClick(appointment)}
-              >
-                <p>
-                  <strong>{FirstName} {LastName}</strong>
-                </p>
-                <p>Age: {Age}</p>
-                <p>Date: {formattedDate}</p>
-                <p>Status: {appointmentStatus}</p>
-              </div>
-            );
-          })}
-        </div>
+  {/* Mobile View */}
+  <div className="block md:hidden">
+    {filteredAppointments.map((appointment) => (
+      <div
+        key={appointment._id}
+        className="border rounded-lg p-4 mb-4 shadow hover:bg-orange-500 hover:text-white cursor-pointer"
+        onClick={() => handleRowClick(appointment)}
+      >
+        <p>
+          <strong>Name:</strong> {appointment.user.FirstName} {appointment.user.LastName}
+        </p>
+        <p>
+          <strong>Age:</strong> {appointment.user.age}
+        </p>
+        <p>
+          <strong>Appointment Date:</strong> {formatDate(appointment.date)}
+        </p>
+        <p>
+          <strong>Appointment Time:</strong> {appointment.time}
+        </p>
+        <p>
+          <strong>Status:</strong> {appointment.appointmentStatus}
+        </p>
       </div>
+    ))}
+  </div>
+</div>
 
-      {/* Modal */}
-      {isModalOpen && selectedAppointment && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center h-screen">
-          <div className="bg-white p-8 rounded-lg relative w-full lg:w-2/5">
-            <MdClose
-              onClick={() => setIsModalOpen(false)}
-              className="absolute top-2 right-2 cursor-pointer text-gray-700"
-              size={24}
-            />
-            <p><strong>First Name:</strong> {selectedAppointment.userData.FirstName}</p>
-            <p><strong>Last Name:</strong> {selectedAppointment.userData.LastName}</p>
-            <p><strong>Age:</strong> {selectedAppointment.userData.Age}</p>
-            <p><strong>Appointment Date:</strong> {format(new Date(selectedAppointment.date), 'yyyy-MM-dd')}</p>
-            <p><strong>Status:</strong> {selectedAppointment.appointmentStatus}</p>
 
-            <div className="mt-4">
-              <label className="block text-sm">Status:</label>
-              <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-                disabled={status === 'Completed'}
-                className="py-2 px-4 border rounded-md w-full"
-              >
-                <option value="Confirmed">Confirmed</option>
-                <option value="Completed">Completed</option>
-                <option value="Cancelled">Cancelled</option>
-              </select>
-            </div>
-            <button
-              onClick={handleUpdateStatus}
-              className="mt-4 bg-green-500 text-white py-2 px-6 rounded-md"
-            >
-              <Save size={18} /> Update Status
-            </button>
-          </div>
-        </div>
+      {modalOpen && selectedAppointment && (
+        <Modal
+          appointment={selectedAppointment}
+          closeModal={() => setModalOpen(false)}
+          updateStatus={updateAppointmentStatus}
+        />
       )}
     </div>
   );
 };
 
-export default AppointmentTable;
+export default DocAppointment;
