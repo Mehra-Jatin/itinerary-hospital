@@ -42,6 +42,7 @@ import DoctorMessages from "./Pages/Dashboard/admin/pages/DoctorMessages";
 import PatientMessages from "./Pages/Dashboard/admin/pages/PatientMessages";
 import ManageAppt from "./Pages/Dashboard/doctor/ManageAppointments";
 import UserSettings from "./Pages/Dashboard/doctor/Settings";
+import UserMessages from "./Pages/Dashboard/admin/pages/UserMessages";
 
 // Define the router configuration with routes
 const router = createBrowserRouter([
@@ -212,6 +213,10 @@ const router = createBrowserRouter([
       {
         path: "patient-messages",  
         element: <PatientMessages />,
+      },
+      {
+        path: "user-messages",  
+        element: <UserMessages />,
       },
       {
         path: "notifications",  

@@ -11,6 +11,7 @@ import DoctorApprovalWaiting from '../../components/DoctorApprovalWaiting';
 import { Textarea } from '@/components/ui/textarea';
 import axios from 'axios';
 import { set } from 'date-fns';
+import { useToast } from '@/hooks/use-toast';
 
 export default function Register() {
     const [registrationStep, setRegistrationStep] = useState(1);
@@ -34,6 +35,7 @@ export default function Register() {
     const [isNewDoctor, setIsNewDoctor] = useState(false);
     const { register } = useAuth();
     const navigate = useNavigate();
+    const { toast } = useToast();
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -114,6 +116,17 @@ export default function Register() {
                         setError(errorMessage);
                     }
                 }
+                toast({
+                    title: result.success ? 'Registration successful' : 'Registration failed',
+                    description: result.message,
+                    variant: result.success ? 'success' : 'destructive',
+                    duration: 5000
+                })
+                toast({
+                    title: 'Now you can login with your credentials',
+                    variant: 'default',
+                    duration: 5000
+                })
             } catch (error) {
                 // Catch any unexpected errors
                 console.error('Registration error:', error);

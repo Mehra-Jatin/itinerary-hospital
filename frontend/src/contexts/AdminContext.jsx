@@ -67,6 +67,7 @@ export const AdminProvider = ({ children }) => {
                 description: "Could not fetch verified doctors",
                 variant: "destructive",
             });
+            logout(); // Logout for token expiration need to be fixed
         } finally {
             setLoading(false);
         }
@@ -107,6 +108,7 @@ export const AdminProvider = ({ children }) => {
                 description: "Could not process doctor action",
                 variant: "destructive",
             });
+            logout(); // Logout for token expiration need to be fixed
         }
     };
 
@@ -131,6 +133,7 @@ export const AdminProvider = ({ children }) => {
                 description: "Could not fetch patients",
                 variant: "destructive",
             });
+            logout(); // Logout for token expiration need to be fixed
         } finally {
             setLoading(false);
         }

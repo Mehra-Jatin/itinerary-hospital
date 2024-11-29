@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { usePatient } from "@/contexts/PatientContext";
 import { useToast } from "@/hooks/use-toast";
 import {
   Card,
@@ -26,6 +25,16 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogDescription, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogTrigger,
+  DialogFooter,
+  DialogClose
+} from "@/components/ui/dialog";
 import {
   Bell,
   Moon,
@@ -34,46 +43,90 @@ import {
   Lock,
   Shield,
   Smartphone,
+  Trash2 
 } from "lucide-react";
+import DeleteAccountModal from "./Components/DeleteAccountModal";
+
+
 
 const UserSettings = () => {
   const { user } = useAuth();
-  const { isLoading } = usePatient();
   const { toast } = useToast();
+  
+  // Theme state
+  const [theme, setTheme] = useState("system");
 
+  // Handle theme change
+  useEffect(() => {
+    if (theme === "light") {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    } else if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      // System preference
+      document.documentElement.classList.remove("dark");
+      localStorage.removeItem("theme");
+    }
+  }, [theme]);
+
+  // Mock function for notification save
   const handleSaveNotifications = async (value) => {
     try {
-      // API call would go here
       toast({
         title: "Settings Updated",
         description: "Your notification preferences have been saved.",
       });
-    // alert("Settings Updated");
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to update settings. Please try again.",
         variant: "destructive",
       });
-    //   alert("Failed to update settings. Please try again.");
     }
   };
 
-  const handleChangePassword = async (e) => {
+  // Password change handler
+  const handlePasswordChange = async (e) => {
     e.preventDefault();
-    // Add password change logic here
-    toast({
-      title: "Password Updated",
-      description: "Your password has been successfully changed.",
-    });
+    try {
+      // Implement password change logic
+      toast({
+        title: "Password Updated",
+        description: "Your password has been successfully changed.",
+      });
+    } catch (error) {
+      toast({
+        title: "Password Change Failed",
+        description: "Unable to update password. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto p-4 space-y-6">
-      {/* Appearance Settings */}
-      <Card>
+    <div className="w-full h-full max-w-3xl mx-auto dark:bg-gray-900 p-6">
+      {/* Delete Account Section */}
+      <Card className=" border-destructive/50">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-destructive">
+            <Trash2 className="w-5 h-5" />
+            Delete Account
+          </CardTitle>
+          <CardDescription className="text-destructive/80">
+            Permanently remove your account and all associated data
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <DeleteAccountModal />
+        </CardContent>
+      </Card>
+
+      {/* Appearance Settings */}
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 ">
             <Sun className="w-5 h-5" />
             Appearance
           </CardTitle>
@@ -81,10 +134,10 @@ const UserSettings = () => {
             Customize how the application looks on your device
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="space-y-2">
+        <CardContent>
+          <div className="space-y-4">
             <Label>Theme</Label>
-            <Select defaultValue="system">
+            <Select value={theme} onValueChange={setTheme}>
               <SelectTrigger>
                 <SelectValue placeholder="Select theme" />
               </SelectTrigger>
@@ -99,176 +152,106 @@ const UserSettings = () => {
       </Card>
 
       {/* Security Settings */}
-      <Card>
+      <Card className="mt-6">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Shield className="w-5 h-5" />
             Security
           </CardTitle>
-          <CardDescription>
-            Manage your account security settings
-          </CardDescription>
+          <CardDescription>Manage your account security settings</CardDescription>
         </CardHeader>
         <CardContent>
-          <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="password">
-              <AccordionTrigger>
-                <div className="flex items-center gap-2">
-                  <Lock className="w-4 h-4" />
-                  Change Password
-                </div>
+          <Accordion type="single" collapsible>
+            <AccordionItem value="change-password">
+              <AccordionTrigger className="flex items-center gap-2">
+                <Lock className="w-5 h-5" />
+                Change Password
               </AccordionTrigger>
               <AccordionContent>
-                <form onSubmit={handleChangePassword} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="current-password">Current Password</Label>
-                    <Input
-                      id="current-password"
-                      type="password"
-                      disabled={isLoading}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="new-password">New Password</Label>
-                    <Input
-                      id="new-password"
-                      type="password"
-                      disabled={isLoading}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="confirm-password">Confirm New Password</Label>
-                    <Input
-                      id="confirm-password"
-                      type="password"
-                      disabled={isLoading}
-                    />
-                  </div>
-                  <Button type="submit" disabled={isLoading}>
-                    Update Password
-                  </Button>
+                <form onSubmit={handlePasswordChange} className="space-y-4">
+                  <Input placeholder="Current Password" type="password" />
+                  <Input placeholder="New Password" type="password" />
+                  <Input placeholder="Confirm New Password" type="password" />
+                  <Button type="submit">Update Password</Button>
                 </form>
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="2fa">
-              <AccordionTrigger>
-                <div className="flex items-center gap-2">
-                  <Smartphone className="w-4 h-4" />
-                  Two-Factor Authentication
-                </div>
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="space-y-4">
-                  <p className="text-sm text-muted-foreground">
-                    Add an extra layer of security to your account by enabling
-                    two-factor authentication.
-                  </p>
-                  <Button variant="outline">Enable 2FA</Button>
-                </div>
               </AccordionContent>
             </AccordionItem>
           </Accordion>
         </CardContent>
       </Card>
 
-      {/* Notifications Settings */}
-      <Card>
+      {/* Notification Settings */}
+      <Card className="mt-6">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Bell className="w-5 h-5" />
             Notifications
           </CardTitle>
-          <CardDescription>
-            Manage how you receive notifications and updates
-          </CardDescription>
+          <CardDescription>Manage your notification preferences</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label>Email Notifications</Label>
-                <p className="text-sm text-muted-foreground">
-                  Receive notifications about your appointments via email
-                </p>
-              </div>
-              <Switch
-                checked={true}
-                onCheckedChange={handleSaveNotifications}
-                disabled={isLoading}
-              />
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label>SMS Notifications</Label>
-                <p className="text-sm text-muted-foreground">
-                  Get text messages for important updates
-                </p>
-              </div>
-              <Switch
-                checked={true}
-                onCheckedChange={handleSaveNotifications}
-                disabled={isLoading}
-              />
-            </div>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <Label>Email Notifications</Label>
+            <Switch
+              onCheckedChange={handleSaveNotifications}
+              checked={true}
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <Label>SMS Notifications</Label>
+            <Switch
+              onCheckedChange={handleSaveNotifications}
+              checked={false}
+            />
           </div>
         </CardContent>
       </Card>
 
       {/* Language Settings */}
-      <Card>
+      <Card className="mt-6">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Globe className="w-5 h-5" />
             Language & Region
           </CardTitle>
           <CardDescription>
-            Choose your preferred language and regional settings
+            Choose your preferred language and time zone
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="space-y-2">
-            <Label>Language</Label>
-            <Select defaultValue="en">
-              <SelectTrigger>
-                <SelectValue placeholder="Select language" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="en">English</SelectItem>
-                <SelectItem value="es">Español</SelectItem>
-                <SelectItem value="fr">Français</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
-            <Label>Time Zone</Label>
-            <Select defaultValue="utc">
-              <SelectTrigger>
-                <SelectValue placeholder="Select timezone" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="utc">UTC</SelectItem>
-                <SelectItem value="est">Eastern Time</SelectItem>
-                <SelectItem value="pst">Pacific Time</SelectItem>
-              </SelectContent>
-            </Select>
+        <CardContent>
+          <div className="space-y-4">
+            <div>
+              <Label>Language</Label>
+              <Select defaultValue="en">
+                <SelectTrigger>
+                  <SelectValue placeholder="Select language" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="en">English</SelectItem>
+                  <SelectItem value="es">Español</SelectItem>
+                  <SelectItem value="fr">Français</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Time Zone</Label>
+              <Select defaultValue="utc">
+                <SelectTrigger>
+                  <SelectValue placeholder="Select time zone" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="utc">UTC</SelectItem>
+                  <SelectItem value="est">Eastern Time</SelectItem>
+                  <SelectItem value="pst">Pacific Time</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </CardContent>
       </Card>
+
     </div>
   );
 };
 
 export default UserSettings;
-
-
-
-// import React from 'react'
-
-// function UserSetting() {
-//   return (
-//     <div>UserSetting</div>
-//   )
-// }
-
-// export default UserSetting
