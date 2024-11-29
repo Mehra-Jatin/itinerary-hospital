@@ -62,7 +62,8 @@ const AdminSidebar = () => {
       label: "Support", 
       subItems: [
             { path: "/admin-dashboard/doctor-messages", icon: Dot, label: "Doctor Messages" },
-            { path: "/admin-dashboard/patient-messages", icon: Dot, label: "Patient Messages" }
+            { path: "/admin-dashboard/patient-messages", icon: Dot, label: "Patient Messages" },
+            { path: "/admin-dashboard/user-messages", icon: Dot, label: "User Messages" }
       ]
     },
   ];

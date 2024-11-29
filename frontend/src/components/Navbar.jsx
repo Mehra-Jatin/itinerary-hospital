@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { Button } from "@/components/ui/button"
 import {
@@ -21,7 +21,7 @@ import logoImg from '../components/Images/logo-header.png'
 import { useAuth } from '@/hooks/useAuth'
 
 export default function Navbar() {
-  const { user, logout } = useAuth();  // Replace with your logout function
+  const { user, logout, updateUserData } = useAuth();  // Replace with your logout function
 
   const menuItems = [
     { name: "Home", path: "/", icon: Home, hasDropdown: false },
@@ -32,12 +32,11 @@ export default function Navbar() {
     { name: "Contacts", path: "/contacts", icon: PhoneCall, hasDropdown: false },
   ]
 
-  // console.log(user);
 
 
   const handleLogout = () => {
-    logout();
     window.location.href = '/';
+    logout();
   };
 
   return (

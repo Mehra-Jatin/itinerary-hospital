@@ -25,6 +25,16 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogDescription, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogTrigger,
+  DialogFooter,
+  DialogClose
+} from "@/components/ui/dialog";
 import {
   Bell,
   Moon,
@@ -33,7 +43,109 @@ import {
   Lock,
   Shield,
   Smartphone,
+  Trash2 
 } from "lucide-react";
+import DeleteAccountModal from "./Components/DeleteAccountModal";
+
+// const DeleteAccountModal = () => {
+//   const { user, logout } = useAuth();
+//   const { toast } = useToast();
+//   const [isDeleting, setIsDeleting] = useState(false);
+//   const [confirmEmail, setConfirmEmail] = useState("");
+
+//   // const handleDeleteAccount = async () => {
+//   //   // Validate inputs
+//   //   if (confirmEmail !== user.email) {
+//   //     toast({
+//   //       title: "Verification Failed",
+//   //       description: "Please verify your inputs correctly.",
+//   //       variant: "destructive"
+//   //     });
+//   //     return;
+//   //   }
+
+//   //   try {
+//   //     setIsDeleting(true);
+//   //     // Simulate account deletion API call
+//   //     // Replace with actual account deletion logic
+//   //     await new Promise(resolve => setTimeout(resolve, 1000));
+
+//   //     // Show success toast and logout
+//   //     toast({
+//   //       title: "Account Deleted",
+//   //       description: "Your account has been permanently deleted.",
+//   //     });
+
+//   //     // Logout user
+//   //     await logout();
+//   //   } catch (error) {
+//   //     toast({
+//   //       title: "Delete Account Failed",
+//   //       description: "There was an error deleting your account. Please try again.",
+//   //       variant: "destructive"
+//   //     });
+//   //   } finally {
+//   //     setIsDeleting(false);
+//   //   }
+//   // };
+
+//   // return (
+//   //   <Dialog>
+//   //     <DialogTrigger asChild>
+//   //       <Button variant="destructive" className="w-full">
+//   //         <Trash2 className="mr-2 h-4 w-4" /> Delete Account
+//   //       </Button>
+//   //     </DialogTrigger>
+//   //     <DialogContent>
+//   //       <DialogHeader>
+//   //         <DialogTitle>Delete Account</DialogTitle>
+//   //         <DialogDescription>
+//   //           This action cannot be undone. This will permanently delete your account.
+//   //         </DialogDescription>
+//   //       </DialogHeader>
+        
+//   //       <div className="space-y-4">
+//   //         {/* <div>
+//   //           <Label>Type your username to confirm</Label>
+//   //           <Input 
+//   //             placeholder="Enter your username"
+//   //             value={confirmationInput}
+//   //             onChange={(e) => setConfirmationInput(e.target.value)}
+//   //             className="mt-2"
+//   //           />
+//   //         </div> */}
+          
+//   //         <div>
+//   //           <Label>Type your email to confirm <span className="text-gray-500 italic">"{user.email}"</span></Label>
+//   //           <Input 
+//   //             placeholder="Enter your email"
+//   //             value={confirmEmail}
+//   //             onChange={(e) => setConfirmEmail(e.target.value)}
+//   //             className="mt-2"
+//   //           />
+//   //         </div>
+//   //       </div>
+        
+//   //       <DialogFooter>
+//   //         <DialogClose asChild>
+//   //           <Button variant="ghost">Cancel</Button>
+//   //         </DialogClose>
+//   //         <Button 
+//   //           variant="destructive" 
+//   //           onClick={handleDeleteAccount}
+//   //           disabled={
+//   //             // confirmationInput !== user.username || 
+//   //             confirmEmail !== user.email ||
+//   //             isDeleting
+//   //           }
+//   //         >
+//   //           {isDeleting ? "Deleting..." : "I understand, delete my account"}
+//   //         </Button>
+//   //       </DialogFooter>
+//   //     </DialogContent>
+//   //   </Dialog>
+//   // );
+// };
 
 const UserSettings = () => {
   const { user } = useAuth();
@@ -73,12 +185,46 @@ const UserSettings = () => {
     }
   };
 
+  // Password change handler
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    try {
+      // Implement password change logic
+      toast({
+        title: "Password Updated",
+        description: "Your password has been successfully changed.",
+      });
+    } catch (error) {
+      toast({
+        title: "Password Change Failed",
+        description: "Unable to update password. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
-    <div className="w-full h-full bg-gray-100 p-6">
-      {/* Appearance Settings */}
-      <Card>
+    <div className="w-full h-full dark:bg-gray-900 p-6">
+      {/* Delete Account Section */}
+      <Card className=" border-destructive/50">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-destructive">
+            <Trash2 className="w-5 h-5" />
+            Delete Account
+          </CardTitle>
+          <CardDescription className="text-destructive/80">
+            Permanently remove your account and all associated data
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <DeleteAccountModal />
+        </CardContent>
+      </Card>
+
+      {/* Appearance Settings */}
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 ">
             <Sun className="w-5 h-5" />
             Appearance
           </CardTitle>
@@ -120,7 +266,7 @@ const UserSettings = () => {
                 Change Password
               </AccordionTrigger>
               <AccordionContent>
-                <form className="space-y-4">
+                <form onSubmit={handlePasswordChange} className="space-y-4">
                   <Input placeholder="Current Password" type="password" />
                   <Input placeholder="New Password" type="password" />
                   <Input placeholder="Confirm New Password" type="password" />
@@ -201,6 +347,7 @@ const UserSettings = () => {
           </div>
         </CardContent>
       </Card>
+
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Loader2 } from 'lucide-react';
+import logoImg from "./Images/logo-header.png";
 
 const Loading = () => {
   return (
@@ -34,7 +35,7 @@ const Loading = () => {
 
       {/* Bottom branding (optional) */}
       <div className="absolute bottom-4 text-sm text-slate-400 font-medium">
-        Powered by Paws Care
+        Powered by Paws Care <img src={logoImg} alt="PawsCare Logo" className="w-36" />
       </div>
     </div>
   );
