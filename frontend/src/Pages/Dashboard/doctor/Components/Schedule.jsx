@@ -5,6 +5,7 @@ import { Dialog, DialogTrigger, DialogContent, DialogTitle } from '@radix-ui/rea
 import axios from 'axios';
 import { AuthContext } from '@/contexts/AuthContext';
 import { CircleX, MessagesSquareIcon } from 'lucide-react';
+import api from '@/utils/api';
 
 const AvailabilityManager = () => {
   const { user, getToken } = useContext(AuthContext);
@@ -18,7 +19,7 @@ const AvailabilityManager = () => {
     const fetchAvailability = async () => {
       try {
         const token = await getToken();
-        const response = await axios.get(`http://localhost:4000/api/v1/getavailability/${user._id}`, {
+        const response = await api.get(`/getavailability/${user._id}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
@@ -40,8 +41,8 @@ const AvailabilityManager = () => {
   const confirmDateSelection = async () => {
     try {
       const token = await getToken();
-      await axios.put(
-        `http://localhost:4000/api/v1/setavailability/${user._id}`,
+      await api.put(
+        `/setavailability/${user._id}`,
         { date: selectedDate.toISOString().split('T')[0] },
         {
           headers: {
@@ -77,8 +78,8 @@ const AvailabilityManager = () => {
   const confirmRemoveDate = async () => {
     try {
       const token = await getToken();
-      await axios.put(
-        `http://localhost:4000/api/v1/cancleavailability/${user._id}`,
+      await api.put(
+        `/cancleavailability/${user._id}`,
         { date: removeDate },
         {
           headers: {

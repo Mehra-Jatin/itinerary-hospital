@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/card';
 import NextPatient from './NextPatient';
 import axios from 'axios';
 import { AuthContext } from '@/contexts/AuthContext';
+import api from '@/utils/api';
 
 export default function TodayAppointments() {
   const [appointments, setAppointments] = useState([]);
@@ -22,7 +23,7 @@ export default function TodayAppointments() {
         
         const token = await getToken();
         setLoading(true);
-        const response = await axios.get(`http://localhost:4000/api/v1/appointment/${user._id}`, {
+        const response = await api.get(`/appointment/${user._id}`, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${Token}`, // Ensure getToken is a function call if it fetches the token
@@ -37,8 +38,8 @@ export default function TodayAppointments() {
         }
 
         // Fetch appointments
-        const appointmentResponse = await axios.get(
-          `http://localhost:4000/api/v1/appointment/${user._id}`,
+        const appointmentResponse = await api.get(
+          `/appointment/${user._id}`,
           {
             headers: {
               'Content-Type': 'application/json',
@@ -74,8 +75,8 @@ export default function TodayAppointments() {
         const userResponses = await Promise.all(
           todayAppointments.map(async (appointment) => {
             if (appointment.userId) {
-              const userResponse = await axios.get(
-                `http://localhost:4000/api/v1/user/${appointment.userId}`,
+              const userResponse = await api.get(
+                `/user/${appointment.userId}`,
                 {
                   headers: {
                     'Content-Type': 'application/json',

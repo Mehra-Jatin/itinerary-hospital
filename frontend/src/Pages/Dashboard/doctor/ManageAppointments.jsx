@@ -3,6 +3,7 @@ import axios from 'axios';
 import * as Dialog from '@radix-ui/react-dialog';
 import { X, Check, Calendar } from 'lucide-react';
 import { AuthContext } from '@/contexts/AuthContext';
+import api from '@/utils/api';
 
 const ManageAppt = () => {
   const [appointments, setAppointments] = useState([]);
@@ -17,8 +18,8 @@ const ManageAppt = () => {
         const Token = await getToken();
 
         // Fetch appointments for the logged-in user
-        const response = await axios.get(
-          `http://localhost:4000/api/v1/appointment/${user._id}`,
+        const response = await api.get(
+          `/appointment/${user._id}`,
           {
             headers: {
               'Content-Type': 'application/json',
@@ -26,6 +27,8 @@ const ManageAppt = () => {
             },
           }
         );
+        console.log(response.data);
+        
 
         const pendingAppointments = response.data.appointment.filter(
           (appointment) => appointment.appointmentStatus === 'pending'
@@ -34,8 +37,8 @@ const ManageAppt = () => {
         // Fetch user details for each appointment
         const appointmentsWithUserDetails = await Promise.all(
           pendingAppointments.map(async (appointment) => {
-            const userResponse = await axios.get(
-              `http://localhost:4000/api/v1/user/${appointment.userId}`,
+            const userResponse = await api.get(
+              `/user/${appointment.userId}`,
               {
                 headers: {
                   'Content-Type': 'application/json',
@@ -61,8 +64,8 @@ const ManageAppt = () => {
   // Update appointment status
   const updateStatus = async (appointmentId, status) => {
     try {
-      await axios.put(
-        'http://localhost:4000/api/v1/appointment/update',
+      await api.put(
+        '/appointment/update',
         { appointmentId, status },
         {
           headers: {

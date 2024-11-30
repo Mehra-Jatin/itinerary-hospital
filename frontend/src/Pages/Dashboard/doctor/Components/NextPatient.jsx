@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Phone, FileText, MessageSquare } from 'lucide-react';
 // import { useAuth } from '@/hooks/useAuth';
 import { AuthContext } from '@/contexts/AuthContext';
+import api from '@/utils/api';
 
 const NextPatient = ({ appointment }) => {
   const [userData, setUserData] = useState(null);
@@ -13,7 +14,7 @@ const NextPatient = ({ appointment }) => {
     const fetchData = async (userId) => {
       try {
         const Token=await getToken()
-        const response = await fetch(`http://localhost:4000/api/v1/user/${userId}`, {
+        const response = await api.get(`/user/${userId}`, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${Token}`, // Ensure getToken is a function call if it fetches the token
@@ -24,8 +25,8 @@ const NextPatient = ({ appointment }) => {
         if (!response.ok) {
           throw new Error('Failed to fetch data');
         }
-        const data = await response.json();
-      //  console.log(data.user);
+        const data = response;
+       console.log(data.user);
        
         
         setUserData(data);

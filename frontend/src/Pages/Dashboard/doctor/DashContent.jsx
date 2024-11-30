@@ -125,24 +125,24 @@ export default function DashContent() {
               <div>History</div>
             </li>
           </Link>
-          <li className="p-2 rounded gap-3 cursor-pointer mb-2 flex transition-all duration-300 transform hover:bg-orange-500 hover:text-white">
-            <div className="flex gap-3">
-              <Bell className="mt-1" /> <div>Alert</div>
+        </ul>
+      </div>
+
+      {/* Logout Button */}
+      <div className="p-4 border-t-2">
+          <li className="p-2 rounded gap-3 cursor-pointer mb-2 flex transition-all duration-300 transform hover:bg-orange-500 hover:text-white ml-12">
+            <div className="flex gap-3 ">
+              <Bell className="mt-1" /> <div>Notifications</div>
             </div>
           </li>
 
           {/* Settings Option */}
           <Link to="/doctor-dashboard/settings">
-            <li className={getLinkClass("/doctor-dashboard/settings")}>
+            <li className={` ${getLinkClass("/doctor-dashboard/settings")} ml-12` }>
               <Settings />
               <div>Settings</div>
             </li>
           </Link>
-        </ul>
-      </div>
-
-      {/* Logout Button */}
-      <div className="p-4">
         <button
           type="button"
           onClick={handleLogout}

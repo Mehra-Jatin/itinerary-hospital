@@ -25,6 +25,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { Description } from "@radix-ui/react-dialog";
+import api from "@/utils/api";
 
 const AppointmentHistory = ({ userId, Token }) => {
     const [history, setHistory] = useState([]);
@@ -39,7 +40,7 @@ const AppointmentHistory = ({ userId, Token }) => {
     useEffect(() => {
         const fetchHistoryData = async () => {
             try {
-                const historyResponse = await axios.get(`http://localhost:4000/api/v1/history/${userId}`, {
+                const historyResponse = await api.get(`/history/${userId}`, {
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${Token}`,
@@ -49,7 +50,7 @@ const AppointmentHistory = ({ userId, Token }) => {
                 setHistory(historyData);
 
                 const appointmentPromises = historyData.map(async (item) => {
-                    const appointmentResponse = await axios.get(`http://localhost:4000/api/v1/appointment/${item.userId}`, {
+                    const appointmentResponse = await api.get(`/appointment/${item.userId}`, {
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${Token}`,
@@ -71,7 +72,7 @@ const AppointmentHistory = ({ userId, Token }) => {
                 setAppointments(mergedAppointments);
 
                 const userPromises = mergedAppointments.map(async (appointment) => {
-                    const userResponse = await axios.get(`http://localhost:4000/api/v1/user/${appointment.userId}`, {
+                    const userResponse = await api.get(`/user/${appointment.userId}`, {
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${Token}`,
@@ -158,7 +159,7 @@ const AppointmentHistory = ({ userId, Token }) => {
     const filteredAndSortedData = sortData(filterData(appointments), sortConfig);
 
     return (
-        <div className="p-4 md:p-6 shadow-orange-200 shadow-xl">
+        <div className="p-4 md:p-6  shadow-xl">
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-semibold">Appointment History</h2>
                 <Button onClick={() => fetchHistoryData()} className="bg-primary text-white">Refresh</Button>
