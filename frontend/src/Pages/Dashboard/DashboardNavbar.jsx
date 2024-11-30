@@ -23,7 +23,7 @@ function DashboardNavbar({ role }) {
       </p>
       <div className="flex items-center space-x-4">
         <Button variant="outline" asChild>
-          <Link href="/">Go to Main Website</Link>
+          <Link to="/">Go to Main Website</Link>
         </Button>
         
         <Popover>

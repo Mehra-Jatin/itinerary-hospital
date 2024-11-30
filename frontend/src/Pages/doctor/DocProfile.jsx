@@ -95,7 +95,7 @@ const DocProfile = () => {
 
   return (
     <div className="p-6 flex justify-center items-center">
-      <div className="w-full max-w-4xl bg-white shadow-2xl rounded-2xl overflow-hidden sm:grid sm:grid-cols-3 gap-6 p-8">
+      <div className="w-full max-w-4xl bg-white shadow-2xl rounded-2xl overflow-hidden md:grid md:grid-cols-3 gap-6 p-8">
         {/* Profile Image Section */}
         <div className="flex flex-col items-center justify-center space-y-4 my-5">
           <div className="relative">

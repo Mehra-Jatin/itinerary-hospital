@@ -13,7 +13,7 @@ const NextPatient = ({ appointment }) => {
     const fetchData = async (userId) => {
       try {
         const Token=await getToken()
-        const response = await fetch(`http://localhost:4000/api/v1/user/${userId}`, {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/user/${userId}`, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${Token}`, // Ensure getToken is a function call if it fetches the token
