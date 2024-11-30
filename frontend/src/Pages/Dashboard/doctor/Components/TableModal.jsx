@@ -10,7 +10,7 @@ const Modal = ({ appointment, closeModal, updateStatus }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 animate-fadeIn z-50">
-      <div className="bg-white rounded shadow-lg w-11/12 sm:w-2/3 lg:w-1/3 max-h-96 overflow-auto relative animate-slideUp mb-3">
+      <div className="bg-white rounded shadow-lg w-11/12 sm:w-2/3 lg:w-3/3 max-h-96 overflow-auto relative animate-slideUp mb-3">
         {/* Close Button */}
         <button
           className="absolute top-2 right-2 text-gray-600 hover:text-gray-900 text-xl"

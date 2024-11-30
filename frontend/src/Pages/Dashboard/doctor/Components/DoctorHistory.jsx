@@ -159,7 +159,7 @@ const AppointmentHistory = ({ userId, Token }) => {
     const filteredAndSortedData = sortData(filterData(appointments), sortConfig);
 
     return (
-        <div className="p-4 md:p-6 shadow-orange-200 shadow-xl">
+        <div className="p-4 md:p-6  shadow-xl">
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-semibold">Appointment History</h2>
                 <Button onClick={() => fetchHistoryData()} className="bg-primary text-white">Refresh</Button>

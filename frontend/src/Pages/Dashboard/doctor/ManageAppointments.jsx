@@ -27,6 +27,8 @@ const ManageAppt = () => {
             },
           }
         );
+        console.log(response.data);
+        
 
         const pendingAppointments = response.data.appointment.filter(
           (appointment) => appointment.appointmentStatus === 'pending'

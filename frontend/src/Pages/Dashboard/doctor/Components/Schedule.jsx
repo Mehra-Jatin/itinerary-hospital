@@ -24,6 +24,8 @@ const AvailabilityManager = () => {
             'Authorization': `Bearer ${token}`,
           },
         });
+        console.log(response);
+        
         setScheduledDates(response.data.availablity);
       } catch (error) {
         console.error(error);

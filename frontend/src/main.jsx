@@ -43,6 +43,8 @@ import PatientMessages from "./Pages/Dashboard/admin/pages/PatientMessages";
 import ManageAppt from "./Pages/Dashboard/doctor/ManageAppointments";
 import UserSettings from "./Pages/Dashboard/doctor/Settings";
 import UserMessages from "./Pages/Dashboard/admin/pages/UserMessages";
+import Contacts from "./Pages/Contacts";
+import Blogs from "./Pages/Blogs";
 
 // Define the router configuration with routes
 const router = createBrowserRouter([
@@ -53,6 +55,14 @@ const router = createBrowserRouter([
       {
         path: "", // This will now render the Home component when navigating to "/"
         element: <Home />, // The component for the homepage
+      },
+      {
+        path: "contacts", // This will now render the Home component when navigating to "/contacts"
+        element: <Contacts />, // The component for the Contacts
+      },
+      {
+        path: "blog", // This will now render the Home component when navigating to "/blog"
+        element: <Blogs />, // The component for the Blog
       },
       {
         path: "doctor", // This will render the Doctor component at "/doctor"
