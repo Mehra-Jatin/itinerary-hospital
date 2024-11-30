@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
-import axios from 'axios';
+// import axios from 'axios';
 import Modal from './Components/TableModal';
 import { AuthContext } from '@/contexts/AuthContext';
+import api from '@/utils/api';
 
 const DocAppointment = () => {
   const [appointments, setAppointments] = useState([]);
@@ -23,7 +24,7 @@ const DocAppointment = () => {
   const fetchAppointments = async () => {
     const Token = await getToken();
     try {
-      const response = await axios.get(`http://localhost:4000/api/v1/appointment/${user._id}`, {
+      const response = await api.get(`/appointment/${user._id}`, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${Token}`,
@@ -32,8 +33,8 @@ const DocAppointment = () => {
 
       const appointmentsWithUserDetails = await Promise.all(
         response.data.appointment.map(async (appointment) => {
-          const userResponse = await axios.get(
-            `http://localhost:4000/api/v1/user/${appointment.userId}`,
+          const userResponse = await api.get(
+            `/user/${appointment.userId}`,
             {
               headers: {
                 'Content-Type': 'application/json',
@@ -69,8 +70,8 @@ const DocAppointment = () => {
   const updateAppointmentStatus = async (status) => {
     const Token = await getToken();
     try {
-      await axios.put(
-        `http://localhost:4000/api/v1/appointment/update`,
+      await api.put(
+        `/appointment/update`,
         {
           appointmentId: selectedAppointment._id,
           status: status,

@@ -107,7 +107,7 @@ export default function Navbar() {
                           <LayoutDashboard className="mr-2 h-4 w-4" /> Go to Dashboard
                         </DropdownMenuItem>
                       </NavLink>
-                      <NavLink to="/doctor-dashboard/appointements" className="flex items-center hover:bg-gray-100 rounded-sm transition duration-150 cursor-pointer">
+                      <NavLink to="/doctor-dashboard/appointments/manage-appointments" className="flex items-center hover:bg-gray-100 rounded-sm transition duration-150 cursor-pointer">
                         <DropdownMenuItem className="cursor-pointer">
                           <Calendar className="mr-2 h-4 w-4" /> Manage Appoientments
                         </DropdownMenuItem>
@@ -117,7 +117,7 @@ export default function Navbar() {
                           <CalendarSearch className="mr-2 h-4 w-4" /> My Schedules
                         </DropdownMenuItem>
                       </NavLink>
-                      <NavLink to="/doctor-dashboard/chats" className="flex items-center hover:bg-gray-100 rounded-sm transition duration-150 cursor-pointer">
+                      <NavLink to="/doctor-dashboard/messages" className="flex items-center hover:bg-gray-100 rounded-sm transition duration-150 cursor-pointer">
                         <DropdownMenuItem className="cursor-pointer">
                           <MessageSquareText className="mr-2 h-4 w-4" /> Chats
                         </DropdownMenuItem>
