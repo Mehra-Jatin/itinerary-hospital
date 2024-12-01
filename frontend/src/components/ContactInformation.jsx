@@ -62,7 +62,7 @@ const ContactForm = () => {
         >
           <h2 className="text-2xl font-bold mb-4">Contact Information</h2>
           <p className="mb-8">
-            Get in touch with Rimberbo for any inquiries about our telemedicine services. 
+            Get in touch with Televets for any inquiries about our telemedicine services. 
             We're here to help you access quality healthcare from anywhere.
           </p>
 
@@ -73,7 +73,7 @@ const ContactForm = () => {
             </div>
             <div className="flex items-center">
               <Mail className="fill-orange-300 mr-3" />
-              <span><a href="mailto:contact@rimberbo.com">contact@rimberbo.com</a></span>
+              <span><a href="mailto:contact@Televets.com">contact@televets.com</a></span>
             </div>
             <div className="flex items-center">
               <MapPin className="fill-orange-300 mr-3" />

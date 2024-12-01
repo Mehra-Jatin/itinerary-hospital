@@ -6,7 +6,7 @@ import { createBrowserRouter, Link, RouterProvider } from "react-router-dom";
 import Home from "./Pages/Home.jsx"; // Import the Home component
 import Doctor from "./Pages/Doctor.jsx";
 import DoctorProfile from "./Pages/DoctorProfile.jsx";
-import BookAppointment from "./Pages/BookAppointment";
+import BookAppointment from "./Pages/Book_Appoientment/BookAppointment";
 import UserProfile from "./Pages/user/UserProfile.jsx";
 import UserAppoienments from "./Pages/user/UserAppoienments.jsx";
 import UserSetting from "./Pages/user/UserSetting.jsx";

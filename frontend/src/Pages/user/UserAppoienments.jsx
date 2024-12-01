@@ -1,18 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { usePatient } from '@/contexts/PatientContext';
-import {
-    Calendar,
-    Clock,
-    MessageSquare,
-    AlertCircle,
-    MoreVertical,
-    ChevronLeft,
-    ChevronRight,
-    User,
-    CalendarClock,
-    ArrowRight,
-    X
-} from 'lucide-react';
+import { Calendar, Clock, MessageSquare, AlertCircle, MoreVertical, ChevronLeft, ChevronRight, User, CalendarClock, ArrowRight, X, Stethoscope, Mail, Phone } from 'lucide-react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -30,26 +18,56 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useDoctor } from '@/contexts/DoctorContext';
 
 const ITEMS_PER_PAGE = 6;
 
 const AppointmentList = () => {
     const { user } = useAuth();
-    const { isLoading, error, appointmentHistory, fetchAppointmentHistory, fetchAppointment } = usePatient();
+    const { isLoading, error, fetchAppointment, BookedAppointments } = usePatient();
     const [currentPage, setCurrentPage] = useState(1);
     const [chatOpen, setChatOpen] = useState(null);
     const [chatMessage, setChatMessage] = useState('');
     const [chatHistory, setChatHistory] = useState({});
     const [rescheduleDialog, setRescheduleDialog] = useState({ open: false, appointmentId: null });
 
+    const { doctors } = useDoctor();
+
     useEffect(() => {
         if (user?._id) {
             fetchAppointment(user._id).catch(console.error);
         }
     }, [user, fetchAppointment]);
+    
+    // Memoized sorted appointments
+    const sortedAppointments = useMemo(() => {
+        return [...BookedAppointments].sort((a, b) => {
+            const dateA = new Date(a.date).getTime();
+            const dateB = new Date(b.date).getTime();
+    
+            if (isNaN(dateA) || isNaN(dateB)) {
+                console.error("Invalid date detected", { a, b });
+                return 0; // Treat invalid dates as equal
+            }
+    
+            return dateA - dateB;
+        });
+    }, [BookedAppointments]);
+    
 
-    const totalPages = Math.ceil(appointmentHistory.length / ITEMS_PER_PAGE);
-    const paginatedAppointments = appointmentHistory.slice(
+    const isAppointmentNow = (appointmentDate, appointmentTime) => {
+        const now = new Date();
+        const appointmentDateTime = new Date(`${appointmentDate}T${appointmentTime}`);
+        
+        // Check if the appointment is today and within the current hour
+        return (
+            now.toDateString() === appointmentDateTime.toDateString() &&
+            now.getHours() === appointmentDateTime.getHours()
+        );
+    };
+
+    const totalPages = Math.ceil(sortedAppointments.length / ITEMS_PER_PAGE);
+    const paginatedAppointments = sortedAppointments.slice(
         (currentPage - 1) * ITEMS_PER_PAGE,
         currentPage * ITEMS_PER_PAGE
     );
@@ -110,7 +128,7 @@ const AppointmentList = () => {
         );
     }
 
-    if (appointmentHistory.length === 0) {
+    if (sortedAppointments.length === 0) {
         return (
             <div className="bg-gradient-to-b from-orange-50 to-white">
                 <div className="max-w-4xl mx-auto pt-16 px-4">
@@ -142,7 +160,7 @@ const AppointmentList = () => {
         <div className="py-8">
             <div className="max-w-4xl mx-auto px-4">
                 <div className="flex items-center justify-between mb-8">
-                    <h1 className="text-3xl font-bold text-orange-800">Your Appointments</h1>
+                    <h1 className="text-3xl font-bold text-orange-800">Your Upcoming Appointments</h1>
                     <Link to="/doctor">
                         <Button className="bg-orange-600 hover:bg-orange-700 text-white rounded-full px-6">
                             Book New
@@ -151,107 +169,121 @@ const AppointmentList = () => {
                 </div>
 
                 <div className="space-y-4">
-                    {paginatedAppointments.map((appointment) => (
-                        <div
-                            key={appointment._id}
-                            className="bg-white rounded-xl shadow-sm border border-orange-100 p-6 
-                                transition-all duration-300 hover:shadow-md hover:border-orange-200"
-                        >
-                            <div className="flex justify-between items-start">
-                                <div className="space-y-3">
-                                    <div className="flex items-center space-x-3">
-                                        <User className="w-5 h-5 text-orange-600" />
-                                        <h3 className="font-semibold text-lg text-orange-800">
-                                            Dr. {appointment.doctorName}
-                                        </h3>
-                                    </div>
+                    {paginatedAppointments.map((appointment) => {
+                        const doctor = doctors.find((doc) => doc._id === appointment.doctorId);
+                        const canChat = isAppointmentNow(appointment.date, appointment.time);
 
-                                    <div className="flex items-center space-x-6 text-sm text-orange-600">
-                                        <div className="flex items-center space-x-2">
-                                            <Clock className="w-4 h-4" />
-                                            <span>{appointment.time}</span>
+                        return (
+                            <div
+                                key={appointment._id}
+                                className="bg-white rounded-xl shadow-sm border border-orange-100 p-6 
+                                    transition-all duration-300 hover:shadow-md hover:border-orange-200"
+                            >
+                                <div className="flex justify-between items-start">
+                                    <div className="space-y-3">
+                                        <div className="flex items-center space-x-3">
+                                            <User className="w-5 h-5 text-orange-600" />
+                                            <h3 className="font-semibold text-xl capitalize">
+                                                Dr. {doctor ? `${doctor.FirstName} ${doctor.LastName}` : 'Unknown'}
+                                            </h3> 
+                                            <span className='text-sm italic text-gray-400'>{doctor.specialization}</span>
                                         </div>
-                                        <div className="flex items-center space-x-2">
-                                            <Calendar className="w-4 h-4" />
-                                            <span>{new Date(appointment.date).toLocaleDateString()}</span>
-                                        </div>
-                                    </div>
 
-                                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(appointment.status)}`}>
-                                        {appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
-                                    </span>
-                                </div>
-
-                                <div className="flex items-center space-x-3">
-                                    {appointment.status === 'confirmed' && (
-                                        <Button
-                                            onClick={() => handleChat(appointment._id)}
-                                            className="bg-orange-100 hover:bg-orange-200 text-orange-600"
-                                            size="sm"
-                                        >
-                                            <MessageSquare className="w-4 h-4 mr-2" />
-                                            Chat
-                                        </Button>
-                                    )}
-
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                className="border-orange-200 text-orange-600 hover:bg-orange-50"
-                                            >
-                                                <MoreVertical className="w-4 h-4" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent className="w-48">
-                                            <DropdownMenuItem
-                                                onClick={() => handleReschedule(appointment._id)}
-                                                className="text-orange-600 focus:text-orange-700 focus:bg-orange-50"
-                                            >
-                                                <Calendar className="w-4 h-4 mr-2" />
-                                                Reschedule
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem
-                                                className="text-red-600 focus:text-red-700 focus:bg-red-50"
-                                            >
-                                                <X className="w-4 h-4 mr-2" />
-                                                Cancel
-                                            </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </div>
-                            </div>
-
-                            {chatOpen === appointment._id && (
-                                <div className="mt-6 border-t border-orange-100 pt-6">
-                                    <div className="bg-orange-50 rounded-xl p-4 h-48 overflow-y-auto mb-4">
-                                        {(chatHistory[appointment._id] || []).map((msg, idx) => (
-                                            <div key={idx} className="mb-3">
-                                                <p className="text-sm bg-white text-orange-800 p-3 rounded-lg inline-block shadow-sm">
-                                                    {msg}
-                                                </p>
+                                        <div className="flex items-center space-x-6 text-sm">
+                                            <div className="flex items-center space-x-2 text-lg font-semibold bg-gray-100 px-3 py-1 rounded-full">
+                                                <Clock className="w-4 h-4" />
+                                                <span>{appointment.time}</span>
                                             </div>
-                                        ))}
+                                            <div className="flex items-center space-x-2 text-lg font-semibold bg-gray-100 px-3 py-1 rounded-full" title='Date: MM/DD/YYYY'>
+                                                <Calendar className="w-4 h-4" />
+                                                <span>{new Date(appointment.date).toLocaleDateString()}</span>
+                                            </div>
+                                        </div>
+
+                                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(appointment.appointmentStatus)}`}>
+                                            {appointment.appointmentStatus.charAt(0).toUpperCase() + appointment.appointmentStatus.slice(1)}
+                                        </span>
                                     </div>
-                                    <div className="flex space-x-3">
-                                        <Input
-                                            value={chatMessage}
-                                            onChange={(e) => setChatMessage(e.target.value)}
-                                            placeholder="Type your message..."
-                                            className="flex-1 border-orange-200 focus:border-orange-400 focus:ring-orange-400"
-                                        />
-                                        <Button
-                                            onClick={() => sendMessage(appointment._id)}
-                                            className="bg-orange-600 hover:bg-orange-700 text-white"
-                                        >
-                                            Send
-                                        </Button>
+
+                                    <div className="flex items-center space-x-3">
+                                        {canChat && appointment.appointmentStatus === 'confirmed' ? (
+                                            <Button
+                                                onClick={() => handleChat(appointment._id)}
+                                                className="bg-orange-100 hover:bg-orange-200 text-orange-600"
+                                                size="sm"
+                                            >
+                                                <MessageSquare className="w-4 h-4 mr-2" />
+                                                Chat
+                                            </Button>
+                                        ) : (
+                                            <Button
+                                                className="bg-orange-100 hover:bg-orange-200 text-orange-600 cursor-not-allowed"
+                                                size="sm"
+                                                disabled
+                                            >
+                                               Chat will be available on time
+                                            </Button>
+                                        )}
+
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="border-orange-200 text-orange-600 hover:bg-orange-50"
+                                                >
+                                                    <MoreVertical className="w-4 h-4" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent className="w-48">
+                                                <DropdownMenuItem
+                                                    onClick={() => handleReschedule(appointment._id)}
+                                                    className="text-orange-600 focus:text-orange-700 focus:bg-orange-50"
+                                                >
+                                                    <Calendar className="w-4 h-4 mr-2" />
+                                                    Reschedule
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem
+                                                    className="text-red-600 focus:text-red-700 focus:bg-red-50"
+                                                >
+                                                    <X className="w-4 h-4 mr-2" />
+                                                    Cancel
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
                                     </div>
                                 </div>
-                            )}
-                        </div>
-                    ))}
+
+                                {chatOpen === appointment._id && canChat && (
+                                    <div className="mt-6 border-t border-orange-100 pt-6">
+                                        <div className="bg-orange-50 rounded-xl p-4 h-48 overflow-y-auto mb-4">
+                                            {(chatHistory[appointment._id] || []).map((msg, idx) => (
+                                                <div key={idx} className="mb-3">
+                                                    <p className="text-sm bg-white text-orange-800 p-3 rounded-lg inline-block shadow-sm">
+                                                        {msg}
+                                                    </p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <div className="flex space-x-3">
+                                            <Input
+                                                value={chatMessage}
+                                                onChange={(e) => setChatMessage(e.target.value)}
+                                                placeholder="Type your message..."
+                                                className="flex-1 border-orange-200 focus:border-orange-400 focus:ring-orange-400"
+                                            />
+                                            <Button
+                                                onClick={() => sendMessage(appointment._id)}
+                                                className="bg-orange-600 hover:bg-orange-700 text-white"
+                                            >
+                                                Send
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
                 </div>
 
                 {totalPages > 1 && (
@@ -281,6 +313,7 @@ const AppointmentList = () => {
                 )}
             </div>
 
+            {/* Reschedule Dialog remains the same */}
             <Dialog
                 open={rescheduleDialog.open}
                 onOpenChange={() => setRescheduleDialog({ open: false, appointmentId: null })}

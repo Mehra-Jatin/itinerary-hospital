@@ -1,10 +1,7 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-// import AuthModal from "../../../../Backend/authModal";
 import { TiArrowRight } from "react-icons/ti";
 
-const Banner = ({ isAuth }) => {
-    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+const Banner = () => {
     const router = useNavigate();
 
     return (
@@ -16,7 +13,7 @@ const Banner = ({ isAuth }) => {
                         Book Appointment<br />With <span className="text-orange-200">100+</span> Trusted Doctors
                     </h2>
                     <button 
-                        onClick={() => setIsAuthModalOpen(true)}
+                        onClick={() => router('/auth/register')}
                         className="inline-flex items-center px-6 py-3 text-orange-700 font-semibold bg-white text-lg rounded-full hover:bg-orange-100 transition-all duration-300 shadow-md hover:shadow-lg"
                     >
                         <span>Create An Account</span>
@@ -29,10 +26,6 @@ const Banner = ({ isAuth }) => {
                 </div>
             </div>
 
-            {/* <AuthModal
-                isOpen={isAuthModalOpen}
-                onClose={() => setIsAuthModalOpen(false)}
-            /> */}
         </div>
     );
 }

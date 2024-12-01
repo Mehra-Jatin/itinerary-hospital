@@ -11,6 +11,7 @@ import {
   LogOut,
   ChevronDown,
   ChevronUp,
+  Dot,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -59,8 +60,8 @@ const DashContent = () => {
       icon: Users,
       label: "Appointments",
       subItems: [
-        { path: "/doctor-dashboard/appointments/manage-appointments", label: "Manage Appointments" },
-        { path: "/doctor-dashboard/appointments/view-appointments", label: "View Appointments" },
+        { path: "/doctor-dashboard/appointments/manage-appointments",icon: Dot, label: "Manage Appointments" },
+        { path: "/doctor-dashboard/appointments/view-appointments",icon: Dot, label: "View Appointments" },
       ],
     },
     { path: "/doctor-dashboard/messages", icon: MessageSquareText, label: "Messages" },
@@ -111,6 +112,7 @@ const DashContent = () => {
                       {item.subItems.map((subItem) => (
                         <li key={subItem.path}>
                           <Link to={subItem.path} className={getLinkClass(subItem.path, true)}>
+                          <subItem.icon className="w-5 h-5" />
                             <span className="flex-grow">{subItem.label}</span>
                           </Link>
                         </li>

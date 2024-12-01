@@ -40,9 +40,19 @@ const DoctorProfile = () => {
   const { doctors, loading, error } = useDoctor();
   const { user } = useAuth();
 
-  // Find the specific doctor using the ID
-  const doctor = doctors.find((doc) => doc._id === id);
+ 
+  
 
+  // Find the specific doctor using the ID
+  const doctor = doctors.find((doc) => doc._id === id) || {
+    FirstName: 'Unknown',
+    LastName: 'Doctor',
+    profileDescription: 'No profile description available.',
+    specialization: 'General Medicine',
+    hospital: 'Unknown Hospital',
+  };
+//  console.log(doctor);
+ 
   const [activeTab, setActiveTab] = useState('overview');
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
@@ -51,18 +61,18 @@ const DoctorProfile = () => {
     return (
       <Loading />
     );
-  }
-  if (!doctor) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <h2 className="text-xl font-semibold text-gray-800 mb-2">Doctor Not Found</h2>
-        <p className="text-gray-600 mb-4">The doctor profile you're looking for doesn't exist.</p>
-        <Button onClick={() => navigate('/doctors')}>
-          View All Doctors
-        </Button>
-      </div>
-    );
-  }
+  } 
+  // if (!doctor) {
+  //   return (
+  //     <div className="flex flex-col items-center justify-center min-h-screen">
+  //       <h2 className="text-xl font-semibold text-gray-800 mb-2">Doctor Not Found</h2>
+  //       <p className="text-gray-600 mb-4">The doctor profile you're looking for doesn't exist.</p>
+  //       <Button onClick={() => navigate('/doctors')}>
+  //         View All Doctors
+  //       </Button>
+  //     </div>
+  //   );
+  // }
 
   // Handle appointment booking
   const handleBookAppointment = () => {
@@ -95,7 +105,7 @@ const DoctorProfile = () => {
       <div className="mt-20 grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Doctor Info Card */}
+
           <Card>
             <CardContent className="pt-6">
               <div className="space-y-4">
@@ -121,7 +131,7 @@ const DoctorProfile = () => {
                     <div>
                       <div className="text-sm font-medium">Available</div>
                       <div className="text-xs text-gray-600">
-                        {doctor.availability || 'Full-time'}
+                        {doctor.availability ? 'Full-time' : 'Part-time'}
                       </div>
                     </div>
                   </div>
@@ -144,7 +154,7 @@ const DoctorProfile = () => {
             </CardContent>
           </Card>
 
-          {/* Tabs Section */}
+ 
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -248,7 +258,7 @@ const DoctorProfile = () => {
                 size="lg"
                 onClick={() => navigate('/auth/register')}
               >
-                Please Login to Book Appointment
+                Login / Register to book
               </Button></div>
               
             )}
@@ -276,6 +286,11 @@ const DoctorProfile = () => {
         </div>
       </div>
     </div>
+    // <div> <img
+    //         src={doctor.profileImage || "https://cdn-icons-png.flaticon.com/512/6660/6660279.png"}
+    //         alt={`Dr. ${doctor.FirstName} ${doctor.LastName}`}
+    //         className="w-full h-full object-cover"
+    //       /></div>
   );
 };
 

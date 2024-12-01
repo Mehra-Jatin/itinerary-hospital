@@ -9,6 +9,7 @@ export const PatientProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [appointmentHistory, setAppointmentHistory] = useState([]);
   const { getToken, logout } = useAuth();
+  const [BookedAppointments, setBookedAppointments] = useState([]);
 
   const handleApiError = (err) => {
     console.error('API Error:', err);
@@ -53,7 +54,7 @@ export const PatientProvider = ({ children }) => {
 
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const config = await getRequestConfig();
       const sanitizedData = {
@@ -84,7 +85,7 @@ export const PatientProvider = ({ children }) => {
 
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const config = await getRequestConfig();
       const response = await api.delete(`/user/${userId}`, config);
@@ -99,6 +100,55 @@ export const PatientProvider = ({ children }) => {
     }
   }, [getToken, logout]);
 
+  const BookAppointment = useCallback(async (formData) => {
+    if (!formData) {
+      throw new Error('form data are required');
+    }
+    if (!formData.doctorId) {
+      throw new Error('Doctor ID is required');
+    }
+
+    if (!formData.userId) {
+      throw new Error('User ID is required');
+    }
+
+    if (!formData.date) {
+      throw new Error('Date is required');
+    }
+
+    if (!formData.time) {
+      throw new Error('Time is required');
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const config = await getRequestConfig();
+      const response = await api.post(`/user/bookappointment`, formData, config);
+      setIsLoading(false);
+      return response.data;
+    } catch (err) {
+      const errorMessage = handleApiError(err);
+      setError(errorMessage);
+      setIsLoading(false);
+      throw new Error(errorMessage);
+    }
+  }, [getToken, logout]);
+
+  const fetchAppointment = useCallback(async (id) => {
+    try {
+      const config = await getRequestConfig();
+      const response = await api.get(`/appointment/${id}`, config);
+      setBookedAppointments(response.data.appointment);
+      return response.data;
+    } catch (err) {
+      const errorMessage = handleApiError(err);
+      setError(errorMessage);
+      throw new Error(errorMessage);
+    }
+  }, [getToken, logout]);
+
   const fetchAppointmentHistory = useCallback(async (userId) => {
     if (!userId) {
       throw new Error('User ID is required');
@@ -106,11 +156,11 @@ export const PatientProvider = ({ children }) => {
 
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const config = await getRequestConfig();
       const response = await api.get(`/history/${userId}`, config);
-      
+
       if (response.data.success) {
         const transformedData = response.data.history.map(appointment => ({
           _id: appointment._id,
@@ -141,18 +191,6 @@ export const PatientProvider = ({ children }) => {
     setError(null);
   }, []);
 
-  const fetchAppointment = useCallback(async (id) => {
-    try {
-      const config = await getRequestConfig();
-      const response = await api.get(`/appointment/${id}`, config);
-      return response.data;
-    } catch (err) {
-      const errorMessage = handleApiError(err);
-      setError(errorMessage);
-      throw new Error(errorMessage);
-    }
-  }, [getToken, logout]);
-
   const value = {
     isLoading,
     error,
@@ -161,7 +199,9 @@ export const PatientProvider = ({ children }) => {
     deletePatientAccount,
     fetchAppointmentHistory,
     clearAppointmentHistory,
-    fetchAppointment
+    fetchAppointment,
+    BookAppointment,
+    BookedAppointments
   };
 
   return (
