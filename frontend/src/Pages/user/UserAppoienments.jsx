@@ -1,59 +1,80 @@
-import { useState, useEffect } from 'react';
-import { FiMessageSquare, FiTrash2, FiX, FiCalendar, FiClock, FiUser, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import React, { useState, useEffect } from 'react';
+import { usePatient } from '@/contexts/PatientContext';
+import {
+    Calendar,
+    Clock,
+    MessageSquare,
+    AlertCircle,
+    MoreVertical,
+    ChevronLeft,
+    ChevronRight,
+    User,
+    CalendarClock,
+    ArrowRight,
+    X
+} from 'lucide-react';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Link } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 
-// Sample appointment data
-const sampleAppointments = [
-    { id: 1, name: 'Dr. John Doe', date: '2023-07-15', time: '10:00 AM', status: 'pending' },
-    { id: 2, name: 'Dr. Jane Smith', date: '2023-07-16', time: '11:00 AM', status: 'completed' },
-    { id: 3, name: 'Dr. Michael Johnson', date: '2023-07-17', time: '12:00 PM', status: 'cancelled' },
-    { id: 4, name: 'Dr. Emily Brown', date: '2023-07-18', time: '2:00 PM', status: 'pending' },
-    { id: 5, name: 'Dr. David Lee', date: '2023-07-19', time: '3:00 PM', status: 'pending' },
-    { id: 6, name: 'Dr. Sarah Wilson', date: '2023-07-20', time: '4:00 PM', status: 'pending' },
-    { id: 7, name: 'Dr. Robert Taylor', date: '2023-07-21', time: '5:00 PM', status: 'pending' },
-    { id: 8, name: 'Dr. Lisa Anderson', date: '2023-07-22', time: '6:00 PM', status: 'pending' },
-];
+const ITEMS_PER_PAGE = 6;
 
-export default function UserAppointments() {
-    const [appointments, setAppointments] = useState([]);
-    const [loading, setLoading] = useState(true);
+const AppointmentList = () => {
+    const { user } = useAuth();
+    const { isLoading, error, appointmentHistory, fetchAppointmentHistory, fetchAppointment } = usePatient();
+    const [currentPage, setCurrentPage] = useState(1);
     const [chatOpen, setChatOpen] = useState(null);
     const [chatMessage, setChatMessage] = useState('');
     const [chatHistory, setChatHistory] = useState({});
-    const [currentPage, setCurrentPage] = useState(1);
-    const [direction, setDirection] = useState(0);
-
-    const appointmentsPerPage = 3;
-    const totalPages = appointments.length > 0 ? Math.ceil(appointments.length / appointmentsPerPage) : 0;
+    const [rescheduleDialog, setRescheduleDialog] = useState({ open: false, appointmentId: null });
 
     useEffect(() => {
-        // Simulating an API call
-        const fetchAppointments = async () => {
-            setLoading(true);
-            setTimeout(() => {
-                setAppointments(sampleAppointments);
-                setLoading(false);
-            }, 1000);
-        };
+        if (user?._id) {
+            fetchAppointment(user._id).catch(console.error);
+        }
+    }, [user, fetchAppointment]);
 
-        fetchAppointments();
-    }, []);
+    const totalPages = Math.ceil(appointmentHistory.length / ITEMS_PER_PAGE);
+    const paginatedAppointments = appointmentHistory.slice(
+        (currentPage - 1) * ITEMS_PER_PAGE,
+        currentPage * ITEMS_PER_PAGE
+    );
 
-    const handleCancelAppointment = (id) => {
-        setAppointments(prevAppointments => prevAppointments.map(app =>
-            app.id === id ? { ...app, status: 'cancelled' } : app
-        ));
+    const getStatusColor = (status) => {
+        switch (status) {
+            case 'confirmed':
+                return 'bg-green-100 text-green-700 border-green-200';
+            case 'pending':
+                return 'bg-orange-100 text-orange-700 border-orange-200';
+            case 'completed':
+                return 'bg-blue-100 text-blue-700 border-blue-200';
+            case 'cancelled':
+                return 'bg-red-100 text-red-700 border-red-200';
+            default:
+                return 'bg-gray-100 text-gray-700 border-gray-200';
+        }
     };
 
-    const handleDeleteAppointment = (id) => {
-        setAppointments(prevAppointments => prevAppointments.filter(app => app.id !== id));
-    };
-
-    const toggleChat = (id) => {
+    const handleChat = (id) => {
         setChatOpen(chatOpen === id ? null : id);
         setChatMessage('');
     };
 
-    const sendChatMessage = (id) => {
+    const sendMessage = (id) => {
         if (chatMessage.trim()) {
             setChatHistory(prev => ({
                 ...prev,
@@ -63,224 +84,248 @@ export default function UserAppointments() {
         }
     };
 
-    const getStatusColor = (status) => {
-        switch (status) {
-            case 'pending': return 'bg-orange-100 text-orange-800';
-            case 'completed': return 'bg-green-100 text-green-800';
-            case 'cancelled': return 'bg-red-100 text-red-800';
-            default: return 'bg-gray-100 text-gray-800';
-        }
+    const handleReschedule = (appointmentId) => {
+        setRescheduleDialog({ open: true, appointmentId });
     };
 
-    const changePage = (newPage) => {
-        setDirection(newPage > currentPage ? 1 : -1);
-        setCurrentPage(newPage);
-    };
-
-    if (loading) {
-        return <div className='flex items-center justify-center text-3xl font-bold animate-pulse text-orange-600 h-[20vh]'>Loading appointments...</div>;
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center h-[50vh]">
+                <div className="text-2xl text-orange-600 animate-pulse flex items-center">
+                    <CalendarClock className="w-8 h-8 mr-3" />
+                    Loading appointments...
+                </div>
+            </div>
+        );
     }
 
-    if (appointments.length === 0) {
+    if (error) {
         return (
-            <div className="">
-                <div className="relative text-white overflow-hidden">
-                    <div className="absolute inset-0">
-                        <div className="absolute inset-0 bg-orange-500 opacity-50 mix-blend-multiply"></div>
-                    </div>
-                    <div className="relative max-w-7xl mx-auto py-24 px-4 sm:py-32 sm:px-6 lg:px-8">
-                        <div className="text-center animate-fade-in-down">
-                            <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
-                                You don't Have Any <span className="text-orange-900">Appointments</span>
-                            </h1>
-                            <p className="mt-6 max-w-3xl mx-auto text-xl text-orange-100 animate-fade-in-up">
-                                Book an appointment in the <span className='italic font-semibold'>doctors section</span>
-                            </p>
-                        </div>
-                        <div className="mt-10 flex justify-center animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-                            <button className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-orange-700 bg-white hover:bg-orange-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105">
-                                Book An Appointment
-                            </button>
-                        </div>
+            <div className="flex items-center justify-center h-screen">
+                <div className="text-red-600 flex items-center">
+                    <AlertCircle className="w-6 h-6 mr-2" />
+                    {error}
+                </div>
+            </div>
+        );
+    }
+
+    if (appointmentHistory.length === 0) {
+        return (
+            <div className="bg-gradient-to-b from-orange-50 to-white">
+                <div className="max-w-4xl mx-auto pt-16 px-4">
+                    <div className="text-center">
+                        <Calendar className="w-20 h-20 text-orange-400 mx-auto mb-6" />
+                        <h2 className="text-3xl font-bold text-orange-800 mb-4">No Appointments Found</h2>
+                        <p className="text-orange-600 mb-8 max-w-md mx-auto">
+                            You don't have any appointments scheduled. Would you like to book a new appointment?
+                        </p>
+                        <Link to="/doctor">
+                            <Button 
+                                variant="outline"
+                                className="relative overflow-hidden px-8 py-2 rounded-full 
+                                transition-all duration-300 transform hover:shadow-lg group"
+                            >
+                                <span className="relative z-10 flex items-center gap-5">
+                                    <span>Schedule New Appointment</span>
+                                    <ArrowRight className="group-hover:flex hidden transition duration-150" />
+                                </span>
+                            </Button>
+                        </Link>
                     </div>
                 </div>
             </div>
         );
     }
 
-    const paginatedAppointments = appointments.slice(
-        (currentPage - 1) * appointmentsPerPage,
-        currentPage * appointmentsPerPage
-    );
-
     return (
-        <div className="p-4">
-            <h1 className="text-3xl font-bold text-orange-800 mb-6">Your Appointments</h1>
-            <div className="space-y-6 mb-6">
-                {paginatedAppointments.map((appointment, index) => (
-                    <div
-                        key={appointment.id}
-                        className={`bg-white rounded-lg p-4 shadow-md hover:shadow-lg transition-all duration-300 ${
-                            index % 2 === 0 ? 'animate-fade-in-left' : 'animate-fade-in-right'
-                        }`}
-                    >
-                        <div className="flex justify-between items-start">
-                            <div>
-                                <h3 className="text-lg font-semibold text-orange-700">{appointment.name}</h3>
-                                <div className="mt-2 space-y-1">
-                                    <p className="text-sm text-orange-600 flex items-center">
-                                        <FiCalendar className="mr-2" />
-                                        {appointment.date}
-                                    </p>
-                                    <p className="text-sm text-orange-600 flex items-center">
-                                        <FiClock className="mr-2" />
-                                        {appointment.time}
-                                    </p>
-                                    <p className={`text-sm font-medium inline-flex items-center px-2.5 py-0.5 rounded-full ${getStatusColor(appointment.status)}`}>
-                                        <FiUser className="mr-1" />
-                                        {appointment.status}
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex space-x-2">
-                                <button
-                                    onClick={() => toggleChat(appointment.id)}
-                                    className="text-orange-600 hover:text-orange-800 transition-colors duration-200"
-                                    aria-label="Chat"
-                                >
-                                    <FiMessageSquare size={20} />
-                                </button>
-                                {appointment.status === 'pending' ? (
-                                    <button
-                                        onClick={() => handleCancelAppointment(appointment.id)}
-                                        className="text-red-600 hover:text-red-800 transition-colors duration-200"
-                                        aria-label="Cancel appointment"
-                                    >
-                                        <FiX size={20} />
-                                    </button>
-                                ) : (
-                                    <button
-                                        onClick={() => handleDeleteAppointment(appointment.id)}
-                                        className="text-red-600 hover:text-red-800 transition-colors duration-200"
-                                        aria-label="Delete appointment"
-                                    >
-                                        <FiTrash2 size={20} />
-                                    </button>
-                                )}
-                            </div>
-                        </div>
-                        {chatOpen === appointment.id && (
-                            <div className="mt-4 bg-orange-50 rounded-lg p-4">
-                                <h4 className="font-semibold text-orange-800">Chat with {appointment.name}</h4>
-                                <div className="mt-2 h-40 overflow-y-auto bg-white p-2 rounded">
-                                    {(chatHistory[appointment.id] || []).map((msg, index) => (
-                                        <p key={index} className="text-sm text-orange-700">{msg}</p>
-                                    ))}
-                                </div>
-                                <div className="flex mt-2">
-                                    <input
-                                        type="text"
-                                        className="flex-1 border border-orange-300 rounded-l-lg p-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                                        value={chatMessage}
-                                        onChange={(e) => setChatMessage(e.target.value)}
-                                        placeholder="Type your message..."
-                                    />
-                                    <button
-                                        onClick={() => sendChatMessage(appointment.id)}
-                                        className="px-4 bg-orange-500 text-white rounded-r-lg hover:bg-orange-600 transition-colors duration-200"
-                                    >
-                                        Send
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                ))}
-            </div>
-
-            <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 sm:space-x-4 bg-orange-100 p-4 rounded-lg">
-                <div className="flex space-x-2">
-                    <button
-                        disabled={currentPage === 1}
-                        onClick={() => changePage(currentPage - 1)}
-                        className="flex items-center px-4 py-2 text-sm font-medium text-orange-700 bg-white border border-orange-300 rounded-md hover:bg-orange-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-                    >
-                        <FiChevronLeft className="mr-1" /> Previous
-                    </button>
-                    <button
-                        disabled={currentPage === totalPages}
-                        onClick={() => changePage(currentPage + 1)}
-                        className="flex items-center px-4 py-2 text-sm font-medium text-orange-700 bg-white border border-orange-300 rounded-md hover:bg-orange-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-                    >
-                        Next <FiChevronRight className="ml-1" />
-                    </button>
+        <div className="py-8">
+            <div className="max-w-4xl mx-auto px-4">
+                <div className="flex items-center justify-between mb-8">
+                    <h1 className="text-3xl font-bold text-orange-800">Your Appointments</h1>
+                    <Link to="/doctor">
+                        <Button className="bg-orange-600 hover:bg-orange-700 text-white rounded-full px-6">
+                            Book New
+                        </Button>
+                    </Link>
                 </div>
-                <span className="text-orange-700">
-                    Page {currentPage} of {totalPages}
-                </span>
+
+                <div className="space-y-4">
+                    {paginatedAppointments.map((appointment) => (
+                        <div
+                            key={appointment._id}
+                            className="bg-white rounded-xl shadow-sm border border-orange-100 p-6 
+                                transition-all duration-300 hover:shadow-md hover:border-orange-200"
+                        >
+                            <div className="flex justify-between items-start">
+                                <div className="space-y-3">
+                                    <div className="flex items-center space-x-3">
+                                        <User className="w-5 h-5 text-orange-600" />
+                                        <h3 className="font-semibold text-lg text-orange-800">
+                                            Dr. {appointment.doctorName}
+                                        </h3>
+                                    </div>
+
+                                    <div className="flex items-center space-x-6 text-sm text-orange-600">
+                                        <div className="flex items-center space-x-2">
+                                            <Clock className="w-4 h-4" />
+                                            <span>{appointment.time}</span>
+                                        </div>
+                                        <div className="flex items-center space-x-2">
+                                            <Calendar className="w-4 h-4" />
+                                            <span>{new Date(appointment.date).toLocaleDateString()}</span>
+                                        </div>
+                                    </div>
+
+                                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(appointment.status)}`}>
+                                        {appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
+                                    </span>
+                                </div>
+
+                                <div className="flex items-center space-x-3">
+                                    {appointment.status === 'confirmed' && (
+                                        <Button
+                                            onClick={() => handleChat(appointment._id)}
+                                            className="bg-orange-100 hover:bg-orange-200 text-orange-600"
+                                            size="sm"
+                                        >
+                                            <MessageSquare className="w-4 h-4 mr-2" />
+                                            Chat
+                                        </Button>
+                                    )}
+
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="border-orange-200 text-orange-600 hover:bg-orange-50"
+                                            >
+                                                <MoreVertical className="w-4 h-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent className="w-48">
+                                            <DropdownMenuItem
+                                                onClick={() => handleReschedule(appointment._id)}
+                                                className="text-orange-600 focus:text-orange-700 focus:bg-orange-50"
+                                            >
+                                                <Calendar className="w-4 h-4 mr-2" />
+                                                Reschedule
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem
+                                                className="text-red-600 focus:text-red-700 focus:bg-red-50"
+                                            >
+                                                <X className="w-4 h-4 mr-2" />
+                                                Cancel
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </div>
+                            </div>
+
+                            {chatOpen === appointment._id && (
+                                <div className="mt-6 border-t border-orange-100 pt-6">
+                                    <div className="bg-orange-50 rounded-xl p-4 h-48 overflow-y-auto mb-4">
+                                        {(chatHistory[appointment._id] || []).map((msg, idx) => (
+                                            <div key={idx} className="mb-3">
+                                                <p className="text-sm bg-white text-orange-800 p-3 rounded-lg inline-block shadow-sm">
+                                                    {msg}
+                                                </p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="flex space-x-3">
+                                        <Input
+                                            value={chatMessage}
+                                            onChange={(e) => setChatMessage(e.target.value)}
+                                            placeholder="Type your message..."
+                                            className="flex-1 border-orange-200 focus:border-orange-400 focus:ring-orange-400"
+                                        />
+                                        <Button
+                                            onClick={() => sendMessage(appointment._id)}
+                                            className="bg-orange-600 hover:bg-orange-700 text-white"
+                                        >
+                                            Send
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+
+                {totalPages > 1 && (
+                    <div className="flex justify-between items-center mt-8 bg-white p-4 rounded-xl shadow-sm border border-orange-100">
+                        <Button
+                            variant="outline"
+                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                            disabled={currentPage === 1}
+                            className="border-orange-200 text-orange-600 hover:bg-orange-50"
+                        >
+                            <ChevronLeft className="w-4 h-4 mr-2" />
+                            Previous
+                        </Button>
+                        <span className="text-sm text-orange-600 font-medium">
+                            Page {currentPage} of {totalPages}
+                        </span>
+                        <Button
+                            variant="outline"
+                            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                            disabled={currentPage === totalPages}
+                            className="border-orange-200 text-orange-600 hover:bg-orange-50"
+                        >
+                            Next
+                            <ChevronRight className="w-4 h-4 ml-2" />
+                        </Button>
+                    </div>
+                )}
             </div>
 
-            <style jsx>{`
-                @keyframes fadeInLeft {
-                    from {
-                        opacity: 0;
-                        transform: translateX(-20px);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: translateX(0);
-                    }
-                }
-
-                @keyframes fadeInRight {
-                    from {
-                        opacity: 0;
-                        transform: translateX(20px);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: translateX(0);
-                    }
-                }
-
-                @keyframes fadeInDown {
-                    from {
-                        opacity: 0;
-                        transform: translateY(-20px);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: translateY(0);
-                    }
-                }
-
-                @keyframes fadeInUp {
-                    from {
-                        opacity: 0;
-                        transform: translateY(20px);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: translateY(0);
-                    }
-                }
-
-                .animate-fade-in-left {
-                    animation: fadeInLeft 0.8s ease-out forwards;
-                }
-
-                .animate-fade-in-right {
-                    animation: fadeInRight 0.8s ease-out forwards;
-                }
-
-                .animate-fade-in-down {
-                    animation: fadeInDown 0.8s ease-out forwards;
-                }
-
-                .animate-fade-in-up {
-                    animation: fadeInUp 0.8s ease-out forwards;
-                }
-            `}</style>
+            <Dialog
+                open={rescheduleDialog.open}
+                onOpenChange={() => setRescheduleDialog({ open: false, appointmentId: null })}
+            >
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="text-orange-800">Reschedule Appointment</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-orange-700">New Date</label>
+                            <Input
+                                type="date"
+                                className="border-orange-200 focus:border-orange-400 focus:ring-orange-400"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-orange-700">New Time</label>
+                            <Input
+                                type="time"
+                                className="border-orange-200 focus:border-orange-400 focus:ring-orange-400"
+                            />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button
+                            variant="outline"
+                            onClick={() => setRescheduleDialog({ open: false, appointmentId: null })}
+                            className="border-orange-200 text-orange-600 hover:bg-orange-50"
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            onClick={() => {
+                                setRescheduleDialog({ open: false, appointmentId: null });
+                            }}
+                            className="bg-orange-600 hover:bg-orange-700 text-white"
+                        >
+                            Confirm
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
-}
+};
+
+export default AppointmentList;

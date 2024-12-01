@@ -1,6 +1,6 @@
 import User from '../Models/UserModel.js';
 import Doctor from '../Models/DoctorModel.js';  // Assuming you want to fetch doctors
-
+import Appointment from '../Models/Appointement.js';
 // Update User
 export const updateUser = async (req, res) => {
   const { userId } = req.params;
@@ -55,11 +55,17 @@ export const deleteUser = async (req, res) => {
 
 // Get User
 export const getUser = async (req, res) => {
+  // console.log('nm');
+  
   const { userId } = req.params;
+  console.log('mdskn',userId);
+  
 
   try {
     // Get user by userId
     const user = await User.findById(userId);
+    console.log('user,',user);
+    
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found.' });
     }
@@ -102,6 +108,54 @@ export const getAllUsers = async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching users:', error);
+    res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
+  }
+}
+
+
+
+export const BookAppointment = async (req, res) => {
+
+  const {userId, doctorId, date, time } = req.body;
+
+  try {
+    let user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found.' });
+    }
+    
+    let doctor = await Doctor.findById(doctorId);
+    if (!doctor) {
+      return res.status(404).json({ success: false, message: 'Doctor not found.' });
+    }
+     
+    const alreadyBooked = await Appointment.findOne({ userId,doctorId, date, time });
+    if (alreadyBooked) {
+      return res.status(400).json({ success: false, message: `Appointment already booked for ${date} and ${time}` });
+    }
+        
+//  ensure the time is in IST
+const appointmentStart = new Date(`${date}T${time}:00`);
+const offset = 5.5 * 60 * 60 * 1000; // Convert 5.5 hours to milliseconds
+// Add 1 hour to the start time to get the endtime
+const endtime = new Date(appointmentStart.getTime() + 60 * 60 * 1000 +offset); // Add 1 hour (in milliseconds)
+ 
+
+    // Create a new appointment
+    const appointment = {
+      userId,
+      doctorId,
+      date,
+      time,
+      chat:true, 
+      endtime:endtime , // Assuming the appointment ends 1 hour after it starts
+    };
+    const newAppointment = await Appointment.create(appointment);
+    await newAppointment.save();
+    res.status(201).json({ success: true, message: 'Appointment booked successfully.', appointment: newAppointment });
+
+  } catch (error) {
+    console.error('Error booking appointment:', error);
     res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
   }
 }

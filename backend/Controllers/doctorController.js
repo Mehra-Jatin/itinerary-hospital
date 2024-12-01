@@ -1,6 +1,9 @@
 import bcrypt from 'bcrypt';
 import Doctor from '../Models/DoctorModel.js';
 import nodemailer from 'nodemailer';
+
+
+
 // Update Doctor
 export const updateDoctor = async (req, res) => {
   const { doctorId } = req.params;
@@ -55,8 +58,34 @@ export const deleteDoctor = async (req, res) => {
     if (!doctor) {
       return res.status(404).json({ success: false, message: 'Doctor not found.' });
     }
+    // Send an email to the doctor
+    var transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false,
+      auth: {
+        user: process.env.ADMIN_EMAIL,
+        pass: process.env.ADMIN_PASSWORD,
+      },
+      debug: true,
+    });
 
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: doctor.email,
+      subject: 'Account Deletion',
+      text: `Hello ${doctor.FirstName},\n\nYour account has been deleted.\n\nRegards,\nHealthcare Team`,
+    };
+    try{
+       transporter.sendMail(mailOptions).then(() => {
+        console.log(`Email sent successfully to ${doctor.email}`);
+       });
+    }
+    catch(error){
+      console.error('Error sending email:', error);
+    }
     res.status(200).json({ success: true, message: 'Doctor deleted successfully.' });
+
   } catch (error) {
     console.error('Error deleting doctor:', error);
     res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
@@ -125,6 +154,7 @@ export const validateDoctor = async (req, res) => {
       debug: true,
     });
 
+
     const mailOptions = {
       from: process.env.EMAIL,
       to: doctor.email,
@@ -167,6 +197,91 @@ export const getAllDoctors = async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching doctors:', error);
+    res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
+  }
+};
+
+
+// set doctor availability
+export const setAvailability = async (req, res) => {
+  const { doctorId } = req.params;
+  const { date , times} = req.body;
+  // body should contain date in "yyyy-mm-dd" and times array ["time1", "time2"]
+  try{
+    const doctor = await Doctor.findById(doctorId);
+    if (!doctor) {
+      return res.status(404).json({ success: false, message: 'Doctor not found.' });
+    }
+    if(!doctor.availability.has(date)){
+      doctor.availability.set(date,times);
+    }
+    else{
+       doctor.availability.set(date, new Set([...doctor.availability.get(date),...times]));
+    }
+    await doctor.save();
+    res.status(200).json({ success: true, message: 'Availability set successfully.', doctor });
+
+  }catch(error){
+    console.error('Error setting availability:', error);
+    res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
+  }
+};
+
+
+// get doctor availability
+export const getAvailability = async (req, res) => {
+  const { doctorId } = req.params;
+  try{
+    const doctor = await Doctor.findById(doctorId);
+    if (!doctor) {
+      return res.status(404).json({ success: false, message: 'Doctor not found.' });
+    }
+    const now = new Date();
+    const currentDate = now.toISOString().split('T')[0]; // Convert to local date only (yyyy-mm-dd)
+   
+    console.log(doctor.availability.size);
+    if (doctor.availability.size > 0) {
+         const updated = new Map();
+      doctor.availability.forEach((value, key) => {
+        if (key >= currentDate) {
+          updated.set(key, value);
+        }
+      });
+
+      doctor.availability = updated; // Update availability array
+    }
+
+    await doctor.save();
+    res.status(200).json({ success: true, message: 'Availability retrieved successfully.', availablity: doctor.availability });
+
+  }catch(error){
+    console.error('Error getting availability:', error);
+    res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
+  }
+};
+
+// remove doctor availability
+export const removeAvailability = async (req, res) => {
+  const { doctorId } = req.params;
+  const { date } = req.body;
+  try{
+    const doctor = await Doctor.findById(doctorId);
+    if (!doctor) {
+      return res.status(404).json({ success: false, message: 'Doctor not found.' });
+    }
+    if(doctor.availability.has(date)){
+       const updated = new Map();
+      doctor.availability.forEach((value, key) => {
+        if (key !== date) {
+          updated.set(key, value);
+        }});
+      doctor.availability = updated;
+    }
+    await doctor.save();
+    res.status(200).json({ success: true, message: 'Availability removed successfully.', doctor });
+
+  }catch(error){
+    console.error('Error removing availability:', error);
     res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
   }
 };

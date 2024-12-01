@@ -13,17 +13,20 @@ const appointmentSchema = mongoose.Schema(
       required: true,
     },
     time:{
-      type:String,
+      type:String, //stored as HH:MM
       required:true,
     } ,
+    endtime:{
+      type:Date,
+    } ,
     date: {
-      type: Date,
+      type: Date,  //yyyy-mm-dd
       required: true,
     },
-    reason:{
-      type:String,
-      required:true,
-    },
+    // reason:{
+    //   type:String,
+    //   required:true,
+    // },
     chat:{
       type:Boolean,
       default:false,

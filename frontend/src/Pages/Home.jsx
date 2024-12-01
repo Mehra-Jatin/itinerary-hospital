@@ -19,6 +19,7 @@ const Home = () => {
       <PetServices />
       <BenefitSection />
       <Gallery />
+      
       <hr className='mt-8'/>
       <ReviewSlider />
       <hr className='mt-8'/>

@@ -6,7 +6,7 @@ import { createBrowserRouter, Link, RouterProvider } from "react-router-dom";
 import Home from "./Pages/Home.jsx"; // Import the Home component
 import Doctor from "./Pages/Doctor.jsx";
 import DoctorProfile from "./Pages/DoctorProfile.jsx";
-import Appointment from "./Pages/Appointment.jsx"; // Import the Appointment component
+import BookAppointment from "./Pages/BookAppointment";
 import UserProfile from "./Pages/user/UserProfile.jsx";
 import UserAppoienments from "./Pages/user/UserAppoienments.jsx";
 import UserSetting from "./Pages/user/UserSetting.jsx";
@@ -21,8 +21,30 @@ import DoctorLayout from "./Pages/doctor/DoctorLayout";
 import DoctorDashboardLayout from "./Pages/Dashboard/doctor/DoctorDashboardLayout";
 import DoctorNavigation from "./Pages/doctor/DoctorNavigation";
 import DocProfile from "./Pages/doctor/DocProfile";
-import AdminDashboardLayout from "./Pages/Dashboard/admin/AdminDashboardLayout";
+
+import UserHistory from "./Pages/user/UserHistory";
 import DashboardLayout from "./Pages/Dashboard/Layout";
+import SchedulePage from "./Pages/Dashboard/doctor/SchedulesPage";
+import DocAppointments from "./Pages/Dashboard/doctor/DocAppoitments";
+import DoctorChat from "./Pages/Dashboard/doctor/DoctorChatPage";
+import DoctHistoriesPage from "./Pages/Dashboard/doctor/DoctorHistory";
+import { Toaster } from "./components/ui/toaster";
+
+import AdminDashboard from "./Pages/Dashboard/admin/AdminDashboard";
+import ManageDoctors from "./Pages/Dashboard/admin/pages/ManageDoctor";
+import VerifyDoctors from "./Pages/Dashboard/admin/pages/VerifyDoctor";
+import ManageAppointments from "./Pages/Dashboard/admin/pages/ManageAppointment";
+import ManagePatients from "./Pages/Dashboard/admin/pages/ManagePatient";
+import AdminSetting from "./Pages/Dashboard/admin/pages/AdminSetting";
+import AdminTransaction from "./Pages/Dashboard/admin/pages/AdminTransaction";
+import AdminNotification from "./Pages/Dashboard/admin/pages/AdminNotification";
+import DoctorMessages from "./Pages/Dashboard/admin/pages/DoctorMessages";
+import PatientMessages from "./Pages/Dashboard/admin/pages/PatientMessages";
+import ManageAppt from "./Pages/Dashboard/doctor/ManageAppointments";
+import UserSettings from "./Pages/Dashboard/doctor/Settings";
+import UserMessages from "./Pages/Dashboard/admin/pages/UserMessages";
+import Contacts from "./Pages/Contacts";
+import Blogs from "./Pages/Blogs";
 
 // Define the router configuration with routes
 const router = createBrowserRouter([
@@ -35,30 +57,45 @@ const router = createBrowserRouter([
         element: <Home />, // The component for the homepage
       },
       {
-        path: "doctor", // This will render the Doctor component at "/doctor"
-        element: <Doctor />,
-        // children: [
-        //   {
-        //     path: "doctorprofile",  // This will render the DoctorProfile component at "/doctor/doctorprofile"
-        //     element: <DoctorProfile />,
-        //   },
-        //   {
-        //     path: "appointment",  // This will render the Appointment component at "/doctor/appointment"
-        //     element: <Appointment />,
-        //   },
-        // ],
+        path: "contacts", // This will now render the Home component when navigating to "/contacts"
+        element: <Contacts />, // The component for the Contacts
       },
       {
-        path: "/doctor/doctorprofile", // This will now render the Home component when navigating to "/"
+        path: "blog", // This will now render the Home component when navigating to "/blog"
+        element: <Blogs />, // The component for the Blog
+      },
+      {
+        path: "doctor", // This will render the Doctor component at "/doctor"
+        element: <Doctor />,
+      },
+      {
+        path: "/doctor/:id", // This will now render the Home component when navigating to "/"
         element: <DoctorProfile />, // The component for the homepage
       },
       {
-        path: "/doctor/appointement", // This will now render the Home component when navigating to "/"
-        element: <Appointment />, // The component for the homepage
+        path: "/doctor/appointment/:id", // This will now render the Home component when navigating to "/"
+        element: <BookAppointment />, // The component for the homepage
       },
     ],
   },
 
+  
+
+  // Auth routes
+  {
+    path: "/auth",
+    element: <ProtectedLoginRoute><AuthLayout /></ProtectedLoginRoute>,
+    children: [
+      {
+        path: "/auth/login",
+        element: <Login />,
+      },
+      {
+        path: "/auth/register",
+        element: <Register />,
+      }
+    ]
+  },
   // patient routes
   {
     path: "/profile",
@@ -80,23 +117,11 @@ const router = createBrowserRouter([
         path: "/profile/appointements",
         element: <UserAppoienments />,
       },
-    ],
-  },
-
-  // Auth routes
-  {
-    path: "/auth",
-    element: <ProtectedLoginRoute><AuthLayout /></ProtectedLoginRoute>,
-    children: [
       {
-        path: "/auth/login",
-        element: <Login />,
+        path: "/profile/history",
+        element: <UserHistory />,
       },
-      {
-        path: "/auth/register",
-        element: <Register />,
-      }
-    ]
+    ],
   },
   {
     path: "/doctor-profile",
@@ -119,29 +144,100 @@ const router = createBrowserRouter([
   // doctor dashboard
   {
     path: "/doctor-dashboard",
-    element: <ProtectedRoute role="doctor">
-      <DashboardLayout role="doctor"/>
+    element: 
+    <ProtectedRoute role="doctor">
+      <DashboardLayout role='doctor'/>
     </ProtectedRoute>,
     children: [
+      // {
+      //   path: "",
+      //   element: <DoctorProfile />,
+      // },
       {
         path: "",
-        element: <DoctorProfile />,
-      }
+        element: <DoctorDashboardLayout />,
+      },
+      {
+        path: "schedules",  
+        element: <SchedulePage />,
+      },
+      {
+        path: "appointments/manage-appointments",  
+        element: <ManageAppt />,
+      },
+      {
+        path: "appointments/view-appointments",  
+        element: <DocAppointments />,
+      },
+      {
+        path: "messages",  
+        element: <DoctorChat />,
+      },
+      {
+        path: "histories",  
+        element: <DoctHistoriesPage />,
+      },
+      {
+        path: "settings",  
+        element: < UserSettings/>,
+      },
     ]
   },
 
   // admin dashboard
   {
     path: "/admin-dashboard",
-    element: <ProtectedRoute role="admin">
-      <AdminDashboardLayout />
+    element: 
+    <ProtectedRoute role="admin">
+      <DashboardLayout/>
     </ProtectedRoute>,
-    // children: [
-    //   {
-    //     path: "",
-    //     element: <DocProfile />,
-    //   }
-    // ]
+    children: [
+      {
+        path: "",
+        element: <AdminDashboard />,
+      },
+      {
+        path: "manage-doctors",  
+        element: <ManageDoctors />,
+      },
+      {
+        path: "verify-doctors",  
+        element: <VerifyDoctors />,
+      },
+      {
+        path: "manage-appointments",
+        element: <ManageAppointments />,
+      },
+      {
+        path: "manage-patients",  
+        element: <ManagePatients />,
+      },
+      {
+        path: "transactions",  
+        element: <AdminTransaction />,
+      },
+      {
+        path: "doctor-messages",  
+        element: <DoctorMessages />,
+      },
+      {
+        path: "patient-messages",  
+        element: <PatientMessages />,
+      },
+      {
+        path: "user-messages",  
+        element: <UserMessages />,
+      },
+      {
+        path: "notifications",  
+        element: <AdminNotification />,
+      },
+      {
+        path: "settings",  
+        element: <AdminSetting />,
+      },
+      
+    ]
   },
 
 
@@ -168,6 +264,7 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AuthProvider>
       <RouterProvider router={router} />
+      <Toaster />
     </AuthProvider>
   </StrictMode>
 );
