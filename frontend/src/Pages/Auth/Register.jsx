@@ -9,8 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import DoctorApprovalWaiting from '../../components/DoctorApprovalWaiting';
 import { Textarea } from '@/components/ui/textarea';
-import axios from 'axios';
+// import axios from 'axios';
 import { set } from 'date-fns';
+import { useToast } from '@/hooks/use-toast';
 
 export default function Register() {
     const [registrationStep, setRegistrationStep] = useState(1);
@@ -34,6 +35,7 @@ export default function Register() {
     const [isNewDoctor, setIsNewDoctor] = useState(false);
     const { register } = useAuth();
     const navigate = useNavigate();
+    const { toast } = useToast();
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -98,7 +100,7 @@ export default function Register() {
                     role  // Add this line to include role
                 };
                 const result = await register(registrationData);
-                
+
                 if (result.success) {
                     if (role === 'doctor') {
                         setIsNewDoctor(true);
@@ -114,6 +116,26 @@ export default function Register() {
                         setError(errorMessage);
                     }
                 }
+                toast({
+                    title: result.success ? 'Registration successful' : 'Registration failed',
+                    description: result.message,
+                    variant: result.success ? 'success' : 'destructive',
+                    duration: 5000
+                })
+                if (setIsNewDoctor) {
+                    toast({
+                        title: 'Now you can wait for approval',
+                        variant: 'default',
+                        duration: 5000
+                    })
+                } else {
+                    toast({
+                        title: 'Now you can login to your account',
+                        variant: 'default',
+                        duration: 5000
+                    })
+                }
+
             } catch (error) {
                 // Catch any unexpected errors
                 console.error('Registration error:', error);

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import NextPatient from './NextPatient';
-import axios from 'axios';
+// import axios from 'axios';
 import { AuthContext } from '@/contexts/AuthContext';
 import api from '@/utils/api';
 
@@ -29,7 +29,7 @@ export default function TodayAppointments() {
             'Authorization': `Bearer ${Token}`, // Ensure getToken is a function call if it fetches the token
           },
         });
-        // console.log('log',response.data);
+        console.log('log',response.data);
         
         if (response.status === 200) { // Use `response.status` for axios instead of `response.ok`
           setAppointments(response.data.appointment); // Access `response.data` for the data payload

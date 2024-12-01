@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
     const checkUserLoggedIn = () => {
         const userFromCookie = Cookies.get('user');
         const tokenFromCookie = Cookies.get('token');
-        
+
         if (userFromCookie && tokenFromCookie) {
             try {
                 const parsedUser = JSON.parse(userFromCookie);
@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }) => {
         try {
             const token = Cookies.get('token');
             // console.log('bjbj',token);
-            
+
             if (!token) {
                 throw new Error('No token found');
             }
@@ -52,22 +52,22 @@ export const AuthProvider = ({ children }) => {
                 setUser(response.data.user);
                 Cookies.set('user', JSON.stringify(response.data.user), { expires: 7 });
                 Cookies.set('token', response.data.token, { expires: 7 });
-                return { 
-                    success: true, 
-                    message: response.data.message, 
+                return {
+                    success: true,
+                    message: response.data.message,
                     user: response.data.user
                 };
             } else {
-                return { 
-                    success: false, 
-                    message: response.data.message || 'Login failed.' 
+                return {
+                    success: false,
+                    message: response.data.message || 'Login failed.'
                 };
             }
         } catch (error) {
             console.error('Error logging in:', error);
-            return { 
-                success: false, 
-                message: error.response?.data?.message || 'An error occurred. Login failed.' 
+            return {
+                success: false,
+                message: error.response?.data?.message || 'An error occurred. Login failed.'
             };
         }
     };
@@ -83,31 +83,33 @@ export const AuthProvider = ({ children }) => {
                 setUser(response.data.user);
                 Cookies.set('user', JSON.stringify(response.data.user), { expires: 7 });
                 Cookies.set('token', response.data.token, { expires: 7 });
-                return { 
-                    success: true, 
-                    user: response.data.user 
+                return {
+                    success: true,
+                    user: response.data.user
                 };
             } else {
-                return { 
-                    success: false, 
-                    message: response.data.message || 'Registration failed' 
+                return {
+                    success: false,
+                    message: response.data.message || 'Registration failed'
                 };
             }
         } catch (error) {
             console.error('Registration error:', error);
-            return { 
-                success: false, 
-                message: error.response?.data?.message || 'An error occurred during registration' 
+            return {
+                success: false,
+                message: error.response?.data?.message || 'An error occurred during registration'
             };
         }
     };
 
     const updateUserData = useCallback((newData) => {
-        setUser(currentUser => ({
-          ...currentUser,
-          ...newData
-        }));
-      }, []);
+        setUser(currentUser => {
+            const updatedUser = { ...currentUser, ...newData };
+            // Update the user cookie with the new data
+            Cookies.set('user', JSON.stringify(updatedUser), { expires: 7 });
+            return updatedUser;
+        });
+    }, []);
 
     const logout = () => {
         setUser(null);
@@ -116,11 +118,11 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ 
-            user, 
-            loading, 
-            login, 
-            register, 
+        <AuthContext.Provider value={{
+            user,
+            loading,
+            login,
+            register,
             logout,
             getToken,
             updateUserData

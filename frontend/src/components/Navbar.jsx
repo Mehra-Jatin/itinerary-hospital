@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { Button } from "@/components/ui/button"
 import {
@@ -21,7 +21,7 @@ import logoImg from '../components/Images/logo-header.png'
 import { useAuth } from '@/hooks/useAuth'
 
 export default function Navbar() {
-  const { user, logout } = useAuth();  // Replace with your logout function
+  const { user, logout, updateUserData } = useAuth();  // Replace with your logout function
 
   const menuItems = [
     { name: "Home", path: "/", icon: Home, hasDropdown: false },
@@ -32,12 +32,11 @@ export default function Navbar() {
     { name: "Contacts", path: "/contacts", icon: PhoneCall, hasDropdown: false },
   ]
 
-  // console.log(user);
 
 
   const handleLogout = () => {
-    logout();
     window.location.href = '/';
+    logout();
   };
 
   return (
@@ -108,7 +107,7 @@ export default function Navbar() {
                           <LayoutDashboard className="mr-2 h-4 w-4" /> Go to Dashboard
                         </DropdownMenuItem>
                       </NavLink>
-                      <NavLink to="/doctor-dashboard/appointements" className="flex items-center hover:bg-gray-100 rounded-sm transition duration-150 cursor-pointer">
+                      <NavLink to="/doctor-dashboard/appointments/manage-appointments" className="flex items-center hover:bg-gray-100 rounded-sm transition duration-150 cursor-pointer">
                         <DropdownMenuItem className="cursor-pointer">
                           <Calendar className="mr-2 h-4 w-4" /> Manage Appoientments
                         </DropdownMenuItem>
@@ -118,7 +117,7 @@ export default function Navbar() {
                           <CalendarSearch className="mr-2 h-4 w-4" /> My Schedules
                         </DropdownMenuItem>
                       </NavLink>
-                      <NavLink to="/doctor-dashboard/chats" className="flex items-center hover:bg-gray-100 rounded-sm transition duration-150 cursor-pointer">
+                      <NavLink to="/doctor-dashboard/messages" className="flex items-center hover:bg-gray-100 rounded-sm transition duration-150 cursor-pointer">
                         <DropdownMenuItem className="cursor-pointer">
                           <MessageSquareText className="mr-2 h-4 w-4" /> Chats
                         </DropdownMenuItem>

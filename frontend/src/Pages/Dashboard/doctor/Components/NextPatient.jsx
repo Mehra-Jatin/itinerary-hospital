@@ -14,7 +14,8 @@ const NextPatient = ({ appointment }) => {
     const fetchData = async (userId) => {
       try {
         const Token=await getToken()
-        const response = await api.get(`/user/${userId}`, {
+       
+        const response = await api.get(`${import.meta.env.VITE_BACKEND_URL}/user/${userId}`, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${Token}`, // Ensure getToken is a function call if it fetches the token

@@ -396,7 +396,7 @@ const Doctor = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-6">Find a Verified Doctor</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-6">Find Your Doctor</h1>
         
         <SearchBar 
           value={searchQuery} 
@@ -442,8 +442,8 @@ const Doctor = () => {
           {/* Doctor List */}
           <div className="lg:w-3/4">
             <div className="mb-4 flex justify-between items-center">
-              <p className="text-gray-600">
-                {filteredDoctors.length} verified 
+              <p className="text-gray-600 w-full text-right">
+                {filteredDoctors.length} 
                 {filteredDoctors.length === 1 ? ' doctor' : ' doctors'} found
               </p>
               <Button 

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { Dialog, DialogTrigger, DialogContent, DialogTitle } from '@radix-ui/react-dialog';
-import axios from 'axios';
+// import axios from 'axios';
 import { AuthContext } from '@/contexts/AuthContext';
 import { CircleX, MessagesSquareIcon } from 'lucide-react';
 import api from '@/utils/api';
@@ -24,6 +24,8 @@ const AvailabilityManager = () => {
             'Authorization': `Bearer ${token}`,
           },
         });
+        console.log(response);
+        
         setScheduledDates(response.data.availablity);
       } catch (error) {
         console.error(error);

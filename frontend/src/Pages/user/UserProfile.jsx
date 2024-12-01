@@ -7,19 +7,7 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  CardFooter,
 } from "@/components/ui/card";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,23 +18,26 @@ import {
   Edit2,
   Save,
   X,
-  Trash2,
   Mail,
   Phone,
   Cake,
-  User
+  User,
+  Loader2,
+  Camera
 } from "lucide-react";
 
 import { useToast } from "@/hooks/use-toast";
 
+const DEFAULT_PROFILE_IMAGE = "/api/placeholder/200/200?text=User";
+
 const UserProfile = () => {
-  const { user, loading, logout, updateUserData } = useAuth();
-  const { updatePatientProfile, deletePatientAccount, isLoading, error } = usePatient();
+  const { user, loading, updateUserData } = useAuth();
+  const { updatePatientProfile, isLoading, error } = usePatient();
   const [isEditing, setIsEditing] = useState(false);
   const [validationError, setValidationError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-  const { toast } = useToast()
-
+  const [profileImage, setProfileImage] = useState(user?.profilePicture || DEFAULT_PROFILE_IMAGE);
+  const { toast } = useToast();
 
   const [formData, setFormData] = useState({
     FirstName: user?.FirstName || "",
@@ -72,20 +63,18 @@ const UserProfile = () => {
 
   if (loading) {
     return (
-      <div className="w-full max-w-2xl mx-auto p-4 space-y-4">
-        <Skeleton className="h-48 w-full" />
-        <Skeleton className="h-24 w-full" />
-        <Skeleton className="h-24 w-full" />
+      <div className="w-full max-w-4xl mx-auto p-6 space-y-6">
+        <Skeleton className="h-64 w-full rounded-2xl" />
       </div>
     );
   }
 
   if (!user) {
     return (
-      <Card className="w-full max-w-2xl mx-auto">
-        <CardContent className="p-6 text-center">
-          <UserCircle className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-          <h2 className="text-xl font-semibold">Please log in to view your profile</h2>
+      <Card className="w-full max-w-2xl mx-auto shadow-lg">
+        <CardContent className="p-8 text-center">
+          <UserCircle className="w-20 h-20 mx-auto mb-6 text-primary/70" />
+          <h2 className="text-2xl font-semibold text-gray-700">Please log in to view your profile</h2>
         </CardContent>
       </Card>
     );
@@ -118,7 +107,7 @@ const UserProfile = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    setValidationError(""); // Clear validation error when user starts typing
+    setValidationError("");
   };
 
   const handleSave = async () => {
@@ -132,14 +121,12 @@ const UserProfile = () => {
 
       const result = await updatePatientProfile(user._id, formData);
       if (result.success) {
-        // Update the user data in AuthContext
         updateUserData({
           ...user,
           ...formData
         });
         setIsEditing(false);
 
-        // Add a success toast or message
         toast({
           title: "Profile Updated",
           description: "Your profile has been successfully updated.",
@@ -149,7 +136,6 @@ const UserProfile = () => {
       }
     } catch (error) {
       console.error("Failed to update profile:", error);
-      // Add an error toast or message
       toast({
         title: "Update Failed",
         description: error.message,
@@ -161,27 +147,31 @@ const UserProfile = () => {
     }
   };
 
-  const handleDelete = async () => {
-    try {
-      const result = await deletePatientAccount(user._id);
-      if (result.success) {
-        // Logout is handled by PatientContext
-      }
-    } catch (error) {
-      console.error("Failed to delete account:", error);
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfileImage(reader.result);
+        setEditedUser(prev => ({
+          ...prev,
+          profilePicture: reader.result
+        }));
+      };
+      reader.readAsDataURL(file);
     }
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto p-4">
-      <Card className="w-full">
-        <CardHeader className="relative pb-8">
-          <div className="absolute right-6 top-6 space-x-2">
+    <div className="w-full max-w-4xl mx-auto p-4 sm:p-6">
+      <Card className="w-full border-none shadow-2xl rounded-3xl overflow-hidden">
+        <CardHeader className="bg-gradient-to-r from-primary/10 to-primary/20 py-8 px-6 relative">
+          <div className="absolute right-6 top-6 space-x-2 z-10">
             {isEditing ? (
-              <>
+              <div className="flex gap-2">
                 <Button
-                  variant="outline"
-                  size="icon"
+                  variant="ghost"
+                  size="sm"
                   onClick={() => {
                     setIsEditing(false);
                     setValidationError("");
@@ -194,54 +184,101 @@ const UserProfile = () => {
                       gender: user.gender || ""
                     });
                   }}
-                  disabled={isLoading}
+                  disabled={isSaving}
+                  className="text-gray-600 hover:text-gray-800"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-4 w-4 mr-2" /> Cancel
                 </Button>
                 <Button
-                  variant="default"
                   onClick={handleSave}
                   disabled={isSaving}
-                  className="flex items-center gap-2"
+                  className="bg-orange-600 text-white hover:bg-orange-600/90 flex items-center"
                 >
-                  {isSaving ? <LoadingSpinner /> : <Save className="h-4 w-4" />}
-                  <span>{isSaving ? 'Saving' : 'Save'}</span>
-                  {isSaving && <LoadingDots />}
+                  {isSaving ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="mr-2 h-4 w-4" />
+                      Save Changes
+                    </>
+                  )}
                 </Button>
-              </>
+              </div>
             ) : (
               <Button
-                variant="outline"
+                variant="ghost"
                 size="icon"
                 onClick={() => setIsEditing(true)}
                 disabled={isLoading}
+                className="text-primary hover:bg-primary/10"
               >
-                <Edit2 className="h-4 w-4" />
+                <Edit2 className="h-5 w-5" />
               </Button>
             )}
           </div>
-          <div className="flex items-center space-x-4">
-            <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
-              <UserCircle className="w-12 h-12 text-primary" />
+
+          <div className="flex items-center space-x-6 relative z-0">
+            {/* <div className="w-24 h-24 rounded-full bg-white shadow-md flex items-center justify-center">
+              {user.profileImage ? (
+                <img
+                  src={user.profileImage}
+                  alt="Profile"
+                  className="w-full h-full rounded-full object-cover"
+                />
+              ) : (
+                <UserCircle className="w-16 h-16 text-primary/70" />
+              )}
+            </div> */}
+            <div className="relative group">
+              {user.image ? (
+                <>
+                  <img
+                    src={user.image}
+                    className="w-48 h-48 rounded-full object-cover border-4 border-orange-100 shadow-lg"
+                  />
+                </>
+              ) : (
+                <><div className="w-48 h-48 rounded-full bg-gray-300 flex items-center justify-center italic font-semibold border-2 border-orange-500 text-gray-500">Upload Profile Image</div></>
+              )}
+              {isEditing && (
+                <input
+                  type="file"
+                  id="profileImageUpload"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageUpload}
+                />
+              )}
+              {isEditing && (
+                <label
+                  htmlFor="profileImageUpload"
+                  className="absolute bottom-2 right-2 bg-orange-500 p-2 rounded-full text-white hover:bg-orange-600 transition cursor-pointer"
+                >
+                  <Camera size={18} />
+                </label>
+              )}
             </div>
             <div>
-              <CardTitle className="text-2xl">
+              <CardTitle className="text-3xl font-bold text-gray-800">
                 {isEditing ? (
-                  <div className="flex gap-2">
+                  <div className="flex gap-3">
                     <Input
                       name="FirstName"
                       value={formData.FirstName}
                       onChange={handleInputChange}
-                      className="w-32"
-                      disabled={isLoading}
+                      className="w-40 bg-white/80"
+                      disabled={isSaving}
                       placeholder="First Name"
                     />
                     <Input
                       name="LastName"
                       value={formData.LastName}
                       onChange={handleInputChange}
-                      className="w-32"
-                      disabled={isLoading}
+                      className="w-40 bg-white/80"
+                      disabled={isSaving}
                       placeholder="Last Name"
                     />
                   </div>
@@ -249,14 +286,14 @@ const UserProfile = () => {
                   `${user.FirstName} ${user.LastName}`
                 )}
               </CardTitle>
-              <CardDescription>Patient Profile</CardDescription>
+              <CardDescription className="text-gray-600">Patient Profile</CardDescription>
             </div>
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-6">
+        <CardContent className="p-6 space-y-6 bg-white">
           {(validationError || error) && (
-            <Alert variant="destructive">
+            <Alert variant="destructive" className="mb-6">
               <AlertDescription>
                 {validationError || error}
               </AlertDescription>
@@ -264,133 +301,56 @@ const UserProfile = () => {
           )}
 
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label className="flex items-center gap-2">
-                <Mail className="w-4 h-4" /> Email
-              </Label>
-              {isEditing ? (
-                <Input
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  disabled={isLoading}
-                  placeholder="email@example.com"
-                />
-              ) : (
-                <p className="text-sm text-muted-foreground">{user.email}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label className="flex items-center gap-2">
-                <Phone className="w-4 h-4" /> Phone Number
-              </Label>
-              {isEditing ? (
-                <Input
-                  name="PhoneNo"
-                  value={formData.PhoneNo}
-                  onChange={handleInputChange}
-                  disabled={isLoading}
-                  placeholder="Phone number"
-                />
-              ) : (
-                <p className="text-sm text-muted-foreground">
-                  {user.PhoneNo || "Not specified"}
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label className="flex items-center gap-2">
-                <Cake className="w-4 h-4" /> Age
-              </Label>
-              {isEditing ? (
-                <Input
-                  name="age"
-                  type="number"
-                  value={formData.age}
-                  onChange={handleInputChange}
-                  disabled={isLoading}
-                  min="0"
-                  max="150"
-                />
-              ) : (
-                <p className="text-sm text-muted-foreground">
-                  {user.age || "Not specified"}
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label className="flex items-center gap-2">
-                <User className="w-4 h-4" /> Gender
-              </Label>
-              {isEditing ? (
-                <Input
-                  name="gender"
-                  value={formData.gender}
-                  onChange={handleInputChange}
-                  disabled={isLoading}
-                  placeholder="Gender"
-                />
-              ) : (
-                <p className="text-sm text-muted-foreground">
-                  {user.gender || "Not specified"}
-                </p>
-              )}
-            </div>
+            {[
+              {
+                icon: <Mail className="w-5 h-5 text-primary" />,
+                label: "Email",
+                name: "email",
+                type: "email"
+              },
+              {
+                icon: <Phone className="w-5 h-5 text-primary" />,
+                label: "Phone Number",
+                name: "PhoneNo"
+              },
+              {
+                icon: <Cake className="w-5 h-5 text-primary" />,
+                label: "Age",
+                name: "age",
+                type: "number"
+              },
+              {
+                icon: <User className="w-5 h-5 text-primary" />,
+                label: "Gender",
+                name: "gender"
+              }
+            ].map(({ icon, label, name, type = "text" }) => (
+              <div key={name} className="space-y-2">
+                <Label className="flex items-center gap-2 text-gray-700">
+                  {icon} {label}
+                </Label>
+                {isEditing ? (
+                  <Input
+                    name={name}
+                    type={type}
+                    value={formData[name]}
+                    onChange={handleInputChange}
+                    disabled={isSaving}
+                    className="bg-gray-50 border-gray-200 focus:ring-primary/30"
+                    placeholder={`Enter ${label.toLowerCase()}`}
+                  />
+                ) : (
+                  <p className="text-sm text-gray-600">
+                    {user[name] || "Not specified"}
+                  </p>
+                )}
+              </div>
+            ))}
           </div>
         </CardContent>
-
-        <CardFooter className="flex justify-between pt-6">
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button
-                variant="destructive"
-                className="flex items-center gap-2"
-                disabled={isLoading}
-              >
-                <Trash2 className="w-4 h-4" />
-                Delete Account
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete your
-                  account and remove your data from our servers.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={handleDelete}
-                  className="bg-destructive text-destructive-foreground"
-                >
-                  Delete Account
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </CardFooter>
       </Card>
     </div>
   );
 };
 
 export default UserProfile;
-
-
-const LoadingSpinner = () => (
-  <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full" />
-);
-
-const LoadingDots = () => (
-  <span className="flex gap-1">
-    <span className="animate-pulse">.</span>
-    <span className="animate-pulse delay-100">.</span>
-    <span className="animate-pulse delay-200">.</span>
-  </span>
-);
