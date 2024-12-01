@@ -16,7 +16,6 @@ app.use(express.json());
 
 // Route setup
 app.use("/api/v1", router);
-
 // Connect to MongoDB
 connectDB();
 
