@@ -323,7 +323,7 @@ export const Putrating = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: 'Server error occurred while adding rating.' });
+    res.status(500).json({ success: false, message: 'Server error occurred while adding rating' });
   }
 };
 
