@@ -14,6 +14,7 @@ import {
   Dot,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { MdSchedule, MdSupport } from "react-icons/md";
 
 const DashContent = () => {
   const { user, loading, logout } = useAuth();
@@ -64,8 +65,10 @@ const DashContent = () => {
         { path: "/doctor-dashboard/appointments/view-appointments",icon: Dot, label: "View Appointments" },
       ],
     },
+    { path: "/doctor-dashboard/schedules", icon: MdSchedule, label: "Schedules" },
     { path: "/doctor-dashboard/messages", icon: MessageSquareText, label: "Messages" },
     { path: "/doctor-dashboard/histories", icon: History, label: "History" },
+    
   ];
 
   const bottomNavItems = [
