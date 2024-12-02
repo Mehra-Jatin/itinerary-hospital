@@ -212,6 +212,8 @@ export const setAvailability = async (req, res) => {
     if (!doctor) {
       return res.status(404).json({ success: false, message: 'Doctor not found.' });
     }
+    console.log(times);
+    
     if(!doctor.availability.has(date)){
       doctor.availability.set(date,times);
     }
