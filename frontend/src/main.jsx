@@ -45,6 +45,7 @@ import UserSettings from "./Pages/Dashboard/doctor/Settings";
 import UserMessages from "./Pages/Dashboard/admin/pages/UserMessages";
 import Contacts from "./Pages/Contacts";
 import Blogs from "./Pages/Blogs";
+import AdminMessages from "./Pages/Dashboard/doctor/AdminMessages";
 
 // Define the router configuration with routes
 const router = createBrowserRouter([
@@ -168,6 +169,18 @@ const router = createBrowserRouter([
       {
         path: "appointments/view-appointments",  
         element: <DocAppointments />,
+      },
+      {
+        path: "Supports/Patient-messages",  
+        element: <PatientMessages />,
+      },
+      {
+        path: "Supports/Admin-messages",  
+        element: <AdminMessages />,
+      },
+      {
+        path: "Supports/User-messages",  
+        element: <UserMessages />,
       },
       {
         path: "messages",  

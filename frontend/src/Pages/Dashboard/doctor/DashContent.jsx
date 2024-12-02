@@ -13,6 +13,7 @@ import {
   ChevronUp,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { MdSupport } from "react-icons/md";
 
 const DashContent = () => {
   const { user, loading, logout } = useAuth();
@@ -65,6 +66,7 @@ const DashContent = () => {
     },
     { path: "/doctor-dashboard/messages", icon: MessageSquareText, label: "Messages" },
     { path: "/doctor-dashboard/histories", icon: History, label: "History" },
+    {icon: MdSupport,label:"Supports",subItems:[{path:'/doctor-dashboard/Supports/Patient-messages',label:"Patient Messages"},{path:'/doctor-dashboard/Supports/User-messages',label:"User Messages"},{path:'/doctor-dashboard/Supports/Admin-messages',label:"Admin Messages"}]}
   ];
 
   const bottomNavItems = [
