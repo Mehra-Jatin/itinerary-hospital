@@ -22,10 +22,10 @@ function DashboardNavbar({ role }) {
         <span className="text-orange-500 capitalize">{role}</span> Dashboard
       </p>
       <div className="flex items-center space-x-4">
-        <Button variant="outline" asChild>
+        <Button variant="outline" asChild className="hidden md:flex">
           <Link to="/">Go to Main Website</Link>
         </Button>
-        
+
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="outline" size="icon" className="relative">
@@ -74,6 +74,11 @@ function DashboardNavbar({ role }) {
             <DropdownMenuItem onClick={logout} className="flex items-center text-red-600">
               <LogOut className="mr-2 h-4 w-4" />
               <span>Logout</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="flex md:hidden">
+              <Button variant="outline" asChild className="flex md:hidden">
+                <Link to="/">Go to Main Website</Link>
+              </Button>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

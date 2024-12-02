@@ -4,7 +4,7 @@ import { Bell, HelpCircle, Settings, Menu, LogOutIcon } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import AdminSidebar from './admin/AdminSidebar';
 import DashContent from './doctor/DashContent';
-import AdminDashboardLayout from './admin/AdminDashboard';
+import AdminDashboardLayout from './admin/pages/AdminDashboard';
 import { Outlet } from 'react-router-dom';
 import { AdminProvider } from '@/contexts/AdminContext';
 import DashboardNavbar from './DashboardNavbar';
@@ -68,7 +68,7 @@ function DashboardLayout({ role }) {
 
             {/* Page Content */}
             <main className="overflow-x-hidden overflow-y-auto">
-              <div className="max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+              <div className="px-4 sm:px-6 lg:px-8 py-8">
                 {/* Your main content goes here */}
                 {role === 'doctor' ? <Outlet /> : <Outlet />}
                 {/* <Outlet /> */}
