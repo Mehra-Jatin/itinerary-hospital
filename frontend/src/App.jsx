@@ -7,16 +7,18 @@ import { Outlet } from 'react-router-dom'
 import Footer from './components/Footer.jsx'
 import { AuthProvider } from './contexts/AuthContext.jsx'
 import { DoctorProvider } from './contexts/DoctorContext'
+import { PatientProvider } from './contexts/PatientContext'
 
 function App() {
   return (
     <AuthProvider>
       <DoctorProvider>
-        <Navbar />
-        <Outlet />
-        <Footer />
+        <PatientProvider>
+          <Navbar />
+          <Outlet />
+          <Footer />
+        </PatientProvider>
       </DoctorProvider>
-
     </AuthProvider>
 
   )
