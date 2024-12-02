@@ -69,8 +69,18 @@ const doctorSchema = mongoose.Schema(
       default: false,
     },
     availability:{
-      type:Array,
-      default:[] // yyyy-mm-dd
+      type:Map,
+      of:[String],
+      default:{} // yyyy-mm-dd: [time1, time2]
+    },
+    fees:{
+      type:Number,
+      default:0,
+    }
+    ,
+    rating:{
+      type:Number,
+      default:0,
     },
     
     // appointments: [

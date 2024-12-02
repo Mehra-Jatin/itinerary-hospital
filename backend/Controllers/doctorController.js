@@ -205,14 +205,20 @@ export const getAllDoctors = async (req, res) => {
 // set doctor availability
 export const setAvailability = async (req, res) => {
   const { doctorId } = req.params;
-  const { date } = req.body;
+  const { date , times} = req.body;
+  // body should contain date in "yyyy-mm-dd" and times array ["time1", "time2"]
   try{
     const doctor = await Doctor.findById(doctorId);
     if (!doctor) {
       return res.status(404).json({ success: false, message: 'Doctor not found.' });
     }
-    if(!doctor.availability.includes(date)){
-      doctor.availability.push(date);
+    console.log(times);
+    
+    if(!doctor.availability.has(date)){
+      doctor.availability.set(date,times);
+    }
+    else{
+       doctor.availability.set(date, new Set([...doctor.availability.get(date),...times]));
     }
     await doctor.save();
     res.status(200).json({ success: true, message: 'Availability set successfully.', doctor });
@@ -222,6 +228,7 @@ export const setAvailability = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
   }
 };
+
 
 // get doctor availability
 export const getAvailability = async (req, res) => {
@@ -233,12 +240,14 @@ export const getAvailability = async (req, res) => {
     }
     const now = new Date();
     const currentDate = now.toISOString().split('T')[0]; // Convert to local date only (yyyy-mm-dd)
-
-    if (doctor.availability.length > 0) {
-      const updated = doctor.availability.filter(date => {
-         if (date >= currentDate) {
-          return date;
-         }
+   
+    console.log(doctor.availability.size);
+    if (doctor.availability.size > 0) {
+         const updated = new Map();
+      doctor.availability.forEach((value, key) => {
+        if (key >= currentDate) {
+          updated.set(key, value);
+        }
       });
 
       doctor.availability = updated; // Update availability array
@@ -262,8 +271,12 @@ export const removeAvailability = async (req, res) => {
     if (!doctor) {
       return res.status(404).json({ success: false, message: 'Doctor not found.' });
     }
-    if(doctor.availability.includes(date)){
-      const updated = doctor.availability.filter(d => d !== date);
+    if(doctor.availability.has(date)){
+       const updated = new Map();
+      doctor.availability.forEach((value, key) => {
+        if (key !== date) {
+          updated.set(key, value);
+        }});
       doctor.availability = updated;
     }
     await doctor.save();

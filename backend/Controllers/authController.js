@@ -4,6 +4,7 @@ import User from "../Models/UserModel.js";
 import Doctor from "../Models/DoctorModel.js";
 import Appointment from "../Models/Appointement.js";
 import History from "../Models/History.js";
+import Notification from "../Models/Notification.js";
 import nodemailer from "nodemailer";
 // Register
 export const register = async (req, res) => {
@@ -57,11 +58,19 @@ export const register = async (req, res) => {
         experience,
         PhoneNo,
       });
+
+      await new Notification({
+        userId: newDoctor._id,
+        message: "new Doctor registered",
+        type: "verifydoctor",
+        read: false,
+      }).save();
       await newDoctor.save();
       return res.status(201).json({
         success: true,
         message: "Doctor registered successfully.",
       });
+ 
     } else {
       const newUser = new User({
         FirstName,

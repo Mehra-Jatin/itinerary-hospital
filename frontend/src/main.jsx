@@ -170,18 +170,18 @@ const router = createBrowserRouter([
         path: "appointments/view-appointments",  
         element: <DocAppointments />,
       },
-      {
-        path: "Supports/Patient-messages",  
-        element: <PatientMessages />,
-      },
-      {
-        path: "Supports/Admin-messages",  
-        element: <AdminMessages />,
-      },
-      {
-        path: "Supports/User-messages",  
-        element: <UserMessages />,
-      },
+      // {
+      //   path: "Supports/Patient-messages",  
+      //   element: <PatientMessages />,
+      // },
+      // {
+      //   path: "Supports/Admin-messages",  
+      //   element: <AdminMessages />,
+      // },
+      // {
+      //   path: "Supports/User-messages",  
+      //   element: <UserMessages />,
+      // },
       {
         path: "messages",  
         element: <DoctorChat />,
