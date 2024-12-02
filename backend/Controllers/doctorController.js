@@ -212,13 +212,15 @@ export const setAvailability = async (req, res) => {
     if (!doctor) {
       return res.status(404).json({ success: false, message: 'Doctor not found.' });
     }
-    console.log(times);
+    // console.log(times);
     
     if(!doctor.availability.has(date)){
       doctor.availability.set(date,times);
     }
     else{
-       doctor.availability.set(date, new Set([...doctor.availability.get(date),...times]));
+      // doctor.availability.set(date, new Set([...doctor.availability.get(date),...times]));
+      doctor.availability.set(date, Array.from(new Set(times)));
+
     }
     await doctor.save();
     res.status(200).json({ success: true, message: 'Availability set successfully.', doctor });
