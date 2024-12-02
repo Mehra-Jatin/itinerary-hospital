@@ -49,10 +49,24 @@ const doctorSchema = mongoose.Schema(
       type: Number,
       default: 0,
     },
-    rating: {
-      type: Number,
-      default: 0,
-    },
+    ratings: [
+      {
+        userId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User',
+        },
+        rating: {
+          type: Number,
+          required: true,
+          min: 0,
+          max: 5,
+        },
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
     PhoneNo: {
       type: Number,
       required: true,
@@ -78,11 +92,6 @@ const doctorSchema = mongoose.Schema(
       default:0,
     }
     ,
-    rating:{
-      type:Number,
-      default:0,
-    },
-    
     // appointments: [
     //   {
     //     type: mongoose.Schema.Types.ObjectId,
