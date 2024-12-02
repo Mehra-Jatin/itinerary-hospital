@@ -152,6 +152,21 @@ const endtime = new Date(appointmentStart.getTime() + 60 * 60 * 1000 +offset); /
     };
     const newAppointment = await Appointment.create(appointment);
     await newAppointment.save();
+
+    // Update doctor availability to remove the booked time
+    const updateDoctor = await Doctor.findById(doctorId);
+    if (!updateDoctor) {
+      return res.status(404).json({ success: false, message: 'Doctor not found.' });
+    }
+    if(updateDoctor.availability.has(date)){
+      const times = updateDoctor.availability.get(date);
+      const index = times.indexOf(time);
+      if (index > -1) {
+        times.splice(index, 1);
+      }
+      updateDoctor.availability.set(date, times);
+    }
+    await updateDoctor.save();
     res.status(201).json({ success: true, message: 'Appointment booked successfully.', appointment: newAppointment });
 
   } catch (error) {
