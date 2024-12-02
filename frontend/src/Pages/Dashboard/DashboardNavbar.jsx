@@ -17,7 +17,7 @@ function DashboardNavbar({ role }) {
   ])
 
   return (
-    <div className="flex items-center justify-between w-full p-4 bg-white shadow-sm">
+    <div className="flex items-center justify-between w-full p-4 bg-white">
       <p className='font-semibold text-lg'>
         <span className="text-orange-500 capitalize">{role}</span> Dashboard
       </p>
