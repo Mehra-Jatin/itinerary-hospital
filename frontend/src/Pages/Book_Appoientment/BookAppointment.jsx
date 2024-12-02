@@ -18,14 +18,14 @@ const BookAppointment = () => {
   const { toast } = useToast();
   
   // If user is not a patient, show an error message or redirect
-  if (user.role !== 'patient') {
-    toast({
-      title: "Unauthorized Access",
-      description: "You are not allowed to book appointments. Only patients can book appointments.",
-      variant: "destructive",
-    });
-    return <Navigate to="/" replace />;
-  }
+  // if (user.role !== 'patient') {
+  //   toast({
+  //     title: "Unauthorized Access",
+  //     description: "You are not allowed to book appointments. Only patients can book appointments.",
+  //     variant: "destructive",
+  //   });
+  //   return <Navigate to="/" replace />;
+  // }
 
   const doctor = doctors.find((doc) => doc._id === id) || {
     FirstName: 'Unknown',
@@ -79,7 +79,7 @@ const BookAppointment = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 max-w-7xl">
+    <div className="container mx-auto min-h-[70vh] mt-10 p-4 max-w-7xl">
       <div className="grid md:grid-cols-3 gap-6">
         <DoctorInfo doctor={doctor} />
         <div className="md:col-span-2 space-y-6">

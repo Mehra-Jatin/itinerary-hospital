@@ -14,7 +14,11 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { Filter } from 'lucide-react'
 
-const FilterSection = ({ title, options, selectedFilters, onChange }) => (
+
+const FilterSection = ({  title = '', 
+  options = [], 
+  selectedFilters = [], 
+  onChange = () => {}  }) => (
   <div className="space-y-4">
     <h3 className="text-lg font-semibold">{title}</h3>
     {options.map((option) => (
@@ -31,7 +35,7 @@ const FilterSection = ({ title, options, selectedFilters, onChange }) => (
       </div>
     ))}
   </div>
-)
+);
 
 const DoctorFilter = ({ specialtyOptions, ratingOptions, onFilterChange }) => {
   const [filters, setFilters] = useState({

@@ -7,13 +7,17 @@ const AdminContext = createContext();
 
 export const AdminProvider = ({ children }) => {
     const { getToken, logout } = useAuth();
+    const [loading, setLoading] = useState(true);
     const [doctors, setDoctors] = useState([]);
     const [verifiedDoctors, setVerifiedDoctors] = useState([]);
-    
+
     const [Patients, setPatients] = useState([]);
     
+    const [currentLogo, setCurrentLogo] = useState(null);
+    const [uploadProgress, setUploadProgress] = useState(0);
     
-    const [loading, setLoading] = useState(true);
+    
+
 
     // Fetch all doctors (unverified included)
     const fetchDoctors = async () => {
@@ -161,17 +165,51 @@ export const AdminProvider = ({ children }) => {
         }
     };
 
+    const uploadLogo = async (file) => {
+        try {
+          const formData = new FormData();
+          formData.append('logo', file);
+    
+          const response = await api.post('/upload-logo', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            },
+            onUploadProgress: (progressEvent) => {
+              const percentCompleted = Math.round(
+                (progressEvent.loaded * 100) / progressEvent.total
+              );
+              setUploadProgress(percentCompleted);
+            }
+          });
+    
+          setCurrentLogo(response.data.logoUrl);
+          setUploadProgress(0);
+          return response.data.logoUrl;
+        } catch (error) {
+          console.error('Logo upload failed:', error);
+          setUploadProgress(0);
+          throw error;
+        }
+      };
+
     return (
         <AdminContext.Provider value={{ 
             loading, 
+
             doctors, 
             verifiedDoctors, 
             fetchDoctors, 
             fetchVerifiedDoctors, 
+
             handleValidation, 
+
             fetchPatients, 
             Patients, 
             deletePatientAccount,
+
+            uploadLogo,
+            currentLogo, 
+            setCurrentLogo
 
         }}>
             {children}

@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Skeleton } from "@/components/ui/skeleton"
-import { AlertTriangle, Eye, GraduationCap, RefreshCw, SearchX, X } from 'lucide-react'
+import { AlertTriangle, Eye, GraduationCap, IndianRupee, RefreshCw, SearchX, X } from 'lucide-react'
 import { useDoctor } from '@/contexts/DoctorContext';
 import DoctorFilter from '@/components/DoctorFilter';
 
@@ -36,26 +36,22 @@ const DoctorCard = ({ doctor }) => {
   const navigate = useNavigate();
 
   return (
-    <Card className="hover:shadow-xl transition-shadow duration-300 overflow-hidden cursor-pointer hover:border-orange-300 hover:border" title='Click to view' onClick={() => navigate(`/doctor/${doctor._id}`)}>
+    <Card className="hover:shadow-xl transition-shadow duration-300 overflow-hidden hover:border-orange-300 hover:border" title='Click to view'>
       <CardContent className="p-6">
         <div className="flex flex-col md:flex-row gap-6">
           <Avatar className="w-32 h-32">
-            <AvatarImage src={doctor.avatar?.url || '/placeholder-user.jpg'} alt={`${doctor.FirstName} ${doctor.LastName}`} />
-            <AvatarFallback>{doctor.FirstName[0]}{doctor.LastName[0]}</AvatarFallback>
+            <AvatarImage src={doctor.avatar?.url || '/placeholder-user.jpg'} alt={`${doctor?.FirstName} ${doctor?.LastName}`} />
+            <AvatarFallback>{doctor?.FirstName[0]}{doctor?.LastName[0]}</AvatarFallback>
           </Avatar>
           <div className="flex-1 space-y-4">
             <div>
-              <h3 className="text-xl font-semibold text-primary">Dr. {doctor.FirstName} {doctor.LastName}</h3>
-              <p className="text-orange-500 font-medium">{doctor.specialty}</p>
-              <div className="flex items-center gap-2 mt-1">
-                <GraduationCap className="text-muted-foreground w-5 h-5" />
-                <span className="text-muted-foreground text-sm">{doctor.specialization}</span>
-              </div>
+              <h3 className="text-xl font-semibold text-primary">Dr. {doctor?.FirstName} {doctor?.LastName}</h3>
+              <p className="text-orange-500 font-medium">{doctor?.specialization}</p>
             </div>
             <div className="flex items-center gap-4">
-              <StarRating rating={doctor.rating || 0} />
+              <StarRating rating={doctor?.rating || 0} />
               <span className="text-sm text-muted-foreground">
-                ({doctor.numOfReviews || 0} reviews)
+                ({doctor?.numOfReviews || 0} reviews)
               </span>
             </div>
             <div className="space-y-2">
@@ -64,22 +60,20 @@ const DoctorCard = ({ doctor }) => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <span className="text-sm text-muted-foreground">
-                  {doctor.experience} years experience
+                  {doctor?.experience} years experience
                 </span>
               </div>
-              <div className="flex items-center gap-2">
-                <svg className="w-4 h-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span className="text-sm text-muted-foreground">
-                  ₹{doctor.consultationFee} consultation fee
+              <div className="flex items-center">
+                <IndianRupee className='w-4 h-4 text-muted-foreground'/>
+                <span className="text-md text-muted-foreground font-semibold">
+                  {doctor?.fees} <span className='text-gray-500 text-xs'>per consultation</span>
                 </span>
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 pt-4">
               {/* <Button
                 variant="outline"
-                onClick={() => navigate(`/doctor/${doctor._id}`)}
+                onClick={() => navigate(`/doctor/${doctor?._id}`)}
                 className="flex-1"
               >
                 <Eye size={15} className="mr-2" />
@@ -104,7 +98,7 @@ const DoctorCard = ({ doctor }) => {
               </Button>
               <Button
                 variant="primary"
-                onClick={() => navigate(`/book-appointment/${doctor._id}`)}
+                onClick={() => navigate(`/doctor/appointment/${doctor._id}`)}
                 className="flex-1 bg-orange-500 hover:bg-orange-600"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
