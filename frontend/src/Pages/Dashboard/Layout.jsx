@@ -52,7 +52,7 @@ function DashboardLayout({ role }) {
           {/* Main Content */}
           <div className="flex w-full flex-col overflow-hidden">
             {/* Top Bar */}
-            <header className="bg-white shadow-sm border-b border-gray-200 z-10">
+            <header className="bg-white border-b border-gray-200 z-10">
               <div className="px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center">
                   <button

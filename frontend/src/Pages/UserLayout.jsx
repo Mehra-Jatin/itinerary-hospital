@@ -5,13 +5,15 @@ import Footer from "../components/Footer";
 import UserNavbar from "./user/components/UserNavbar";
 import { AppointmentProvider } from "@/contexts/AppointmentContext";
 import { PatientProvider } from "@/contexts/PatientContext";
+import { DoctorProvider } from "@/contexts/DoctorContext";
 
 
 const UserLayout = () => {
     return (
         <AppointmentProvider>
             <PatientProvider>
-                <div>
+                <DoctorProvider>
+                     <div>
                     <Navbar />
                     <div className='mt-5 mb-16'>
                         <UserNavbar />
@@ -21,6 +23,7 @@ const UserLayout = () => {
                     </div>
                     <Footer />
                 </div>
+                </DoctorProvider>
             </PatientProvider>
         </AppointmentProvider>
     );

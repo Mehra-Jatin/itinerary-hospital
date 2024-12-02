@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardTitle } from "./ui/card";
 export default function BlogCard({ title, description, date, image, className = '' }) {
   return (
     <motion.div
-      whileHover={{ scale: 1.05 }} // Slight zoom effect on hover
+      whileHover={{ scale: 1.02 }} // Slight zoom effect on hover
       whileTap={{ scale: 0.98 }}  // Slight shrink on tap
       transition={{ duration: 0.3, ease: "easeInOut" }} // Smooth animation
       className={`relative rounded-lg shadow-md w-full bg-cover bg-center flex flex-col ${className}`}

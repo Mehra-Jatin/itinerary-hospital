@@ -205,13 +205,15 @@ export const getAllDoctors = async (req, res) => {
 // set doctor availability
 export const setAvailability = async (req, res) => {
   const { doctorId } = req.params;
-  const { date , times} = req.body;
+  const { date , times} = req.body;    
   // body should contain date in "yyyy-mm-dd" and times array ["time1", "time2"]
   try{
     const doctor = await Doctor.findById(doctorId);
     if (!doctor) {
       return res.status(404).json({ success: false, message: 'Doctor not found.' });
     }
+    console.log(times);
+    
     if(!doctor.availability.has(date)){
       doctor.availability.set(date,times);
     }

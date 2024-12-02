@@ -45,7 +45,7 @@ import {
   Smartphone,
   Trash2 
 } from "lucide-react";
-import DeleteAccountModal from "./Components/DeleteAccountModal";
+// import DeleteAccountModal from "./Components/DeleteAccountModal";
 
 
 
@@ -119,7 +119,7 @@ const UserSettings = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <DeleteAccountModal />
+          {/* <DeleteAccountModal /> */}
         </CardContent>
       </Card>
 
