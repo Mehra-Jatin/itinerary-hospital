@@ -1,7 +1,7 @@
 import express from 'express';
 import { updateUser, deleteUser, getUser, getAllUsers,BookAppointment } from '../Controllers/userController.js';
 import { updateDoctor, deleteDoctor, getDoctor, getAllDoctors,validateDoctor ,setAvailability,getAvailability ,removeAvailability, Putrating, getavgrating} from '../Controllers/doctorController.js';
-import { register, login ,getHistory, getAppointment, updateAppointment, rescheduleAppointment} from '../Controllers/authController.js';
+import { register, login ,getHistory, getAppointment, updateAppointment, rescheduleAppointment,getNotification,updateNotification,deleteNotification} from '../Controllers/authController.js';
 import { authorizeRoles, isAuthenticatedUser } from '../Middleware/roleMiddleware.js';
 
 const router = express.Router();
@@ -32,4 +32,10 @@ router.route('/history/:id').get(isAuthenticatedUser(),authorizeRoles('admin','p
 router.route('/appointment/:id').get(isAuthenticatedUser(),authorizeRoles('admin','patient','doctor'),getAppointment);
 router.route('/appointment/statusupdate').put(isAuthenticatedUser(),authorizeRoles('patient','doctor'),updateAppointment);
 router.route('/rescheduleappointment').put(isAuthenticatedUser(),authorizeRoles('patient','doctor'),rescheduleAppointment);
+
+
+router.route('/getnotification').get(isAuthenticatedUser(),authorizeRoles('admin'),getNotification);
+router.route('/updatenotification/:id').put(isAuthenticatedUser(),authorizeRoles('admin'),updateNotification);
+router.route('/deletenotification/:id').delete(isAuthenticatedUser(),authorizeRoles('admin'),deleteNotification);
+
 export default router;

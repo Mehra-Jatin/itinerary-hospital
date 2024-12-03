@@ -293,11 +293,44 @@ export const rescheduleAppointment = async (req,res) => {
       // "2024-11-25T00:00:00.000Z"
       const offset= 5.5*60*60*1000;
       const end = new Date(newappointmendDateTime.getTime() + offset + 60*60*1000);
-      const appointment = await Appointment.findByIdAndUpdate(appointmentId, {time: newTime, date: newDate, endtime:end}, { new: true, runValidators: true });
+
+  
+     const appointment = await Appointment.findById(appointmentId);
       if (!appointment) {
         return res.status(404).json({ success: false, message: "Appointment not found." });
       }
+      // updating availablity of doctor by setting old slot to available and new slot to unavailable
+      const updateDoctor = await Doctor.findById(appointment.doctorId);
+      if (!updateDoctor) {
+        return res.status(404).json({ success: false, message: "Doctor not found." });
+      }
+      //add the old time to the availability
 
+      const oldDate = new Date(appointment.date).toISOString().split('T')[0];
+      console.log(oldDate);
+
+      if(updateDoctor.availability.has(oldDate)){
+        const times = [...updateDoctor.availability.get(oldDate)];
+      if (!times.includes(appointment.time)) {
+        times.push(appointment.time);
+      }
+      updateDoctor.availability.set(oldDate, times);
+    }
+     //remove the new time from the availability
+      if(updateDoctor.availability.has(newDate)){
+        const times = [...updateDoctor.availability.get(newDate)];
+        const index = times.indexOf(newTime);
+        if (index > -1) {
+          times.splice(index, 1);
+        }
+        updateDoctor.availability.set(newDate, times);
+      }
+      await updateDoctor.save();
+
+      //update the appointment
+      const updated = await Appointment.findByIdAndUpdate(appointmentId, {date:newDate,time:newTime,endtime:end}, { new: true, runValidators: true });
+
+      await updated.save();
       // const history = new History({
       //   userId: appointment.userId,
       //   doctorId: appointment.doctorId,
@@ -310,10 +343,63 @@ export const rescheduleAppointment = async (req,res) => {
       res.status(200).json({
         success: true,
         message: "Appointment rescheduled successfully.",
-        appointment: appointment,
+        appointment: updated,
       });
     } catch (error) {
       console.error("Error rescheduling appointment:", error);
+      res.status(500).json({ success: false, message: "Server error. Please try again later." });
+    }
+  };
+
+
+  export const getNotification = async (req, res) => {
+    try {
+      const notifications = await Notification.find();
+      res.status(200).json({
+        success: true,
+        message: "Notification retrieved successfully.",
+        notifications: notifications,
+      });
+    }
+    catch (error) {
+      console.error("Error getting notifications:", error);
+      res.status(500).json({ success: false, message: "Server error. Please try again later." });
+    }
+  }
+
+
+  export const updateNotification = async (req, res) => {
+    const { id } = req.params;
+    const { read } = req.body;
+    try {
+      const notification = await Notification.findByIdAndUpdate(id,{read:read}, { new: true, runValidators: true });
+      if (!notification) {
+        return res.status(404).json({ success: false, message: "Notification not found." });
+      }
+      res.status(200).json({
+        success: true,
+        message: "Notification updated successfully.",
+        notification: notification,
+      });
+    }
+    catch (error) {
+      console.error("Error updating notification:", error);
+      res.status(500).json({ success: false, message: "Server error. Please try again later." });
+    }
+  };
+
+
+  export const deleteNotification = async (req, res) => {
+    const { id } = req.params;
+    try {
+      const notification = await Notification.findByIdAndDelete(id);
+      if (!notification) {
+        return res.status(404).json({ success: false, message: "Notification not found." });
+      }
+      res.status(200).json({ success: true, message: "Notification deleted successfully." });
+    }
+    catch (error) {
+      console.error("Error deleting notification:", error);
       res.status(500).json({ success: false, message: "Server error. Please try again later." });
     }
   };
