@@ -2,7 +2,8 @@ import React from 'react'
 
 function AdminTransaction() {
   return (
-    <div>AdminTransaction</div>
+    <div>AdminTransaction <br />
+      Need Backend Api endPoient for this, fetch all appointments</div>
   )
 }
 

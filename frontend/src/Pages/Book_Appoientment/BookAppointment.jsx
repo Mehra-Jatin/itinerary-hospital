@@ -16,7 +16,7 @@ const BookAppointment = () => {
   const { BookAppointment } = usePatient();
   const { id } = useParams();
   const { toast } = useToast();
-  
+
   // If user is not a patient, show an error message or redirect
   // if (user.role !== 'patient') {
   //   toast({
@@ -79,15 +79,21 @@ const BookAppointment = () => {
   };
 
   return (
-    <div className="container mx-auto min-h-[70vh] mt-10 p-4 max-w-7xl">
+    <div className="container mx-auto sm:min-h-[70vh] mb-[40%] sm:mb-0 mt-10 p-4 max-w-7xl">
       <div className="grid md:grid-cols-3 gap-6">
         <DoctorInfo doctor={doctor} />
         <div className="md:col-span-2 space-y-6">
-          <DatePicker selectedDate={selectedDate} onDateSelect={handleDateSelect} />
+          <DatePicker
+            selectedDate={selectedDate}
+            onDateSelect={handleDateSelect}
+            doctorId={doctor._id}  // Pass the doctor's ID
+          />
           {selectedDate && (
             <TimeSlots
+              selectedDate={selectedDate}
               selectedSlot={selectedSlot}
               onTimeSelect={handleTimeSelect}
+              doctorId={doctor._id}  // Pass the doctor's ID
             />
           )}
         </div>

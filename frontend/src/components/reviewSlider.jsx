@@ -59,7 +59,7 @@ const ReviewSlider = () => {
       <div className="relative">
         <div className="overflow-hidden">
           <div className={`flex items-center justify-center p-6 transition-opacity duration-500 ${isAnimating ? 'opacity-0' : 'opacity-600'}`}>
-            <div className="rounded-lg shadow-lg p-8 max-w-4xl shadow-gray-500">
+            <div className="rounded-lg shadow-lg p-8 max-w-4xl shadow-gray-500 max-h-[55vh]">
               <div className="flex flex-wrap items-start gap-6 p-6">
                 <div className="relative">
                   <div className="absolute -left-8 top-0">
@@ -104,16 +104,16 @@ const ReviewSlider = () => {
 
         <button
           onClick={prevSlide}
-          className="absolute left-0 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 hover:bg-gray-50 transition-colors"
+          className="absolute left-0 top-1/2 -translate-y-1/2 sm:bg-white bg-orange-500 hover:bg-orange-700 rounded-full p-2 sm:hover:bg-gray-50 transition-colors"
         >
-          <ChevronLeft className="w-6 h-6 text-gray-600" />
+          <ChevronLeft className="w-6 h-6 sm:text-gray-600" />
         </button>
 
         <button
           onClick={nextSlide}
-          className="absolute right-0 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 hover:bg-gray-50 transition-colors"
+          className="absolute right-0 top-1/2 -translate-y-1/2 sm:bg-white bg-orange-500 hover:bg-orange-700 rounded-full p-2 sm:hover:bg-gray-50 transition-colors"
         >
-          <ChevronRight className="w-6 h-6 text-gray-600" />
+          <ChevronRight className="w-6 h-6 sm:text-gray-600" />
         </button>
 
         <div className="flex justify-center gap-2 mt-4">

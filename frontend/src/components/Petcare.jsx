@@ -12,50 +12,50 @@ const PetCareSection = () => {
     {/* Cards Section */}
     <div className="relative z-20 mb-[-100px] mt-[-50px]  w-full flex flex-wrap items-center justify-center">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4 md:px-16 lg:px-32">
-        <div className="bg-white w-fit p-6 rounded-lg shadow-lg text-left hover:bg-brown-600 hover:translate-y-[-10px] transition-all duration-300">
+        <div className="bg-white w-fit p-6 rounded-lg shadow-lg text-left hover:bg-orange-600 hover:translate-y-[-10px] transition-all duration-300 group cursor-default">
           <div className="flex items-center mb-4 text-orange-500 hover:text-brown-800">
-            <span className="material-icons-outlined text-3xl mr-2">
+            <span className="text-3xl mr-2 capitalize group-hover:text-brown-800 font-bold ">
               home
             </span>
-            <h3 className="text-xl font-bold text-gray-800">
+            <h3 className="text-xl font-bold text-gray-800 group-hover:text-white">
               Pet Boarding
             </h3>
           </div>
-          <p className="text-gray-600">
+          <p className="text-gray-600 group-hover:text-white">
             Place for dogs & cats to stay while you’re away!
           </p>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-lg text-left hover:bg-brown-600 transition-all duration-300 hover:translate-y-[-10px]">
+        <div className="bg-white p-6 rounded-lg shadow-lg text-left hover:bg-orange-600 transition-all duration-300 hover:translate-y-[-10px] group cursor-default">
           <div className="flex items-center mb-4 text-orange-500 hover:text-brown-800">
-            <span className="material-icons-outlined text-3xl mr-2">
+            <span className="text-3xl mr-2 capitalize group-hover:text-brown-800 font-bold">
               healing
             </span>
-            <h3 className="text-xl font-bold text-gray-800">
+            <h3 className="text-xl font-bold text-gray-800 group-hover:text-white">
               Veterinary Care
             </h3>
           </div>
-          <p className="text-gray-600">
+          <p className="text-gray-600 group-hover:text-white">
             Pet health and wellness that’s one step ahead.
           </p>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-lg text-left flex flex-col hover:bg-brown-500 transition-all duration-300 hover:translate-y-[-10px]">
+        <div className="bg-white p-6 rounded-lg shadow-lg text-left flex flex-col hover:bg-orange-600 transition-all duration-300 hover:translate-y-[-10px] group cursor-default">
           <div className="flex items-center mb-4 text-orange-500 hover:text-brown-800">
-            <span className="material-icons-outlined text-3xl mr-2">
+            <span className="text-3xl mr-2 capitalize group-hover:text-brown-800 font-bold">
               content
             </span>
-            <h3 className="text-xl font-bold text-gray-800">
+            <h3 className="text-xl font-bold text-gray-800 group-hover:text-white">
               Pet Grooming
             </h3>
           </div>
-          <p className="text-gray-600">
+          <p className="text-gray-600 group-hover:text-white">
             Making dogs & cats look great is our passion!
           </p>
         </div>
       </div>
     </div>
-    <section className="flex z-0 flex-col md:flex-row items-center justify-center p-8 bg-white space-y-6 md:space-y-0 md:space-x-12 md:mx-[10%] lg:pt-48 md:pt-96 pt-96">
+    <section className="flex z-0 flex-col md:flex-row items-center justify-center p-8 bg-white space-y-6 md:space-y-0 md:space-x-12 md:mx-[10%] pt-48">
       {/* Left Side - Image and Icons */}
       <div className="relative bg-white w-full md:w-2/4 h-auto md:h-[400px] lg:h-[500px] flex items-center justify-center ">
         <img src={img1} alt="Pug" className="w-3/4 h-auto md:w-64 lg:w-80" /> {/* Responsive size for img1 */}
@@ -87,7 +87,7 @@ const PetCareSection = () => {
         </p>
         
         {/* Feature List */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+        <div className="grid grid-cols-2 gap-2 mt-6">
           <Feature title="Skilled Personal" />
           <Feature title="Pets Care 24/7" />
           <Feature title="Best Veterinarians" />

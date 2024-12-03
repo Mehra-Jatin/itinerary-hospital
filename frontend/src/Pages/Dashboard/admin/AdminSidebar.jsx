@@ -4,6 +4,7 @@ import { LayoutDashboard, UserCog, Users, CalendarCheck, Receipt, Bell, Settings
 import { Link, useLocation } from "react-router-dom";
 import NotificationCount from './components/NotificationCount';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const AdminSidebar = () => {
   const { user, loading, logout } = useAuth();
@@ -98,7 +99,7 @@ const AdminSidebar = () => {
       </div>
 
       {/* Navigation Links */}
-      <nav className="flex-grow overflow-y-auto text-base">
+      <ScrollArea className="flex-grow overflow-y-auto text-base">
         <ul className="space-y-1">
           {navItems.map((item) => (
             <li key={item.label}>
@@ -157,7 +158,7 @@ const AdminSidebar = () => {
             </li>
           ))}
         </ul>
-      </nav>
+      </ScrollArea>
 
       {/* Bottom Navigation */}
       <div className="mt-auto pt-4 border-t border-gray-200">

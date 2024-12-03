@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
-import { Bell, MoreVertical, LogOut, Settings } from 'lucide-react'
+import { Bell, MoreVertical, LogOut, Settings, SquareArrowOutUpLeft } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Badge } from "@/components/ui/badge"
 import { useAuth } from '@/hooks/useAuth'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
+import logoImg from '../../components/Images/logo-header.png';
 
 
 function DashboardNavbar({ role }) {
@@ -23,7 +24,10 @@ function DashboardNavbar({ role }) {
       </p>
       <div className="flex items-center space-x-4">
         <Button variant="outline" asChild className="hidden md:flex">
-          <Link to="/">Go to Main Website</Link>
+          <Link to="/" title='Back to Home'>
+            <SquareArrowOutUpLeft className="mr-2 h-4 w-4" />
+            <img src={logoImg} alt="PawsCare Logo" className="w-20" />
+          </Link>
         </Button>
 
         <Popover>
@@ -77,7 +81,9 @@ function DashboardNavbar({ role }) {
             </DropdownMenuItem>
             <DropdownMenuItem className="flex md:hidden">
               <Button variant="outline" asChild className="flex md:hidden">
-                <Link to="/">Go to Main Website</Link>
+                <Link to="/" title='Back to Home'>
+                <SquareArrowOutUpLeft className="mr-2 h-4 w-4" />
+            <img src={logoImg} alt="PawsCare Logo" className="w-20" /></Link>
               </Button>
             </DropdownMenuItem>
           </DropdownMenuContent>

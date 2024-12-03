@@ -310,7 +310,7 @@ const Doctor = () => {
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold text-primary mb-6">Find Your Doctor</h1>
 
-      <div className='sticky top-0 z-50 bg-white/30 py-3 backdrop-blur-3xl px-10 rounded-lg border-none'>
+      <div className='z-50 bg-white/30 py-3 backdrop-blur-3xl rounded-lg border-none'>
         <Input
           type="text"
           value={searchQuery}

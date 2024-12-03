@@ -89,8 +89,9 @@ export default function Navbar() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="font-semibold group capitalize">
-                    <User className="mr-2 h-4 w-4" />{user.role === 'doctor' ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : user.FirstName}
-                    <ChevronDown className="ml-1 h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                    <User className="h-4 w-4" />
+                    <span className='hidden md:flex'>{user.role === 'doctor' ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : user.FirstName}</span>
+                    <ChevronDown className=" h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
@@ -155,7 +156,7 @@ export default function Navbar() {
           </>
         ) : (
           <Link to="/auth/register">
-            <Button className="bg-orange-600 hover:bg-orange-800 text-white">Create an account</Button>
+            <Button className="bg-orange-600 hover:bg-orange-800 text-white hidden md:flex">Create an account</Button>
           </Link>
         )}
       </div>
@@ -163,12 +164,12 @@ export default function Navbar() {
       {/* Mobile Menu */}
       <Sheet open={isMenuOpen} onOpenChange={setMenuOpen}>
         <SheetTrigger asChild>
-          <Button variant="ghost" size="icon" className="md:hidden">
-            <Menu className="h-8 w-8" />
+          <Button variant="ghost" className="md:hidden">
+            <Menu className="text-lg" />
             <span className="sr-only">Open menu</span>
           </Button>
         </SheetTrigger>
-        <SheetContent side="right" className="w-[350px] sm:w-[500px]">
+        <SheetContent side="right" className="w-[80%]">
           <SheetHeader>
             <SheetTitle className="text-2xl font-bold text-orange-500">Menu</SheetTitle>
           </SheetHeader>
@@ -180,10 +181,10 @@ export default function Navbar() {
                 onClick={() => setMenuOpen(false)} // Close menu on navigation
                 className="flex items-center space-x-2 text-lg border-b border-gray-200 py-2 hover:bg-orange-50 hover:text-orange-500 transition-colors duration-200"
               >
-                <Button variant="outline" size="icon" className="w-10 h-10">
+                <Button variant="ghost" className="w-full justify-start hover:hover:bg-orange-50 hover:text-orange-500 gap-4">
                   <item.icon className="h-5 w-5" />
+                <span className='text-base'>{item.name}</span>
                 </Button>
-                <span>{item.name}</span>
               </Link>
             ))}
           </div>
@@ -206,7 +207,7 @@ export default function Navbar() {
                 </>
               ) : (
                 <>
-                  <Button onClick={handleLogout} className="w-4/5 bg-orange-500 hover:bg-orange-600 text-white absolute bottom-36 right-10">
+                  <Button onClick={handleLogout} className="w-3/4 bg-orange-500 hover:bg-orange-600 text-white absolute bottom-36 right-[12%]">
                     <LogOut className="mr-2 h-4 w-4" /> Logout
                   </Button>
                 </>
