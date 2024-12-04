@@ -22,11 +22,11 @@ const AuthLayout = () => {
 
             <div className="flex items-center justify-between px-10 pb-2 border-t">
                 <NavLink to="/" className="flex items-center space-x-2">
-                    <img src={logoImg} alt="PawsCare Logo" className="w-36" />
+                    <img src={logoImg} alt="Televets Logo" className="w-36" />
                 </NavLink>
 
                 <div>
-                    <p className="text-xs text-gray-500">© 2024 PawsCare. All rights reserved.</p>
+                    <p className="text-xs text-gray-500">© 2024 Televets. All rights reserved.</p>
                 </div>
 
                 <div className="flex items-center space-x-2 text-xs ">

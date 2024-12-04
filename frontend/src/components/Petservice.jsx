@@ -15,7 +15,7 @@ const PetServices = () => {
         </div>
         <h2 className="text-4xl md:text-5xl font-bold text-gray-800 m-4">What We Can Offer</h2>
         <p className="text-gray-600 mt-2 max-w-lg mx-auto text-sm md:text-base">
-          Pawscare is the largest specialty pet retailer of services and solutions for the lifetime needs of pets. At Pawscare, we love pets.
+        Televets is the largest specialty pet retailer of services and solutions for the lifetime needs of pets. At Televets, we love pets.
         </p>
       </div>
 
@@ -24,17 +24,17 @@ const PetServices = () => {
         <ServiceCard 
           image={catImage} 
           title="Hotel For Pets" 
-          description="Pawscare is the largest specialty pet retailer of services and solutions."
+          description="Televets is the largest specialty pet retailer of services and solutions."
         />
         <ServiceCard 
           image={catImage} 
           title="Veterinary Care" 
-          description="Pawscare is the largest specialty pet retailer of services and solutions."
+          description="Televets is the largest specialty pet retailer of services and solutions."
         />
         <ServiceCard 
           image={dogImage} 
           title="Best Activity" 
-          description="Pawscare is the largest specialty pet retailer of services and solutions."
+          description="Televets is the largest specialty pet retailer of services and solutions."
         />
       </div>
     </section>

@@ -64,7 +64,7 @@ const ManageAppt = () => {
   const updateStatus = async (appointmentId, status) => {
     try {
       await api.put(
-        '/appointment/update',
+        '/appointment/statusupdate',
         { appointmentId, status },
         {
           headers: {

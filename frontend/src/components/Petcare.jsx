@@ -83,7 +83,7 @@ const PetCareSection = () => {
           We Love to Take Care of Your Pets
         </h2>
         <p className="text-gray-600 mt-4 text-sm md:text-base lg:text-lg">
-          Pawscare is the largest specialty pet retailer of services and solutions for the lifetime needs of pets. At Pawscare, we love pets, and we believe pets make us better people.
+        televets is the largest specialty pet retailer of services and solutions for the lifetime needs of pets. At televets, we love pets, and we believe pets make us better people.
         </p>
         
         {/* Feature List */}

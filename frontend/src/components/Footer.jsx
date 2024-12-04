@@ -48,7 +48,7 @@ const Footer = () => {
                 <img src="https://www.shutterstock.com/shutterstock/photos/1731072460/display_1500/stock-vector-dog-paw-logo-on-a-white-background-1731072460.jpg" alt="Paws Care Logo" className="w-8 h-8"/>
               </div>
               <div>
-                <h2 className="font-bold text-xl">PAWSCARE</h2>
+                <h2 className="font-bold text-xl">Televets</h2>
                 <p className="text-sm text-gray-400">Care for the Pets</p>
               </div>
             </div>
@@ -157,7 +157,7 @@ const Footer = () => {
               </a>
             </div>
             <div className="text-gray-400 mt-4 md:mt-0">
-              Copyright © 2024 Pawscare by{' '}
+              Copyright © 2024 Televets by{' '}
               <a href="#" className="text-white hover:text-orange-400">
                 WebGeniusLab
               </a>
