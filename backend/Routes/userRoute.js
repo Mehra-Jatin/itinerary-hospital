@@ -1,5 +1,5 @@
 import express from 'express';
-import { updateUser, deleteUser, getUser, getAllUsers,BookAppointment } from '../Controllers/userController.js';
+import { updateUser, deleteUser, getUser, getAllUsers,BookAppointment, getAllAppointments } from '../Controllers/userController.js';
 import { updateDoctor, deleteDoctor, getDoctor, getAllDoctors,validateDoctor ,setAvailability,getAvailability ,removeAvailability, Putrating, getavgrating} from '../Controllers/doctorController.js';
 import { register, login ,getHistory, getAppointment, updateAppointment, rescheduleAppointment,getNotification,updateNotification,deleteNotification} from '../Controllers/authController.js';
 import { authorizeRoles, isAuthenticatedUser } from '../Middleware/roleMiddleware.js';
@@ -35,6 +35,7 @@ router.route('/rescheduleappointment').put(isAuthenticatedUser(),authorizeRoles(
 
 
 router.route('/getnotification').get(isAuthenticatedUser(),authorizeRoles('admin'),getNotification);
+router.route('/getallAppointement').get(isAuthenticatedUser(),authorizeRoles('admin'),getAllAppointments);
 router.route('/updatenotification/:id').put(isAuthenticatedUser(),authorizeRoles('admin'),updateNotification);
 router.route('/deletenotification/:id').delete(isAuthenticatedUser(),authorizeRoles('admin'),deleteNotification);
 
