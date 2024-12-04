@@ -63,7 +63,7 @@ const Hero = () => {
             transition={{ duration: 0.8 }}
             className="bg-white text-orange-500 text-lg font-extrabold px-4 py-2 inline-block rounded-lg"
           >
-            WELCOME TO PAWSCARE!
+            WELCOME TO televets!
           </motion.div>
 
           <motion.h1

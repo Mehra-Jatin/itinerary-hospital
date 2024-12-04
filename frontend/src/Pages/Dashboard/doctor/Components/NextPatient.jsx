@@ -15,23 +15,25 @@ const NextPatient = ({ appointment }) => {
       try {
         const Token=await getToken()
        
-        const response = await api.get(`${import.meta.env.VITE_BACKEND_URL}/user/${userId}`, {
+        const response = await api.get(`/user/${userId}`, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${Token}`, // Ensure getToken is a function call if it fetches the token
           },
         });
-        // console.log(response);
+        console.log(response);
         
-        if (!response.ok) {
-          throw new Error('Failed to fetch data');
-        }
-        const data = response;
-       console.log(data.user);
+        // if (!response.ok) {
+        //   throw new Error('Failed to fetch data');
+        // }
+        const data = response.data;
+       console.log('df',data.user);
        
         
         setUserData(data);
       } catch (err) {
+        console.log(err);
+        
         setError(err.message);
       } finally {
         setLoading(false);

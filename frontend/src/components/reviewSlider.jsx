@@ -49,10 +49,10 @@ const ReviewSlider = () => {
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-8 md:mt-24">
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-[#f97316] mb-4">Pawscare Reviews</h1>
+        <h1 className="text-4xl font-bold text-[#f97316] mb-4">Televets Reviews</h1>
         <p className="text-dark max-w-2xl mx-auto">
-          Pawscare is the largest specialty pet retailer of services and solutions
-          for the lifetime needs of pets. At Pawscare, we love pets.
+        Televets is the largest specialty pet retailer of services and solutions
+          for the lifetime needs of pets. At Televets, we love pets.
         </p>
       </div>
 

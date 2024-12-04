@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext } from 'react';
 import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import NextPatient from './NextPatient';
-// import axios from 'axios';
 import { AuthContext } from '@/contexts/AuthContext';
 import api from '@/utils/api';
 
@@ -14,54 +13,30 @@ export default function TodayAppointments() {
   const [userDetails, setUserDetails] = useState({});
   const { user, getToken } = useContext(AuthContext);
 
-  // Fetch appointments and user data
   useEffect(() => {
     const fetchAppointmentsAndUsers = async () => {
       try {
-        const Token =await getToken()
-        // console.log('tk',Token);
-        
-        const token = await getToken();
         setLoading(true);
+        const token = await getToken();
+
+        // Fetch today's appointments
         const response = await api.get(`/appointment/${user._id}`, {
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${Token}`, // Ensure getToken is a function call if it fetches the token
+            Authorization: `Bearer ${token}`,
           },
         });
-        console.log('log',response.data);
-        
-        if (response.status === 200) { // Use `response.status` for axios instead of `response.ok`
-          setAppointments(response.data.appointment); // Access `response.data` for the data payload
-        } else {
+
+        if (response.status !== 200) {
           throw new Error(response.data.message || 'Failed to fetch appointments');
         }
 
-        // Fetch appointments
-        const appointmentResponse = await api.get(
-          `/appointment/${user._id}`,
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const { appointment: fetchedAppointments } = response.data;
 
-        const { appointment: fetchedAppointments } = appointmentResponse.data;
-
-        if (appointmentResponse.status !== 200) {
-          throw new Error(appointmentResponse.data.message || 'Failed to fetch appointments');
-        }
-
-        // Filter appointments by today's date
+        // Filter appointments for today's date
         const today = new Date();
         const todayAppointments = fetchedAppointments.filter((appointment) => {
-          console.log('appt',appointment);
-          
-          const appointmentDate = new Date(appointment.date); // Adjust key based on your backend date field
-          console.log('dt',appointmentDate);
-          
+          const appointmentDate = new Date(appointment.date);
           return (
             appointmentDate.getFullYear() === today.getFullYear() &&
             appointmentDate.getMonth() === today.getMonth() &&
@@ -71,33 +46,34 @@ export default function TodayAppointments() {
 
         setAppointments(todayAppointments);
 
-        // Fetch user details for each userId
+        // Fetch user details for each appointment's userId
         const userResponses = await Promise.all(
           todayAppointments.map(async (appointment) => {
             if (appointment.userId) {
-              const userResponse = await api.get(
-                `/user/${appointment.userId}`,
-                {
-                  headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
-                  },
-                }
-              );
+              const userResponse = await api.get(`/user/${appointment.userId}`, {
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${token}`,
+                },
+              });
               return { userId: appointment.userId, userData: userResponse.data.user };
             }
             return null;
           })
         );
 
-        // Transform user responses into a dictionary for quick lookup
+        // Map user details for quick lookup
         const userDataMap = userResponses.reduce((acc, userResponse) => {
           if (userResponse) acc[userResponse.userId] = userResponse.userData;
           return acc;
         }, {});
+        console.log('user',userDataMap);
+        
 
         setUserDetails(userDataMap);
       } catch (err) {
+        console.log(err);
+        
         setError(err.response?.data?.message || err.message);
       } finally {
         setLoading(false);
@@ -114,8 +90,9 @@ export default function TodayAppointments() {
   if (loading) {
     return <p className="text-center text-gray-500">Loading appointments...</p>;
   }
-
+  
   if (error) {
+    // console.log(error);
     return <p className="text-center text-red-500">Error: {error}</p>;
   }
 
