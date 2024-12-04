@@ -27,7 +27,7 @@ const PetServices = () => {
           description="Pawscare is the largest specialty pet retailer of services and solutions."
         />
         <ServiceCard 
-          image={vetImage} 
+          image={catImage} 
           title="Veterinary Care" 
           description="Pawscare is the largest specialty pet retailer of services and solutions."
         />
@@ -46,7 +46,7 @@ const ServiceCard = ({ image, title, description }) => {
 
   return (
     <div
-      className="bg-white rounded-lg shadow-lg overflow-hidden transform transition duration-300 hover:scale-105 w-full sm:w-80 md:w-96 m-4"
+      className="bg-white rounded-lg shadow-lg overflow-hidden transform transition duration-105 hover:scale-105 w-full sm:w-80 md:w-96 m-4"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
@@ -72,7 +72,7 @@ const ServiceCard = ({ image, title, description }) => {
 
       <div className="p-4">
         <p className="text-gray-700 text-start text-sm md:text-base">{description}</p>
-        <button className="text-orange-500 mt-4 font-semibold flex items-center justify-center">
+        <button className="text-orange-500 mt-4 font-semibold flex items-center justify-center px-3 py-2 rounded-lg hover:bg-orange-100 transition duration-150 hover:border-orange-200 border border-transparent">
           <div className="flex">LEARN MORE</div>
           <motion.div
             className="ml-2"

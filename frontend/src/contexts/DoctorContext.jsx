@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 // import axios from 'axios';
 import api from '@/utils/api';
+import { useAuth } from '@/hooks/useAuth';
 
 // Create the context
 export const DoctorContext = createContext();
@@ -10,6 +11,25 @@ export const DoctorProvider = ({ children }) => {
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { getToken, logout, user } = useAuth();
+  const [doctorAvailability, setDoctorAvailability] = useState({});
+  const [userRatings, setUserRatings] = useState({});
+
+  const getRequestConfig = async () => {
+    try {
+      const token = await getToken();
+      return {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      };
+    } catch (error) {
+      console.error('Error getting token:', error);
+      logout();
+      throw new Error('Authentication failed');
+    }
+  };
 
   // Function to fetch all doctors
   const fetchDoctors = async () => {
@@ -42,6 +62,59 @@ export const DoctorProvider = ({ children }) => {
     }
   };
 
+  const rateDoctorProfile = async (doctorId, rating) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const token = await getToken();
+      const response = await api.post(`/doctor/rate/${doctorId}`, 
+        { rating }, 
+        { 
+          headers: { 
+            'Content-Type': 'application/json', 
+            Authorization: `Bearer ${token}` 
+          } 
+        }
+      );
+      
+      // Update the specific doctor's rating in the local state
+      const updatedDoctors = doctors.map(doc => 
+        doc._id === doctorId 
+          ? { ...doc, ratings: [...(doc.ratings || []), { rating, userId: user._id }] } 
+          : doc
+      );
+      setDoctors(updatedDoctors);
+
+      return response.data;
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || 'Rating failed';
+      setError(errorMessage);
+      throw new Error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // New method to get average rating for a doctor
+  const getDoctorAverageRating = async (doctorId) => {
+    try {
+      const token = await getToken();
+      const response = await api.get(`/doctor/avg/${doctorId}`, {
+        headers: { 
+          'Content-Type': 'application/json', 
+          Authorization: `Bearer ${token}` 
+        }
+      });
+      
+      return response.data.avg;
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || 'Failed to fetch average rating';
+      console.error(errorMessage);
+      return 0;
+    }
+  };
+
+
 
   // Fetch doctors on initial load
   useEffect(() => {
@@ -49,7 +122,8 @@ export const DoctorProvider = ({ children }) => {
   }, []);
 
   return (
-    <DoctorContext.Provider value={{ doctors, loading, error, fetchDoctors, updateDoctorProfile }}>
+    <DoctorContext.Provider value={{ doctors, loading, error, fetchDoctors, updateDoctorProfile, rateDoctorProfile,
+      getDoctorAverageRating, }}>
       {children}
     </DoctorContext.Provider>
   );

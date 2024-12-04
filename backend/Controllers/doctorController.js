@@ -212,19 +212,26 @@ export const setAvailability = async (req, res) => {
     if (!doctor) {
       return res.status(404).json({ success: false, message: 'Doctor not found.' });
     }
-    // console.log(times);
-    
-    if(!doctor.availability.has(date)){
-      doctor.availability.set(date,times);
-    }
-    else{
-      // doctor.availability.set(date, new Set([...doctor.availability.get(date),...times]));
-      doctor.availability.set(date, Array.from(new Set(times)));
 
-    }
+    // Convert the availability Map to a plain object before saving
+    const availabilityObj = Object.fromEntries(doctor.availability);
+    
+    // Merge times, removing duplicates
+    const mergedTimes = availabilityObj[date] 
+      ? Array.from(new Set([...availabilityObj[date], ...times]))
+      : times;
+    
+    // Update the availability as a plain object
+    availabilityObj[date] = mergedTimes;
+    
+    // Save the updated availability
+    doctor.availability = availabilityObj;
+    
+    console.log(doctor.availability);
+    
     await doctor.save();
     res.status(200).json({ success: true, message: 'Availability set successfully.', doctor });
-
+ 
   }catch(error){
     console.error('Error setting availability:', error);
     res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
@@ -289,6 +296,7 @@ export const removeAvailability = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
   }
 };
+
 export const Putrating = async (req, res) => {
   try {
     const { doctorId } = req.params;

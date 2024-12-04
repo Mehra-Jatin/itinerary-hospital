@@ -2,7 +2,8 @@ import React from 'react'
 
 function DoctorMessages() {
   return (
-    <div>DoctorMessages</div>
+    <div>DoctorMessages       <br />
+      Need Backend Api endPoient for this</div>
   )
 }
 

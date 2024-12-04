@@ -2,7 +2,11 @@ import React from 'react'
 
 function ManageAppointment() {
   return (
-    <div>ManageAppointment</div>
+    <div>
+      ManageAppointment
+      <br />
+      Need Backend Api endPoient for this, fetch all appointments
+    </div>
   )
 }
 

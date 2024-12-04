@@ -46,6 +46,7 @@ import UserMessages from "./Pages/Dashboard/admin/pages/UserMessages";
 import Contacts from "./Pages/Contacts";
 import Blogs from "./Pages/Blogs";
 import AdminMessages from "./Pages/Dashboard/doctor/AdminMessages";
+import ManageUi from "./Pages/Dashboard/admin/pages/ManageUi";
 
 // Define the router configuration with routes
 const router = createBrowserRouter([

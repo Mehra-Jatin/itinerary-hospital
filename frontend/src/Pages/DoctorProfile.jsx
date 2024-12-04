@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   Card,
@@ -37,11 +37,12 @@ const DoctorProfile = () => {
   const { toast } = useToast();
 
   // Get doctors directly from context
-  const { doctors, loading, error } = useDoctor();
+  const { doctors, loading, rateDoctorProfile, getDoctorAverageRating } = useDoctor();
   const { user } = useAuth();
 
- 
-  
+  const [selectedRating, setSelectedRating] = useState(0);
+  const [averageRating, setAverageRating] = useState(0);
+  const [hasUserRated, setHasUserRated] = useState(false);
 
   // Find the specific doctor using the ID
   const doctor = doctors.find((doc) => doc._id === id) || {
@@ -51,8 +52,74 @@ const DoctorProfile = () => {
     specialization: 'General Medicine',
     hospital: 'Unknown Hospital',
   };
-//  console.log(doctor);
- 
+  //  console.log(doctor);
+  console.log(user);
+
+  // Check if user has already rated
+  useEffect(() => {
+    if (doctor && user) {
+      const userRating = doctor.ratings?.find(r => String(r.userId) === String(user._id));
+      if (userRating) {
+        setHasUserRated(true);
+      }
+    }
+  }, [doctor, user]);
+
+  // Fetch average rating
+  useEffect(() => {
+    const fetchAverageRating = async () => {
+      if (doctor._id) {
+        const avg = await getDoctorAverageRating(doctor._id);
+        setAverageRating(avg);
+      }
+    };
+    fetchAverageRating();
+  }, [doctor._id]);
+
+  useEffect(() => {
+    // Check if current user has rated this specific doctor
+    const userRated = doctor.ratings?.some(
+      rating => String(rating.userId) === String(user?._id)
+    );
+    setHasUserRated(userRated);
+  }, [doctor, user]);
+
+  const handleRateDoctor = async () => {
+    if (!user) {
+      toast({
+        variant: "destructive",
+        title: "Login Required",
+        description: "Please log in to rate the doctor."
+      });
+      return;
+    }
+
+    if (hasUserRated) {
+      toast({
+        variant: "destructive",
+        title: "Rating Limit",
+        description: "You have already rated this doctor."
+      });
+      return;
+    }
+
+    try {
+      await rateDoctorProfile(doctor._id, selectedRating);
+      setHasUserRated(true);
+      toast({
+        title: "Rating Submitted",
+        description: "Thank you for your feedback!"
+      });
+      navigate.go(0);
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Rating Failed",
+        description: error.message
+      });
+    }
+  };
+
   const [activeTab, setActiveTab] = useState('overview');
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
@@ -61,7 +128,7 @@ const DoctorProfile = () => {
     return (
       <Loading />
     );
-  } 
+  }
   // if (!doctor) {
   //   return (
   //     <div className="flex flex-col items-center justify-center min-h-screen">
@@ -154,7 +221,7 @@ const DoctorProfile = () => {
             </CardContent>
           </Card>
 
- 
+
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -214,9 +281,40 @@ const DoctorProfile = () => {
                   <div className="space-y-4">
                     <div className="flex items-center gap-2">
                       <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
-                      <span className="font-medium">{doctor.rating || '94%'}</span>
+                      <span className="font-medium">{averageRating}/5</span>
                       <span className="text-gray-600">(Overall Rating)</span>
                     </div>
+
+                    {user && !hasUserRated && (
+                      <div className="mt-4">
+                        <h3 className="text-lg font-medium mb-2">Rate this Doctor</h3>
+                        <div className="flex items-center gap-2">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <Star
+                              key={star}
+                              className={`w-6 h-6 cursor-pointer ${star <= selectedRating
+                                  ? 'text-yellow-500 fill-yellow-500'
+                                  : 'text-gray-300'
+                                }`}
+                              onClick={() => setSelectedRating(star)}
+                            />
+                          ))}
+                          <Button
+                            onClick={handleRateDoctor}
+                            disabled={selectedRating === 0}
+                            className="ml-4"
+                          >
+                            Submit Rating
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+
+                    {hasUserRated && (
+                      <p className="text-green-600">
+                        You have already rated this doctor. Thank you for your feedback!
+                      </p>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -253,14 +351,14 @@ const DoctorProfile = () => {
               <div className='p-4 border-t'>
                 <Separator className="my-6" />
                 <Button
-                className="w-full bg-orange-100 border-2 border-orange-500 hover:bg-orange-50"
-                variant="outline"
-                size="lg"
-                onClick={() => navigate('/auth/register')}
-              >
-                Login / Register to book
-              </Button></div>
-              
+                  className="w-full bg-orange-100 border-2 border-orange-500 hover:bg-orange-50"
+                  variant="outline"
+                  size="lg"
+                  onClick={() => navigate('/auth/register')}
+                >
+                  Login / Register to book
+                </Button></div>
+
             )}
 
           </Card>
@@ -272,14 +370,7 @@ const DoctorProfile = () => {
                   <Calendar className="w-5 h-5 text-blue-500" />
                   <h3 className="font-medium">Next Available</h3>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <Badge variant="outline" className="justify-center">
-                    Today, 2:00 PM
-                  </Badge>
-                  <Badge variant="outline" className="justify-center">
-                    Tomorrow, 10:00 AM
-                  </Badge>
-                </div>
+                
               </div>
             </CardContent>
           </Card>

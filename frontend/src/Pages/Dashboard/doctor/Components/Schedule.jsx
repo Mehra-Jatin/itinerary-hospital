@@ -59,7 +59,7 @@ const ScheduleManager = () => {
     if (!selectedDate) return; // Ensure date is selected before saving
 
     const token = await getToken();
-  const res=  await api.put(`/setavailability/${user._id}`, {
+    const res = await api.put(`/setavailability/${user._id}`, {
       date: formatDate(selectedDate), // Save only the date part
       times: Array.from(new Set(selectedTimes)),
     }, {
@@ -71,8 +71,8 @@ const ScheduleManager = () => {
     // Update the availability in state
     setAvailability((prev) => new Map(prev).set(formatDate(selectedDate), selectedTimes));
     console.log(res.data.success);
-    if(res.data.success) setSelectedDate(null);
-    
+    if (res.data.success) setSelectedDate(null);
+
 
   };
 
@@ -107,52 +107,52 @@ const ScheduleManager = () => {
 
     return (
       <div className="shadow-md w-full">
-      <Table className="shadow-md border ">
-        <TableHeader>
-          <TableRow>
-            <TableHead> <div className="flex gap-2"><CalendarDays/> <p>Date</p></div> </TableHead>
-            <TableHead> <div className="flex gap-2">
-             <TimerIcon /> <p>Times</p>
-            </div> </TableHead>
-            <TableHead> Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {Array.from(filteredAvailability.keys()).map(date => (
-            <TableRow key={date} className="transition ease-in-out delay-150 duration-200">
-              <TableCell>{date}</TableCell>
-              <TableCell><span className="bg-orange-400 px-3 py-1 text-white text-center rounded-full">{filteredAvailability.get(date).join(', ')}</span> </TableCell>
-              <TableCell>
-                <button
-                  onClick={() => handleRemoveDate(date)}
-                  className="text-red-500 hover:text-gray-400 hover:bg-red-700 p-2 rounded transition duration-300"
-                >
-                  <DeleteIcon />
-                </button>
-              </TableCell>
+        <Table className="shadow-md border ">
+          <TableHeader>
+            <TableRow>
+              <TableHead> <div className="flex gap-2"><CalendarDays /> <p>Date</p></div> </TableHead>
+              <TableHead> <div className="flex gap-2">
+                <TimerIcon /> <p>Times</p>
+              </div> </TableHead>
+              <TableHead> Actions</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table></div>
+          </TableHeader>
+          <TableBody>
+            {Array.from(filteredAvailability.keys()).map(date => (
+              <TableRow key={date} className="transition ease-in-out delay-150 duration-200">
+                <TableCell>{date}</TableCell>
+                <TableCell><span className="bg-orange-400 px-3 py-1 text-white text-center rounded-full">{filteredAvailability.get(date).join(', ')}</span> </TableCell>
+                <TableCell>
+                  <button
+                    onClick={() => handleRemoveDate(date)}
+                    className="text-red-500 hover:text-gray-400 hover:bg-red-700 p-2 rounded transition duration-300"
+                  >
+                    <DeleteIcon />
+                  </button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table></div>
     );
   };
 
   const isDateDisabled = (date) => {
     const today = new Date();
-  // Set the time portion to 00:00:00 for comparison
-  today.setHours(0, 0, 0, 0);
+    // Set the time portion to 00:00:00 for comparison
+    today.setHours(0, 0, 0, 0);
 
-  // Disable dates that are before today (yesterday and earlier)
-  return date < today;
+    // Disable dates that are before today (yesterday and earlier)
+    return date < today;
   };
 
-  const isDateDisabledForFilter=(date)=>{
+  const isDateDisabledForFilter = (date) => {
     const today = new Date();
-  // Set the time portion to 00:00:00 for comparison
-  today.setHours(0, 0, 0, 0);
+    // Set the time portion to 00:00:00 for comparison
+    today.setHours(0, 0, 0, 0);
 
-  // Disable dates that are before today (yesterday and earlier)
-  return date < today;
+    // Disable dates that are before today (yesterday and earlier)
+    return date < today;
   }
   // Helper function to format date in YYYY-MM-DD format
   const formatDate = (date) => {
@@ -168,20 +168,20 @@ const ScheduleManager = () => {
         <div className='flex flex-col gap-6 justify-center'>
           <label htmlFor="">Filter By Date : </label>
           <div className="relative">
-          <DatePicker
-  selected={filterDate}
-  onChange={handleFilterChange}
-  filterDate={(date) => !isDateDisabledForFilter(date)} // Disable dates before today
-  placeholderText="Filter by Date"
-  className="border p-2 rounded mb-4"
-  calendarClassName="rounded-md shadow-lg"
-  inline
-  dayClassName={(date) =>
-    isDateDisabledForFilter(date)
-      ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-      : 'bg-white text-gray-800 hover:bg-blue-100 hover:text-blue-600 transition duration-200'
-  }
-/>
+            <DatePicker
+              selected={filterDate}
+              onChange={handleFilterChange}
+              filterDate={(date) => !isDateDisabledForFilter(date)} // Disable dates before today
+              placeholderText="Filter by Date"
+              className="border p-2 rounded mb-4"
+              calendarClassName="rounded-md shadow-lg"
+              inline
+              dayClassName={(date) =>
+                isDateDisabledForFilter(date)
+                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                  : 'bg-white text-gray-800 hover:bg-blue-100 hover:text-blue-600 transition duration-200'
+              }
+            />
             {filterDate && (
               <button
                 onClick={() => setFilterDate(null)}
@@ -252,7 +252,7 @@ const ScheduleManager = () => {
             {selectedTimes.map((time, index) => (
               <li key={index} className="flex justify-between items-center bg-orange-500 p-4 gap-3 text-xl rounded-md">
                 <span>{time}</span>
-                <button onClick={() => handleDeleteTime(time)} className="text-red-500"><Trash2 size={30} className="hover:bg-red-700 w-10 h-10 p-2 hover:rounded transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-100"/> </button>
+                <button onClick={() => handleDeleteTime(time)} className="text-red-500"><Trash2 size={30} className="hover:bg-red-700 w-10 h-10 p-2 hover:rounded transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-100" /> </button>
               </li>
             ))}
           </ul>

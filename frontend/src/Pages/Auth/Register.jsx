@@ -122,19 +122,19 @@ export default function Register() {
                     variant: result.success ? 'success' : 'destructive',
                     duration: 5000
                 })
-                if (setIsNewDoctor) {
-                    toast({
-                        title: 'Now you can wait for approval',
-                        variant: 'default',
-                        duration: 5000
-                    })
-                } else {
-                    toast({
-                        title: 'Now you can login to your account',
-                        variant: 'default',
-                        duration: 5000
-                    })
-                }
+                // if (setIsNewDoctor) {
+                //     toast({
+                //         title: 'Now you can wait for approval',
+                //         variant: 'default',
+                //         duration: 5000
+                //     })
+                // } else {
+                //     toast({
+                //         title: 'Now you can login to your account',
+                //         variant: 'default',
+                //         duration: 5000
+                //     })
+                // }
 
             } catch (error) {
                 // Catch any unexpected errors

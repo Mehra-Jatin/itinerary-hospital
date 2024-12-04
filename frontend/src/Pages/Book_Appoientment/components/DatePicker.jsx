@@ -59,7 +59,7 @@ const DatePicker = ({ onDateSelect }) => {
           key={day}
           onClick={() => handleDateClick(date)}
           disabled={isPast}
-          className={`flex items-center justify-center p-2 rounded-md w-16 h-10 transition-colors 
+          className={`flex items-center justify-center p-2 rounded-md sm:w-16 sm:h-10 w-8 h-8 transition-colors 
             ${isToday(date) ? 'bg-orange-100 text-orange-800' : ''} 
             ${isSelected ? 'bg-orange-500 text-white hover:text-black hover:bg-orange-800' : ''} 
             ${isPast ? 'text-gray-400 cursor-not-allowed' : 'hover:bg-orange-100'}`}

@@ -44,9 +44,11 @@ import {
   MapPin,
   Search,
   X,
+  ListFilter
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from '@/hooks/use-toast';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
 function ManagePatient() {
   const {
@@ -64,6 +66,7 @@ function ManagePatient() {
   const [patientToDelete, setPatientToDelete] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
+  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [sortConfig, setSortConfig] = useState({
     key: 'createdAt',
     direction: 'desc'
@@ -171,44 +174,108 @@ function ManagePatient() {
           ))}
         </div>
         <div className="flex items-center justify-end space-x-3 bg-gray-50 p-3 rounded-lg">
-          <Button className="w-1/3 flex " variant="destructive" onClick={() => setPatientToDelete(patient)}>Delete Account</Button>
+          <Button
+            className="w-full"
+            variant="destructive"
+            onClick={() => setPatientToDelete(patient)}
+          >
+            Delete Account
+          </Button>
         </div>
       </CardContent>
     </Card>
   );
 
-  // Pagination controls
-  const PaginationControls = () => (
-    <>
-      {Patients.length > 10 && (
-        <div className="flex justify-evenly items-center mt-4 w-full">
-          <div className="flex items-center space-x-10">
+  // Mobile-friendly Patient Card for List View
+  const MobilePatientCard = ({ patient, onView, onDelete }) => (
+    <Card className="w-full mb-4">
+      <CardContent className="p-4">
+        <div className="flex justify-between items-center">
+          <div>
+            <h3 className="text-lg font-bold">
+              {patient.FirstName} {patient.LastName}
+            </h3>
+            <p className="text-sm text-gray-600">
+              {patient.age} yrs, {patient.gender} | Joined: {new Date(patient.createdAt).toLocaleDateString()}
+            </p>
+          </div>
+          <div className="flex space-x-2">
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
+              onClick={() => onView(patient)}
+              className="p-2"
             >
-              <ChevronLeft className="mr-2 w-4 h-4" /> Previous
+              <Eye className="w-4 h-4" />
             </Button>
-
-            <span className="text-sm text-gray-500">
-              Page {currentPage} of {totalPages}
-            </span>
-
             <Button
-              variant="outline"
+              variant="destructive"
               size="sm"
-              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages}
+              onClick={() => onDelete(patient)}
+              className="p-2"
             >
-              Next <ChevronRight className="ml-2 w-4 h-4" />
+              <Trash2 className="w-4 h-4" />
             </Button>
           </div>
         </div>
-      )}
-    </>
+      </CardContent>
+    </Card>
+  );
 
+  // Mobile Filters Sheet
+  const MobileFiltersSheet = () => (
+    <Sheet open={mobileFilterOpen} onOpenChange={setMobileFilterOpen}>
+      <SheetTrigger asChild>
+        <Button variant="outline" size="sm" className="flex items-center">
+          <ListFilter className="mr-2 w-4 h-4" /> Filters
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="bottom" className="h-[80vh] rounded-t-2xl">
+        <SheetHeader>
+          <SheetTitle>Filters & Sorting</SheetTitle>
+        </SheetHeader>
+        <div className="space-y-4 mt-4">
+          <div>
+            <label className="text-sm font-medium">Search</label>
+            <Input
+              type="text"
+              placeholder="Search patients..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="mt-2"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium">Sort By</label>
+            <Select
+              value={`${sortConfig.key}-${sortConfig.direction}`}
+              onValueChange={(value) => {
+                const [key, direction] = value.split('-');
+                setSortConfig({ key, direction });
+                setCurrentPage(1);
+                setMobileFilterOpen(false);
+              }}
+              className="mt-2"
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select sorting" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="createdAt-desc">Newest First</SelectItem>
+                <SelectItem value="createdAt-asc">Oldest First</SelectItem>
+                <SelectItem value="FirstName-asc">Name (A-Z)</SelectItem>
+                <SelectItem value="FirstName-desc">Name (Z-A)</SelectItem>
+                <SelectItem value="age-asc">Age (Low-High)</SelectItem>
+                <SelectItem value="age-desc">Age (High-Low)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 
   // Render loading state
@@ -222,67 +289,34 @@ function ManagePatient() {
 
   return (
     <div className="w-full px-4 py-8 min-h-screen">
-      <h1 className="text-3xl font-bold text-gray-800 mb-8 text-center">
+      <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6 text-center">
         Patient Management
       </h1>
 
-      {/* Search and Sort Controls */}
-      <div className="flex flex-col md:flex-row justify-between mb-6 space-y-4 md:space-y-0">
-        {/* Search Input */}
-        <div className="relative flex-grow md:mr-4">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-          <Input
-            type="text"
-            placeholder="Search patients..."
-            className="pl-10 w-full"
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setCurrentPage(1);
-            }}
-          />
-          {searchTerm && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="absolute right-2 top-1/2 -translate-y-1/2"
-              onClick={() => setSearchTerm('')}
-            >
-              <X className="w-4 h-4" />
-            </Button>
-          )}
-        </div>
-
-        {/* Sort Select */}
-        <div className="flex items-center space-x-2">
-          <span className="text-sm text-gray-600">Sort by:</span>
-          <Select
-            value={`${sortConfig.key}-${sortConfig.direction}`}
-            onValueChange={(value) => {
-              const [key, direction] = value.split('-');
-              setSortConfig({ key, direction });
-              setCurrentPage(1);
-            }}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="createdAt-desc">Newest First</SelectItem>
-              <SelectItem value="createdAt-asc">Oldest First</SelectItem>
-              <SelectItem value="FirstName-asc">Name (A-Z)</SelectItem>
-              <SelectItem value="FirstName-desc">Name (Z-A)</SelectItem>
-              <SelectItem value="age-asc">Age (Low-High)</SelectItem>
-              <SelectItem value="age-desc">Age (High-Low)</SelectItem>
-            </SelectContent>
-          </Select>
+      {/* Mobile-friendly controls */}
+      <div className="flex flex-col sm:flex-row justify-between mb-6 space-y-4 sm:space-y-0">
+        <div className="flex space-x-2 w-full">
+          <MobileFiltersSheet />
+          <div className="flex-grow">
+            <Input
+              type="text"
+              placeholder="Search patients..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="w-full md:hidden"
+            />
+          </div>
         </div>
       </div>
 
-      {/* Patient Table */}
+      {/* Responsive Patient Display */}
       {filteredPatients.length > 0 ? (
         <>
-          <div className="w-full overflow-x-auto">
+          {/* Desktop Table */}
+          <div className="hidden md:block w-full overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -382,21 +416,57 @@ function ManagePatient() {
             </Table>
           </div>
 
+          {/* Mobile Card List */}
+          <div className="md:hidden">
+            {currentPatients.map(patient => (
+              <MobilePatientCard
+                key={patient._id}
+                patient={patient}
+                onView={() => setSelectedPatient(patient)}
+                onDelete={() => setPatientToDelete(patient)}
+              />
+            ))}
+          </div>
+
           {/* Pagination Controls */}
-          <PaginationControls />
+          <div className="flex justify-between items-center mt-6">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="flex items-center"
+            >
+              <ChevronLeft className="mr-2 w-4 h-4" /> Previous
+            </Button>
+            <p className="text-sm text-gray-600">
+              Page {currentPage} of {totalPages}
+            </p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="flex items-center"
+            >
+              Next <ChevronRight className="ml-2 w-4 h-4" />
+            </Button>
+          </div>
         </>
       ) : (
-        <div className="text-center text-gray-500 text-xl">
-          No Patients found.
+        <div className="flex justify-center items-center mt-10">
+          <p className="text-gray-600 text-sm">No patients found.</p>
         </div>
       )}
 
-      {/* Patient Details Dialog */}
-      <Dialog open={!!selectedPatient} onOpenChange={() => setSelectedPatient(null)}>
-        <DialogContent className="max-w-2xl">
-          {selectedPatient && renderPatientDetails(selectedPatient)}
-        </DialogContent>
-      </Dialog>
+      {/* Dialog for Viewing Patient Details */}
+      {selectedPatient && (
+        <Dialog open={!!selectedPatient} onOpenChange={() => setSelectedPatient(null)}>
+          <DialogContent>
+            {renderPatientDetails(selectedPatient)}
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
