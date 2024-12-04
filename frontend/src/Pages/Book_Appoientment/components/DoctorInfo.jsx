@@ -19,7 +19,7 @@ const DoctorInfo = ({ doctor }) => {
             )}
           </div>
           <div>
-            <CardTitle className="text-xl">{doctor.FirstName} {doctor.LastName}</CardTitle>
+            <CardTitle className="text-xl capitalize">Dr. {doctor.FirstName} {doctor.LastName}</CardTitle>
             <div className="flex items-center gap-2 mt-1">
               <Stethoscope className="w-4 h-4 text-gray-500" />
               <span className="text-sm text-gray-600">{doctor.specialization}</span>
@@ -29,7 +29,8 @@ const DoctorInfo = ({ doctor }) => {
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="about">
-          <TabsList className="grid w-full grid-cols-2">
+          <div className='py-3 text-lg font-semibold'>Consultation Fees : <span className='hover:underline '>{doctor.fees}/-</span></div>
+          <TabsList className="grid w-full grid-cols-2 bg-orange-50">
             <TabsTrigger value="about">About</TabsTrigger>
             <TabsTrigger value="contact">Contact</TabsTrigger>
           </TabsList>
@@ -50,7 +51,7 @@ const DoctorInfo = ({ doctor }) => {
                 {doctor.education ? (
                   doctor.education.map((edu, index) => (
                     <li key={index} className="flex items-start gap-2">
-                      <span className="w-1 h-1 rounded-full bg-gray-400 mt-2" />
+                      <span className="w-1 h-1 rounded-full bg-orange-400 mt-2" />
                       {edu}
                     </li>
                   ))

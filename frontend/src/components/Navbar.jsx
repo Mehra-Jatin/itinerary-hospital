@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { Button } from "@/components/ui/button"
 import {
@@ -22,6 +22,7 @@ import { useAuth } from '@/hooks/useAuth'
 
 export default function Navbar() {
   const { user, logout, updateUserData } = useAuth();  // Replace with your logout function
+  const [isMenuOpen, setMenuOpen] = useState(false); // State for mobile menu
 
   const menuItems = [
     { name: "Home", path: "/", icon: Home, hasDropdown: false },
@@ -77,18 +78,18 @@ export default function Navbar() {
         {user ? (
           <>
             {user.role === 'admin' ? (
-              <div className='flex items-center space-x-2'>
+              <div className='items-center space-x-2 flex'>
                 <Link to="/admin-dashboard">
                   <Button className="bg-orange-600 hover:bg-orange-800 text-white">Go to Dashboard</Button>
                 </Link>
-                <Button onClick={handleLogout} variant="outline" className="border-orange-600 text-black hover:bg-orange-100">Log out</Button>
+                <Button onClick={handleLogout} variant="outline" className="border-orange-600 text-black hover:bg-orange-100 hidden md:flex">Log out</Button>
               </div>
 
             ) : (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="font-semibold group">
-                    <User className="mr-2 h-4 w-4" /> Welcome, {user.role === 'doctor' ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : user.FirstName}
+                  <Button variant="ghost" className="font-semibold group capitalize">
+                    <User className="mr-2 h-4 w-4" />{user.role === 'doctor' ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : user.FirstName}
                     <ChevronDown className="ml-1 h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -160,14 +161,14 @@ export default function Navbar() {
       </div>
 
       {/* Mobile Menu */}
-      <Sheet>
+      <Sheet open={isMenuOpen} onOpenChange={setMenuOpen}>
         <SheetTrigger asChild>
           <Button variant="ghost" size="icon" className="md:hidden">
             <Menu className="h-8 w-8" />
             <span className="sr-only">Open menu</span>
           </Button>
         </SheetTrigger>
-        <SheetContent side="right" className="w-[400px] sm:w-[500px]">
+        <SheetContent side="right" className="w-[350px] sm:w-[500px]">
           <SheetHeader>
             <SheetTitle className="text-2xl font-bold text-orange-500">Menu</SheetTitle>
           </SheetHeader>
@@ -176,6 +177,7 @@ export default function Navbar() {
               <Link
                 key={item.name}
                 to={item.path}
+                onClick={() => setMenuOpen(false)} // Close menu on navigation
                 className="flex items-center space-x-2 text-lg border-b border-gray-200 py-2 hover:bg-orange-50 hover:text-orange-500 transition-colors duration-200"
               >
                 <Button variant="outline" size="icon" className="w-10 h-10">
@@ -184,22 +186,41 @@ export default function Navbar() {
                 <span>{item.name}</span>
               </Link>
             ))}
-
           </div>
-          {!user && (
+          {!user ? (
             <div className="mt-6">
-              <Link to="/auth/register" className="w-full">
+              <Link to="/auth/register" onClick={() => setMenuOpen(false)}>
                 <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white">Create an account</Button>
               </Link>
             </div>
+          ) : (
+            <>
+              {user.role === 'admin' ? (
+                <>
+                  <div className='items-center space-y-2 mt-52 flex flex-col w-full'>
+                    <Link to="/admin-dashboard" className='w-full'>
+                      <Button className="bg-orange-600 hover:bg-orange-800 text-white w-full">Go to Dashboard</Button>
+                    </Link>
+                    <Button onClick={handleLogout} variant="outline" className="border-orange-600 text-black hover:bg-orange-100 w-full">Log out</Button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <Button onClick={handleLogout} className="w-4/5 bg-orange-500 hover:bg-orange-600 text-white absolute bottom-36 right-10">
+                    <LogOut className="mr-2 h-4 w-4" /> Logout
+                  </Button>
+                </>
+              )}
+
+            </>
           )}
           <div className='absolute bottom-4'>
             <p className="text-xs text-gray-500">© 2024 PawsCare. All rights reserved.</p>
             <img src={logoImg} alt="PawsCare Logo" className="h-12" />
           </div>
         </SheetContent>
-
       </Sheet>
+
 
 
     </nav>

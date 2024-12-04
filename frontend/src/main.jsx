@@ -30,7 +30,7 @@ import DoctorChat from "./Pages/Dashboard/doctor/DoctorChatPage";
 import DoctHistoriesPage from "./Pages/Dashboard/doctor/DoctorHistory";
 import { Toaster } from "./components/ui/toaster";
 
-import AdminDashboard from "./Pages/Dashboard/admin/AdminDashboard";
+import AdminDashboard from "./Pages/Dashboard/admin/pages/AdminDashboard";
 import ManageDoctors from "./Pages/Dashboard/admin/pages/ManageDoctor";
 import VerifyDoctors from "./Pages/Dashboard/admin/pages/VerifyDoctor";
 import ManageAppointments from "./Pages/Dashboard/admin/pages/ManageAppointment";
@@ -46,6 +46,7 @@ import UserMessages from "./Pages/Dashboard/admin/pages/UserMessages";
 import Contacts from "./Pages/Contacts";
 import Blogs from "./Pages/Blogs";
 import AdminMessages from "./Pages/Dashboard/doctor/AdminMessages";
+import ManageUi from "./Pages/Dashboard/admin/pages/ManageUi";
 
 // Define the router configuration with routes
 const router = createBrowserRouter([
@@ -240,6 +241,10 @@ const router = createBrowserRouter([
       {
         path: "user-messages",  
         element: <UserMessages />,
+      },
+      {
+        path: "manageui",  
+        element: <ManageUi />,
       },
       {
         path: "notifications",  

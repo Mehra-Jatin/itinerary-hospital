@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
-import { Check, Trash2, EyeIcon } from 'lucide-react';
+import { Check, Trash2, EyeIcon, ArrowUpDown } from 'lucide-react';
 import { useAdmin } from "@/contexts/AdminContext"; // Import your AdminContext
 // import { toast } from "@/hooks/use-toast";
 
@@ -49,16 +49,25 @@ const VerifyDoctor = () => {
   if (loading) return <div className="text-orange-500">Loading doctors...</div>;
 
   return (
-    <div className="space-y-4 p-4">
+    <div className="space-y-4 p-4 max-w-6xl mx-auto">
       <h2 className="text-2xl font-bold text-orange-600">Unverified Doctors</h2>
       {doctors.length === 0 ? (
         <p className="text-gray-500">No unverified doctors</p>
       ) : (
         <Table>
-          <TableHeader className="bg-orange-100">
+          <TableHeader className="">
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Specialization</TableHead>
+              <TableHead className="cursor-pointer hover:bg-gray-100">Name</TableHead>
+              <TableHead className="cursor-pointer hover:bg-gray-100">Specialization</TableHead>
+              <TableHead
+                    onClick={() => handleSort('createdAt')}
+                    className="cursor-pointer hover:bg-gray-100"
+                  >
+                    <div className="flex items-center">
+                      Joined Date
+                      <ArrowUpDown className="ml-2 w-4 h-4" />
+                    </div>
+                  </TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -73,6 +82,9 @@ const VerifyDoctor = () => {
                     {doctor.specialization || 'No Specialization'}
                   </Badge>
                 </TableCell>
+                <TableCell>
+                      {new Date(doctor.createdAt).toLocaleDateString()}
+                    </TableCell>
                 <TableCell className="text-right space-x-2">
                   <Button 
                     size="sm"

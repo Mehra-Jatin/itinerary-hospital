@@ -289,3 +289,68 @@ export const removeAvailability = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
   }
 };
+export const Putrating = async (req, res) => {
+  try {
+    const { doctorId } = req.params;
+    const { rating } = req.body;
+    const userId = req.user._id; // Assuming user is authenticated
+
+    const doctor = await Doctor.findById(doctorId);
+    if (!doctor) {
+      return res.status(404).json({ success: false, message: 'Doctor not found.' });
+    }
+
+    if (rating < 0 || rating > 5) {
+      return res.status(400).json({ success: false, message: 'Rating must be between 0 and 5.' });
+    }
+
+    // Check if user has already rated the doctor
+    const existingRating = doctor.ratings.find(r => String(r.userId) === String(userId));
+    if (existingRating) {
+      return res.status(400).json({ success: false, message: 'You have already rated this doctor.' });
+    }
+
+    // Add new rating
+    doctor.ratings.push({
+      userId,
+      rating,
+    });
+
+    await doctor.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Rating added successfully.',
+      doctor,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Server error occurred while adding rating' });
+  }
+};
+
+
+export const getavgrating = async (req, res) => {
+  try {
+    const { doctorId } = req.params;
+    const doctor = await Doctor.findById(doctorId);
+    
+    if (!doctor) {
+      return res.status(404).json({ success: false, message: 'Doctor not found.' });
+    }
+    
+    const ratings = doctor.ratings;
+    if (ratings.length === 0) {
+      // If no ratings, return 0 as average
+      return res.status(200).json({ success: true, message: 'No ratings available.', avg: 0 });
+    }
+    
+    const sum = ratings.reduce((acc, cur) => acc + cur.rating, 0);
+    const avg = Math.round(sum / ratings.length);  // Rounding the average to an integer
+
+    res.status(200).json({ success: true, message: 'Average rating retrieved successfully.', avg });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Server error occurred while retrieving average rating.' });
+  }
+};

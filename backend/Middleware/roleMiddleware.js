@@ -13,17 +13,15 @@ const isAuthenticatedUser = () => {
     
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-      console.log('Decoded JWT:', decoded); // Log the decoded JWT
+      console.log('Decoded JWT:', decoded);
 
-      // Try to find the user and the doctor using the decoded userId
       const user = await User.findById(decoded.userId);
       const doctor = await Doctor.findById(decoded.userId);
-
       if (!user && !doctor) {
         return res.status(404).json({ message: 'User or Doctor not found.' });
       }
 
-      // Assign the user or doctor to the request object
+      
       if (user) {
         req.user = user;
       }
@@ -31,9 +29,8 @@ const isAuthenticatedUser = () => {
       if (doctor) {
         req.doctor = doctor;
       }
-
-      console.log('User:', req.user); // Log the user details
-      console.log('Doctor:', req.doctor); // Log the doctor details (if applicable)
+      console.log('User:', req.user);
+      console.log('Doctor:', req.doctor); 
 
       next();
     } catch (error) {
