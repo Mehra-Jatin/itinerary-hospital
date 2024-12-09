@@ -137,6 +137,13 @@ export const login = async (req, res) => {
       { expiresIn: "1h" }
     );
     
+    res.cookie("jwt", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== "development",
+      maxAge: 3600000, 
+      sameSite:"Strict",
+    });
+
     user.password = undefined; // Don't send password
     // Send response with user info and token
     res.status(200).json({
