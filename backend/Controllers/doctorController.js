@@ -362,3 +362,112 @@ export const getavgrating = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error occurred while retrieving average rating.' });
   }
 };
+// Post a review
+export const PostReview = async (req, res) => {
+  try {
+    const { doctorId } = req.params; // Get doctorId from params
+    const { review } = req.body; // Get review text from request body
+    const userId = req.user._id; // Get userId from authenticated user
+
+    // Validate review text
+    if (!review || review.trim().length === 0) {
+      return res.status(400).json({ success: false, message: 'Review cannot be empty.' });
+    }
+    
+    // Find the doctor by doctorId
+    const doctor = await Doctor.findById(doctorId);
+    if (!doctor) {
+      return res.status(404).json({ success: false, message: 'Doctor not found.' });
+    }
+
+    // Check if user has already reviewed the doctor
+    const existingReview = doctor.reviews.find(r => String(r.userId) === String(userId));
+    if (existingReview) {
+      return res.status(400).json({ success: false, message: 'You have already reviewed this doctor.' });
+    }
+
+    // Add the review
+    doctor.reviews.push({
+      userId,
+      review,
+    });
+
+    // Save the doctor with the new review
+    await doctor.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Review added successfully.',
+      doctor,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Server error occurred while adding review.' });
+  }
+};
+
+// Get reviews for a doctor
+export const GetReviews = async (req, res) => {
+  try {
+    const { doctorId } = req.params; // Get doctorId from params
+
+    // Find the doctor by doctorId
+    const doctor = await Doctor.findById(doctorId);
+    if (!doctor) {
+      return res.status(404).json({ success: false, message: 'Doctor not found.' });
+    }
+
+    // Retrieve the reviews
+    const reviews = doctor.reviews;
+
+    // If there are no reviews
+    if (reviews.length === 0) {
+      return res.status(200).json({ success: true, message: 'No reviews available.', reviews: [] });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Reviews retrieved successfully.',
+      reviews,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Server error occurred while retrieving reviews.' });
+  }
+};
+// Get both ratings and reviews for a doctor
+export const getDoctorRatingsAndReviews = async (req, res) => {
+  try {
+    const { doctorId } = req.params; 
+    const doctor = await Doctor.findById(doctorId)
+      // .populate('reviews.userId', 'FirstName LastName')
+      // .exec();
+    
+    if (!doctor) {
+      return res.status(404).json({ success: false, message: 'Doctor not found.' });
+    }
+
+    // Get ratings and calculate average rating
+    const ratings = doctor.ratings;
+    let avgRating = 0;
+    if (ratings.length > 0) {
+      const sum = ratings.reduce((acc, cur) => acc + cur.rating, 0);
+      avgRating = Math.round(sum / ratings.length); // Average rating
+    }
+
+    // Get reviews
+    const reviews = doctor.reviews;
+
+    // Return both ratings and reviews
+    res.status(200).json({
+      success: true,
+      message: 'Ratings and reviews retrieved successfully.',
+      avgRating,
+      ratings,
+      reviews,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Server error occurred while retrieving ratings and reviews.' });
+  }
+};
