@@ -1,6 +1,6 @@
 import express from 'express';
-import { updateUser, deleteUser, getUser, getAllUsers,BookAppointment } from '../Controllers/userController.js';
-import { updateDoctor, deleteDoctor, getDoctor, getAllDoctors,validateDoctor ,setAvailability,getAvailability ,removeAvailability, Putrating, getavgrating} from '../Controllers/doctorController.js';
+import { updateUser, deleteUser, getUser, getAllUsers,BookAppointment, getAllAppointments } from '../Controllers/userController.js';
+import { updateDoctor, deleteDoctor, getDoctor, getAllDoctors,validateDoctor ,setAvailability,getAvailability ,removeAvailability, Putrating, getavgrating, GetReviews, PostReview, getDoctorRatingsAndReviews} from '../Controllers/doctorController.js';
 import { register, login ,getHistory, getAppointment, updateAppointment, rescheduleAppointment,getNotification,updateNotification,deleteNotification} from '../Controllers/authController.js';
 import { authorizeRoles, isAuthenticatedUser } from '../Middleware/roleMiddleware.js';
 
@@ -21,6 +21,9 @@ router.route('/doctor/:doctorId').put(isAuthenticatedUser(), authorizeRoles('adm
 router.route('/doctor/:doctorId').delete(isAuthenticatedUser(), authorizeRoles('admin','doctor'), deleteDoctor);
 router.route('/doctor/rate/:doctorId').post(isAuthenticatedUser(), authorizeRoles('patient'), Putrating);//
 router.route('/doctor/avg/:doctorId').get(isAuthenticatedUser(),authorizeRoles('admin','patient'), getavgrating);//
+router.route('/doctor/getreview/:doctorId').get(isAuthenticatedUser(),authorizeRoles('admin','patient'), GetReviews);//
+router.route('/doctor/postreview/:doctorId').post(isAuthenticatedUser(),authorizeRoles('admin','patient'), PostReview);//
+router.route('/doctor/all/:doctorId').get(isAuthenticatedUser(), authorizeRoles('admin','patient'), getDoctorRatingsAndReviews);//
 router.route('/doctor/:doctorId').get(isAuthenticatedUser(), getDoctor);
 router.route('/doctors').get(getAllDoctors);
 router.route('/setavailability/:doctorId').put(isAuthenticatedUser(),authorizeRoles('doctor'),setAvailability);
@@ -35,6 +38,7 @@ router.route('/rescheduleappointment').put(isAuthenticatedUser(),authorizeRoles(
 
 
 router.route('/getnotification').get(isAuthenticatedUser(),authorizeRoles('admin'),getNotification);
+router.route('/getallAppointement').get(isAuthenticatedUser(),authorizeRoles('admin'),getAllAppointments);
 router.route('/updatenotification/:id').put(isAuthenticatedUser(),authorizeRoles('admin'),updateNotification);
 router.route('/deletenotification/:id').delete(isAuthenticatedUser(),authorizeRoles('admin'),deleteNotification);
 

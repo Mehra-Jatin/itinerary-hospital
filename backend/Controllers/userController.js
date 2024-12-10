@@ -174,3 +174,23 @@ const endtime = new Date(appointmentStart.getTime() + 60 * 60 * 1000 +offset); /
     res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
   }
 }
+
+export const getAllAppointments = async (req, res) => {
+  try {
+    // Fetch all appointments from the database and populate doctor and user details
+    const appointments = await Appointment.find()
+      .populate('doctorId', 'FirstName LastName')  // Populate doctor details such as name and specialty
+      .populate('userId', 'FirstName LastName')  // Populate user details such as name and email
+      .sort({ date: 1, time: 1 });  // Sort appointments by date and time
+
+    if (appointments.length === 0) {
+      return res.status(404).json({ success: false, message: 'No appointments found.' });
+    }
+
+    // Send the response with appointments data
+    return res.status(200).json({ success: true, appointments });
+  } catch (error) {
+    console.error('Error fetching appointments:', error);
+    return res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
+  }
+};

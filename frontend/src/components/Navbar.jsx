@@ -43,7 +43,7 @@ export default function Navbar() {
   return (
     <nav className="flex justify-between items-center p-4 bg-white shadow-lg">
       <Link to="/" className="flex items-center space-x-2">
-        <img src={logoImg} alt="PawsCare Logo" className="h-16" />
+        <img src={logoImg} alt="Televets Logo" className="h-16" />
       </Link>
 
       {/* Desktop Menu */}
@@ -216,8 +216,8 @@ export default function Navbar() {
             </>
           )}
           <div className='absolute bottom-4'>
-            <p className="text-xs text-gray-500">© 2024 PawsCare. All rights reserved.</p>
-            <img src={logoImg} alt="PawsCare Logo" className="h-12" />
+            <p className="text-xs text-gray-500">© 2024 Televets. All rights reserved.</p>
+            <img src={logoImg} alt="Televets Logo" className="h-12" />
           </div>
         </SheetContent>
       </Sheet>

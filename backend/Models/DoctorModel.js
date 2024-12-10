@@ -104,6 +104,24 @@ const doctorSchema = mongoose.Schema(
     //     ref: 'History',
     //   },
     // ],
+    reviews: [
+      {
+        userId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User',
+          required: true,
+        },
+        review: {
+          type: String,
+          required: true,
+          maxlength: 500, // Limit the review text length
+        },
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
   },
   {
     timestamps: true,
