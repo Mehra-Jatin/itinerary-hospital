@@ -45,7 +45,13 @@ import { MessageSquare, ArrowUpDown, Calendar, User, Filter, FileX } from "lucid
 
 const UserHistory = () => {
     const { user } = useAuth();
-    const { appointmentHistory, isLoading, error, fetchAppointmentHistory } = usePatient();
+    const { 
+        appointmentHistory, 
+        isLoading, 
+        error, 
+        fetchAppointmentHistory, 
+        clearAppointmentHistory 
+    } = usePatient();
 
     const [filters, setFilters] = useState({
         doctorName: "",
@@ -58,10 +64,15 @@ const UserHistory = () => {
     const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     useEffect(() => {
+        // Clear previous history when component mounts
+        clearAppointmentHistory();
+    }, [clearAppointmentHistory]);
+
+    useEffect(() => {
         if (user?._id) {
             fetchAppointmentHistory(user._id).catch(console.error);
         }
-    }, [user, fetchAppointmentHistory]);
+    }, [user]);
 
     const sortData = (data, sortConfig) => {
         if (!sortConfig.key) return data;
@@ -84,8 +95,8 @@ const UserHistory = () => {
             const statusMatch =
                 filters.status === "all" || item.status === filters.status;
             const dateMatch =
-                (!filters.dateFrom || item.date >= filters.dateFrom) &&
-                (!filters.dateTo || item.date <= filters.dateTo);
+                (!filters.dateFrom || new Date(item.date) >= new Date(filters.dateFrom)) &&
+                (!filters.dateTo || new Date(item.date) <= new Date(filters.dateTo));
             return doctorMatch && statusMatch && dateMatch;
         });
     };

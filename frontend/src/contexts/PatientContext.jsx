@@ -141,7 +141,7 @@ export const PatientProvider = ({ children }) => {
       const config = await getRequestConfig();
       const response = await api.get(`/appointment/${id}`, config);
       setBookedAppointments(response.data.appointment);
-      return response.data;
+      return response.data.appointment;
     } catch (err) {
       const errorMessage = handleApiError(err);
       setError(errorMessage);
@@ -160,31 +160,28 @@ export const PatientProvider = ({ children }) => {
     try {
       const config = await getRequestConfig();
       const response = await api.get(`/history/${userId}`, config);
-
-      if (response.data.success) {
-        const transformedData = response.data.history.map(appointment => ({
-          _id: appointment._id,
-          patientName: appointment.userId?.name || 'Unknown Patient',
-          doctorName: appointment.doctorId?.name || 'Unknown Doctor',
-          specialty: appointment.doctorId?.specialty || 'General',
-          date: new Date(appointment.date).toISOString(),
-          time: appointment.time || 'Not specified',
-          status: (appointment.status || 'pending').toLowerCase(),
-          type: appointment.type || 'General Consultation',
-          notes: appointment.notes || '',
-          chatHistory: Array.isArray(appointment.chatHistory) ? appointment.chatHistory : []
-        }));
-        setAppointmentHistory(transformedData);
-      }
+      
+      // Assuming the API returns a history array
+      const formattedHistory = response.data.history.map(item => ({
+        _id: item._id,
+        date: item.date,
+        doctorName: item.doctorId?.name || 'Unknown Doctor', // Add fallback
+        specialty: item.doctorId?.specialty || 'N/A',
+        status: item.appointmentStatus.toLowerCase(), // Normalize status
+        notes: item.notes || '' // Add optional notes
+      }));
+      console.log(formattedHistory);
+      
+      setAppointmentHistory(formattedHistory);
       setIsLoading(false);
-      return response.data;
+      return formattedHistory;
     } catch (err) {
       const errorMessage = handleApiError(err);
       setError(errorMessage);
       setIsLoading(false);
       throw new Error(errorMessage);
     }
-  }, [getToken, logout]);
+  }, [getToken, logout, handleApiError]);
 
   const clearAppointmentHistory = useCallback(() => {
     setAppointmentHistory([]);

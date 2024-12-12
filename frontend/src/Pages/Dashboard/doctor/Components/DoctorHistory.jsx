@@ -46,6 +46,8 @@ const AppointmentHistory = ({ userId, Token }) => {
                         'Authorization': `Bearer ${Token}`,
                     },
                 });
+                console.log(historyResponse.data.history);
+                
                 const historyData = historyResponse.data.history;
                 setHistory(historyData);
 

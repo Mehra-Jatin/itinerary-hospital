@@ -5,12 +5,13 @@ import { Link, useLocation } from "react-router-dom";
 import NotificationCount from './components/NotificationCount';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useAdmin } from '@/contexts/AdminContext';
 
 const AdminSidebar = () => {
   const { user, loading, logout } = useAuth();
   const location = useLocation();
-  const [expandedSection, setExpandedSection] = useState(null);
-  const [notificationCount, setNotificationCount] = useState(1);
+  const [expandedSections, setExpandedSections] = useState({});
+  const {notifications} = useAdmin();
 
   if (loading) {
     return (
@@ -43,7 +44,10 @@ const AdminSidebar = () => {
   };
 
   const toggleSection = (section) => {
-    setExpandedSection(expandedSection === section ? null : section);
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
   };
 
   const navItems = [
@@ -76,7 +80,7 @@ const AdminSidebar = () => {
       path: "/admin-dashboard/notifications", 
       icon: Bell, 
       label: "Notifications",
-      extra: <NotificationCount count={notificationCount} />
+      extra: <NotificationCount count={notifications.filter(notif => !notif.read).length} />
     },
     { path: "/admin-dashboard/settings", icon: Settings, label: "Settings" },
   ];
@@ -112,10 +116,10 @@ const AdminSidebar = () => {
                   >
                     <item.icon className="w-4 h-4" />
                     <span className="flex-grow text-left">{item.label}</span>
-                    {expandedSection === item.label ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                    {expandedSections[item.label] ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                   </motion.button>
                   <AnimatePresence>
-                    {expandedSection === item.label && (
+                    {expandedSections[item.label] && (
                       <motion.ul
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
@@ -134,7 +138,6 @@ const AdminSidebar = () => {
                             <Link
                               to={subItem.path}
                               className={getLinkClass(subItem.path, true)}
-                              onClick={() => setExpandedSection(null)}
                             >
                               <subItem.icon className="w-5 h-5" />
                               <span className="flex-grow">{subItem.label}</span>
@@ -149,7 +152,6 @@ const AdminSidebar = () => {
                 <Link
                   to={item.path}
                   className={getLinkClass(item.path)}
-                  onClick={() => setExpandedSection(null)}
                 >
                   <item.icon className="w-4 h-4" />
                   <span className="flex-grow">{item.label}</span>

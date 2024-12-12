@@ -53,7 +53,7 @@ const DoctorProfile = () => {
     hospital: 'Unknown Hospital',
   };
   //  console.log(doctor);
-  console.log(user);
+  // console.log(user);
 
   // Check if user has already rated
   useEffect(() => {
@@ -235,7 +235,7 @@ const DoctorProfile = () => {
                   <h2 className="text-xl font-semibold mb-4">About Doctor</h2>
                   <div className="relative">
                     <p className={`text-gray-600 leading-relaxed ${!isDescriptionExpanded && 'line-clamp-3'}`}>
-                      {doctor.profileDescription || 'Doctor details are not available.'}
+                      {doctor.profileDescription || 'Doctor details are not provided.'}
                     </p>
                     <Button
                       variant="ghost"

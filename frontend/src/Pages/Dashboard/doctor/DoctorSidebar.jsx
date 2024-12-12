@@ -15,11 +15,13 @@ import {
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { MdSchedule, MdSupport } from "react-icons/md";
+import { motion, AnimatePresence } from 'framer-motion';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
-const DashContent = () => {
+const DoctorSidebar = () => {
   const { user, loading, logout } = useAuth();
   const location = useLocation();
-  const [expandedSection, setExpandedSection] = useState(null);
+  const [expandedSections, setExpandedSections] = useState({});
 
   const handleLogout = () => {
     logout();
@@ -52,7 +54,10 @@ const DashContent = () => {
   };
 
   const toggleSection = (section) => {
-    setExpandedSection(expandedSection === section ? null : section);
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
   };
 
   const navItems = [
@@ -61,14 +66,20 @@ const DashContent = () => {
       icon: Users,
       label: "Appointments",
       subItems: [
-        { path: "/doctor-dashboard/appointments/manage-appointments",icon: Dot, label: "Manage Appointments" },
-        { path: "/doctor-dashboard/appointments/view-appointments",icon: Dot, label: "View Appointments" },
+        { path: "/doctor-dashboard/appointments/manage-appointments", icon: Dot, label: "Manage Appointments" },
+        { path: "/doctor-dashboard/appointments/view-appointments", icon: Dot, label: "View Appointments" },
       ],
     },
     { path: "/doctor-dashboard/schedules", icon: MdSchedule, label: "Schedules" },
-    { path: "/doctor-dashboard/messages", icon: MessageSquareText, label: "Messages" },
+    { 
+      icon: MessageSquareText, 
+      label: "Messages", 
+      subItems: [
+            { path: "/doctor-dashboard/patient-messages", icon: Dot, label: "Patient Messages" },
+            { path: "/doctor-dashboard/admin-messages", icon: Dot, label: "Admin Support" }
+      ]
+    },
     { path: "/doctor-dashboard/histories", icon: History, label: "History" },
-    
   ];
 
   const bottomNavItems = [
@@ -92,36 +103,54 @@ const DashContent = () => {
       </div>
 
       {/* Navigation Links */}
-      <nav className="flex-grow overflow-y-auto text-base">
+      <ScrollArea className="flex-grow overflow-y-auto text-base">
         <ul className="space-y-1">
           {navItems.map((item) => (
             <li key={item.label}>
               {item.subItems ? (
                 <div>
-                  <button
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
                     onClick={() => toggleSection(item.label)}
                     className={`w-full ${getLinkClass("")}`}
                   >
                     <item.icon className="w-4 h-4" />
                     <span className="flex-grow text-left">{item.label}</span>
-                    {expandedSection === item.label ? (
+                    {expandedSections[item.label] ? (
                       <ChevronUp className="w-4 h-4" />
                     ) : (
                       <ChevronDown className="w-4 h-4" />
                     )}
-                  </button>
-                  {expandedSection === item.label && (
-                    <ul className="mt-1 space-y-1">
-                      {item.subItems.map((subItem) => (
-                        <li key={subItem.path}>
-                          <Link to={subItem.path} className={getLinkClass(subItem.path, true)}>
-                          <subItem.icon className="w-5 h-5" />
-                            <span className="flex-grow">{subItem.label}</span>
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                  </motion.button>
+                  <AnimatePresence>
+                    {expandedSections[item.label] && (
+                      <motion.ul
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                        className="mt-1 space-y-1 overflow-hidden"
+                      >
+                        {item.subItems.map((subItem) => (
+                          <motion.li 
+                            key={subItem.path}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <Link
+                              to={subItem.path}
+                              className={getLinkClass(subItem.path, true)}
+                            >
+                              <subItem.icon className="w-5 h-5" />
+                              <span className="flex-grow">{subItem.label}</span>
+                            </Link>
+                          </motion.li>
+                        ))}
+                      </motion.ul>
+                    )}
+                  </AnimatePresence>
                 </div>
               ) : (
                 <Link to={item.path} className={getLinkClass(item.path)}>
@@ -132,7 +161,7 @@ const DashContent = () => {
             </li>
           ))}
         </ul>
-      </nav>
+      </ScrollArea>
 
       {/* Bottom Navigation */}
       <div className="mt-auto pt-4 border-t border-gray-200">
@@ -146,17 +175,19 @@ const DashContent = () => {
             </li>
           ))}
         </ul>
-        <button
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           type="button"
           onClick={handleLogout}
           className="w-full px-4 py-2 text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors duration-200 flex items-center justify-center"
         >
           <LogOut className="w-5 h-5 mr-2" />
           <span>Logout</span>
-        </button>
+        </motion.button>
       </div>
     </div>
   );
 };
 
-export default DashContent;
+export default DoctorSidebar;

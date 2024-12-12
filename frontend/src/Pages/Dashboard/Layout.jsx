@@ -1,18 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Bell, HelpCircle, Settings, Menu, LogOutIcon } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import AdminSidebar from './admin/AdminSidebar';
-import DashContent from './doctor/DashContent';
-import AdminDashboardLayout from './admin/pages/AdminDashboard';
 import { Outlet } from 'react-router-dom';
 import { AdminProvider } from '@/contexts/AdminContext';
 import DashboardNavbar from './DashboardNavbar';
 import { DoctorProvider } from '@/contexts/DoctorContext';
+import DoctorSidebar from './doctor/DoctorSidebar';
 
 function DashboardLayout({ role }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -45,7 +43,7 @@ function DashboardLayout({ role }) {
               }`}
           >
             <div className="h-full flex flex-col">
-              {user.role === 'doctor' ? <DashContent /> : <AdminSidebar />}
+              {user.role === 'doctor' ? <DoctorSidebar /> : <AdminSidebar />}
             </div>
           </aside>
 

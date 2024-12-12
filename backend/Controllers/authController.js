@@ -178,6 +178,7 @@ export const getHistory = async (req, res) => {
       message: "History retrieved successfully.",
       history: history,
     });
+    
   }
   catch (error) {
     console.error("Error getting user appointment:", error);
