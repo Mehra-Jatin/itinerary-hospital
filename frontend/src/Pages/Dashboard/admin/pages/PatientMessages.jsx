@@ -1,9 +1,11 @@
 import React from 'react'
+import ChatLayout from '../../Chat/ChatLayout'
 
 function PatientMessages() {
   return (
-    <div>PatientMessages       <br />
-      Need Backend Api endPoient for this</div>
+    <div>
+       <ChatLayout />
+    </div>
   )
 }
 

@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { AlertTriangle, Eye, GraduationCap, IndianRupee, RefreshCw, SearchX, X } from 'lucide-react'
 import { useDoctor } from '@/contexts/DoctorContext';
 import DoctorFilter from '@/components/DoctorFilter';
+import { useAuth } from '@/hooks/useAuth';
 
 const StarRating = ({ rating, size = 'base' }) => {
   const sizes = {
@@ -32,7 +33,7 @@ const StarRating = ({ rating, size = 'base' }) => {
   );
 };
 
-const DoctorCard = ({ doctor }) => {
+const DoctorCard = ({ doctor, user }) => {
   const navigate = useNavigate();
 
   return (
@@ -64,7 +65,7 @@ const DoctorCard = ({ doctor }) => {
                 </span>
               </div>
               <div className="flex items-center">
-                <IndianRupee className='w-4 h-4 text-muted-foreground'/>
+                <IndianRupee className='w-4 h-4 text-muted-foreground' />
                 <span className="text-md text-muted-foreground font-semibold">
                   {doctor?.fees} <span className='text-gray-500 text-xs'>per consultation</span>
                 </span>
@@ -96,16 +97,19 @@ const DoctorCard = ({ doctor }) => {
                 <Eye size={15} />
                 View Profile
               </Button>
-              <Button
-                variant="primary"
-                onClick={() => navigate(`/doctor/appointment/${doctor._id}`)}
-                className="flex-1 bg-orange-500 hover:bg-orange-600"
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                Book Appointment
-              </Button>
+              {user &&
+                <Button
+                  variant="primary"
+                  onClick={() => navigate(`/doctor/appointment/${doctor._id}`)}
+                  className="flex-1 bg-orange-500 hover:bg-orange-600"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  Book Appointment
+                </Button>
+              }
+
 
             </div>
           </div>
@@ -196,6 +200,7 @@ const NoResults = ({ searchQuery, hasActiveFilters, clearAllFilters }) => {
 
 const Doctor = () => {
   const { doctors, loading, error } = useDoctor();
+  const { user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -310,16 +315,16 @@ const Doctor = () => {
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold text-primary mb-6">Find Your Doctor</h1>
 
-      <div className='z-50 bg-white/30 py-3 backdrop-blur-3xl rounded-lg border-none'>
-        <Input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search by name, specialty, or specialization..."
-          className="mb-6"
-        />
-      </div>
-        
+        <div className='z-50 bg-white/30 py-3 backdrop-blur-3xl rounded-lg border-none'>
+          <Input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search by name, specialty, or specialization..."
+            className="mb-6"
+          />
+        </div>
+
 
         <div className="flex flex-col lg:flex-row gap-6">
           <DoctorFilter
@@ -344,7 +349,7 @@ const Doctor = () => {
             ) : (
               <div className="space-y-6">
                 {filteredDoctors.map((doctor) => (
-                  <DoctorCard key={doctor._id} doctor={doctor} />
+                  <DoctorCard key={doctor._id} doctor={doctor} user={user} />
                 ))}
               </div>
             )}

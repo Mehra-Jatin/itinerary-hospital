@@ -28,6 +28,9 @@ import SchedulePage from "./Pages/Dashboard/doctor/SchedulesPage";
 import DocAppointments from "./Pages/Dashboard/doctor/DocAppoitments";
 import DoctorChat from "./Pages/Dashboard/doctor/DoctorChatPage";
 import DoctHistoriesPage from "./Pages/Dashboard/doctor/DoctorHistory";
+// import PatientMessages from "./Pages/Dashboard/doctor/PatientMessages";
+// import AdminMessages from "./Pages/Dashboard/doctor/AdminMessages";
+
 import { Toaster } from "./components/ui/toaster";
 
 import AdminDashboard from "./Pages/Dashboard/admin/pages/AdminDashboard";
@@ -47,6 +50,7 @@ import Contacts from "./Pages/Contacts";
 import Blogs from "./Pages/Blogs";
 import AdminMessages from "./Pages/Dashboard/doctor/AdminMessages";
 import ManageUi from "./Pages/Dashboard/admin/pages/ManageUi";
+import ChatLayout from "./Pages/Dashboard/Chat/ChatLayout";
 
 // Define the router configuration with routes
 const router = createBrowserRouter([
@@ -181,11 +185,16 @@ const router = createBrowserRouter([
       // },
       // {
       //   path: "Supports/User-messages",  
-      //   element: <UserMessages />,
+      //   element: <UserMessages />,/doctor-dashboard/patient-messages", icon: Dot, label: "Patient Messages" },
+            // { path: "/doctor-dashboard/admin-messages
       // },
       {
-        path: "messages",  
-        element: <DoctorChat />,
+        path: "patient-messages",  
+        element: <PatientMessages />,
+      },
+      {
+        path: "admin-messages",  
+        element: <AdminMessages />,
       },
       {
         path: "histories",  

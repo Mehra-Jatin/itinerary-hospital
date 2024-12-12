@@ -150,6 +150,7 @@ const endtime = new Date(appointmentStart.getTime() + 60 * 60 * 1000 +offset); /
       chat:true, 
       endtime:endtime , // Assuming the appointment ends 1 hour after it starts
     };
+    
     const newAppointment = await Appointment.create(appointment);
     await newAppointment.save();
 
