@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import heroImg1 from "./images/home1-img.jpg";
-import heroImg2 from "./images/home2-img.jpg";
-import heroImg3 from "./images/home3-img.jpg";
+const heroImg1 = "./images/home1-img.jpg";
+ const heroImg2= "./images/home2-img.jpg";
+const  heroImg3 = "ef"; 
 
 const heroImages = [heroImg1, heroImg2, heroImg3];
 
